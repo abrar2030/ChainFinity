@@ -1,0 +1,22 @@
+specVersion: 0.0.5
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: CrossChainManager
+    network: arbitrum
+    source:
+      address: "{{address}}"
+      abi: CrossChainManager
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - PositionCreated
+      abis:
+        - name: CrossChainManager
+          file: ../artifacts/contracts/CrossChainManager.sol/CrossChainManager.json
+      eventHandlers:
+        - event: PositionCreated(indexed bytes32)
+          handler: handlePositionCreated
