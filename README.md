@@ -1,9 +1,8 @@
-# Cross-Chain Asset Management Protocol (CCAMP)  
+# Cross-Chain Asset Management Protocol (ChainFinity)  
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  
-[![Build Status](https://github.com/your-org/ccamp/actions/workflows/deploy.yml/badge.svg)](https://github.com/your-org/ccamp/actions)  
 
 ## 🌐 Overview  
-CCAMP enables secure cross-chain asset management with AI-powered risk assessment and institutional-grade portfolio analytics. Combines multi-chain interoperability with quantitative finance models for professional asset allocation.
+ChainFinity enables secure cross-chain asset management with AI-powered risk assessment and institutional-grade portfolio analytics. Combines multi-chain interoperability with quantitative finance models for professional asset allocation.
 
 ## 🚀 Key Features  
 - Cross-chain asset transfers (EVM + non-EVM chains)  
@@ -42,8 +41,8 @@ graph TD
 ## ⚙️ Installation  
 ```bash
 # Clone repository  
-git clone https://github.com/your-org/ccamp.git  
-cd ccamp  
+git clone https://github.com/abrar2030/ChainFinity.git
+cd ChainFinity  
 
 # Install dependencies  
 cd blockchain && npm install  
