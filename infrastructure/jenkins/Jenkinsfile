@@ -1,0 +1,108 @@
+pipeline {
+    agent any
+    
+    environment {
+        DOCKER_CREDENTIALS = credentials('docker-hub-credentials')
+        AWS_CREDENTIALS = credentials('aws-credentials')
+        KUBE_CONFIG = credentials('kube-config')
+        DB_HOST = credentials('db-host')
+        DB_PASSWORD = credentials('db-password')
+        NODE_ENV = 'production'
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        
+        stage('Build') {
+            parallel {
+                stage('Build Frontend') {
+                    steps {
+                        dir('code/frontend') {
+                            sh 'npm install'
+                            sh 'npm run build'
+                            sh 'docker build -t chainfinity/frontend:${BUILD_NUMBER} .'
+                        }
+                    }
+                }
+                
+                stage('Build Backend') {
+                    steps {
+                        dir('code/backend') {
+                            sh 'pip install -r requirements.txt'
+                            sh 'docker build -t chainfinity/backend:${BUILD_NUMBER} .'
+                        }
+                    }
+                }
+            }
+        }
+        
+        stage('Test') {
+            parallel {
+                stage('Test Frontend') {
+                    steps {
+                        dir('code/frontend') {
+                            sh 'npm run test:ci'
+                            sh 'npm run lint'
+                        }
+                    }
+                }
+                
+                stage('Test Backend') {
+                    steps {
+                        dir('code/backend') {
+                            sh 'python -m pytest --cov=app tests/'
+                            sh 'flake8 app tests'
+                        }
+                    }
+                }
+            }
+        }
+        
+        stage('Security Scan') {
+            steps {
+                sh 'docker scan chainfinity/frontend:${BUILD_NUMBER}'
+                sh 'docker scan chainfinity/backend:${BUILD_NUMBER}'
+            }
+        }
+        
+        stage('Push Docker Images') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+                    sh 'docker push chainfinity/frontend:${BUILD_NUMBER}'
+                    sh 'docker push chainfinity/backend:${BUILD_NUMBER}'
+                }
+            }
+        }
+        
+        stage('Deploy to Kubernetes') {
+            steps {
+                withCredentials([file(credentialsId: 'kube-config', variable: 'KUBECONFIG')]) {
+                    sh 'kubectl config use-context chainfinity-cluster'
+                    sh 'kubectl set image deployment/chainfinity-frontend frontend=chainfinity/frontend:${BUILD_NUMBER}'
+                    sh 'kubectl set image deployment/chainfinity-backend backend=chainfinity/backend:${BUILD_NUMBER}'
+                    sh 'kubectl rollout status deployment/chainfinity-frontend'
+                    sh 'kubectl rollout status deployment/chainfinity-backend'
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            cleanWs()
+            junit '**/test-results/*.xml'
+            cobertura coberturaReportFile: '**/coverage.xml'
+        }
+        success {
+            slackSend channel: '#deployments', message: "Deployment successful: ${BUILD_URL}"
+        }
+        failure {
+            slackSend channel: '#deployments', message: "Deployment failed: ${BUILD_URL}"
+        }
+    }
+} 

@@ -1,0 +1,154 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: chainfinity-secrets
+type: Opaque
+data:
+  db-host: {{ .Values.db.host | b64enc }}
+  db-password: {{ .Values.db.password | b64enc }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chainfinity-frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: chainfinity-frontend
+  template:
+    metadata:
+      labels:
+        app: chainfinity-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: chainfinity/frontend:latest
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        env:
+        - name: REACT_APP_API_URL
+          value: "http://chainfinity-backend:8000"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chainfinity-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: chainfinity-backend
+  template:
+    metadata:
+      labels:
+        app: chainfinity-backend
+    spec:
+      containers:
+      - name: backend
+        image: chainfinity/backend:latest
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "256Mi"
+          limits:
+            cpu: "1000m"
+            memory: "1Gi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        env:
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: chainfinity-secrets
+              key: db-host
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: chainfinity-secrets
+              key: db-password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chainfinity-frontend
+spec:
+  selector:
+    app: chainfinity-frontend
+  ports:
+  - port: 80
+    targetPort: 3000
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chainfinity-backend
+spec:
+  selector:
+    app: chainfinity-backend
+  ports:
+  - port: 8000
+    targetPort: 8000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: chainfinity-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+  - hosts:
+    - chainfinity.example.com
+    secretName: chainfinity-tls
+  rules:
+  - host: chainfinity.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: chainfinity-frontend
+            port:
+              number: 80
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: chainfinity-backend
+            port:
+              number: 8000 
