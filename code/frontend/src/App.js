@@ -1,47 +1,38 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { ThemeProvider } from '@mui/material/styles';
-import { CssBaseline } from '@mui/material';
-import { AppProvider } from './context/AppContext';
-import { theme, globalStyles } from './styles/globalStyles';
-import { Global } from '@emotion/react';
-import Web3Wrapper from '../web3-provider';
-
-// Import pages
+import { Routes, Route } from 'react-router-dom';
+import { Box, CssBaseline } from '@mui/material';
+import Navbar from './components/layout/Navbar';
+import Footer from './components/layout/Footer';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
+import Register from './pages/Register';
+import Transactions from './pages/Transactions';
+import Settings from './pages/Settings';
 import NotFound from './pages/NotFound';
-
-// Import components
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
+import { useApp } from './context/AppContext';
 
 function App() {
+  const { isAuthenticated } = useApp();
+
   return (
-    <Web3Wrapper>
-      <AppProvider>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <Global styles={globalStyles} />
-          <Router>
-            <div className="app">
-              <Navbar />
-              <main className="container">
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </main>
-              <Footer />
-            </div>
-          </Router>
-        </ThemeProvider>
-      </AppProvider>
-    </Web3Wrapper>
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <CssBaseline />
+      <Navbar />
+      <Box component="main" sx={{ flexGrow: 1 }}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/transactions" element={<Transactions />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Box>
+      <Footer />
+    </Box>
   );
 }
 
-export default App; 
+export default App;

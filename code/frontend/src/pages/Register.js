@@ -14,8 +14,6 @@ import {
   Divider,
   useTheme,
   Alert,
-  Checkbox,
-  FormControlLabel,
   Link,
   CircularProgress
 } from '@mui/material';
@@ -24,6 +22,7 @@ import {
   VisibilityOff,
   Email,
   Lock,
+  Person,
   AccountBalanceWallet
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
@@ -76,19 +75,26 @@ const SocialButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-const Login = () => {
+const Register = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { login, error, loading, clearError } = useApp();
+  const { register, error, loading, clearError } = useApp();
   
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [walletAddress, setWalletAddress] = useState('');
   const [formError, setFormError] = useState('');
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleClickShowConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
   };
 
   const handleMouseDownPassword = (event) => {
@@ -102,17 +108,37 @@ const Login = () => {
     clearError();
     setFormError('');
     
-    if (!email || !password) {
-      setFormError('Please enter both email and password');
+    // Form validation
+    if (!name || !email || !password || !confirmPassword) {
+      setFormError('Please fill in all required fields');
+      return;
+    }
+    
+    if (password !== confirmPassword) {
+      setFormError('Passwords do not match');
+      return;
+    }
+    
+    if (password.length < 8) {
+      setFormError('Password must be at least 8 characters long');
       return;
     }
     
     try {
-      const success = await login({ email, password });
+      const result = await register({ 
+        name, 
+        email, 
+        password,
+        wallet_address: walletAddress || undefined
+      });
       
-      if (success) {
-        // Redirect to dashboard on success
-        navigate('/dashboard');
+      if (result.success) {
+        // Redirect to login on success
+        navigate('/login', { 
+          state: { 
+            message: 'Registration successful! Please log in with your new account.' 
+          } 
+        });
       }
     } catch (err) {
       setFormError('An unexpected error occurred. Please try again.');
@@ -139,27 +165,46 @@ const Login = () => {
               WebkitTextFillColor: 'transparent',
             }}
           >
-            Welcome Back
+            Create Account
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            Sign in to access your ChainFinity dashboard
+            Join ChainFinity to track your crypto portfolio
           </Typography>
         </Box>
 
         <AuthPaper elevation={3}>
           {(error || formError) && (
             <Alert severity="error" sx={{ mb: 3 }}>
-              {formError || error?.message || 'Authentication failed. Please try again.'}
+              {formError || error?.message || 'Registration failed. Please try again.'}
             </Alert>
           )}
 
           <form onSubmit={handleSubmit}>
             <TextField
               fullWidth
+              label="Full Name"
+              variant="outlined"
+              margin="normal"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Person color="action" />
+                  </InputAdornment>
+                ),
+              }}
+              disabled={loading}
+            />
+
+            <TextField
+              fullWidth
               label="Email Address"
               variant="outlined"
               margin="normal"
               required
+              type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               InputProps={{
@@ -204,22 +249,55 @@ const Login = () => {
               disabled={loading}
             />
 
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1, mb: 2 }}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    color="primary"
-                    disabled={loading}
-                  />
-                }
-                label="Remember me"
-              />
-              <Link component={RouterLink} to="/forgot-password" variant="body2" color="primary">
-                Forgot password?
-              </Link>
-            </Box>
+            <TextField
+              fullWidth
+              label="Confirm Password"
+              variant="outlined"
+              margin="normal"
+              required
+              type={showConfirmPassword ? 'text' : 'password'}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Lock color="action" />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowConfirmPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      edge="end"
+                      disabled={loading}
+                    >
+                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              disabled={loading}
+            />
+
+            <TextField
+              fullWidth
+              label="Wallet Address (Optional)"
+              variant="outlined"
+              margin="normal"
+              value={walletAddress}
+              onChange={(e) => setWalletAddress(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <AccountBalanceWallet color="action" />
+                  </InputAdornment>
+                ),
+              }}
+              disabled={loading}
+              helperText="Connect your Ethereum wallet address to track your portfolio"
+            />
 
             <Button
               type="submit"
@@ -227,21 +305,21 @@ const Login = () => {
               variant="contained"
               color="primary"
               size="large"
-              sx={{ py: 1.5, mb: 2 }}
+              sx={{ py: 1.5, mb: 2, mt: 2 }}
               disabled={loading}
             >
               {loading ? (
                 <CircularProgress size={24} color="inherit" />
               ) : (
-                'Sign In'
+                'Create Account'
               )}
             </Button>
 
             <Box sx={{ textAlign: 'center', mt: 1 }}>
               <Typography variant="body2" color="text.secondary">
-                Don't have an account?{' '}
-                <Link component={RouterLink} to="/register" fontWeight={600} color="primary">
-                  Sign Up
+                Already have an account?{' '}
+                <Link component={RouterLink} to="/login" fontWeight={600} color="primary">
+                  Sign In
                 </Link>
               </Typography>
             </Box>
@@ -265,7 +343,7 @@ const Login = () => {
           </AuthDivider>
 
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <SocialButton
                 fullWidth
                 variant="outlined"
@@ -276,16 +354,6 @@ const Login = () => {
                 Connect Wallet
               </SocialButton>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <SocialButton
-                fullWidth
-                variant="outlined"
-                onClick={() => console.log('Guest login')}
-                disabled={loading}
-              >
-                Guest Access
-              </SocialButton>
-            </Grid>
           </Grid>
         </AuthPaper>
       </motion.div>
@@ -293,4 +361,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

@@ -1,58 +1,78 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import {
-  Container,
-  Box,
-  Typography,
-  Button,
-  Paper,
-} from '@mui/material';
+import { Box, Container, Typography, Button, useTheme } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { motion } from 'framer-motion';
+import { Link as RouterLink } from 'react-router-dom';
 
-function NotFound() {
-  const navigate = useNavigate();
+const NotFoundContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  minHeight: 'calc(100vh - 200px)',
+  textAlign: 'center',
+  padding: theme.spacing(3),
+}));
+
+const NotFoundImage = styled('img')(({ theme }) => ({
+  maxWidth: '100%',
+  height: 'auto',
+  marginBottom: theme.spacing(4),
+}));
+
+const NotFound = () => {
+  const theme = useTheme();
 
   return (
-    <Container maxWidth="sm">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Paper
-          elevation={3}
-          sx={{
-            padding: 4,
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            textAlign: 'center',
-          }}
+    <Container maxWidth="md">
+      <NotFoundContainer>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
         >
-          <Typography variant="h1" component="h1" gutterBottom>
+          <NotFoundImage
+            src="/404-illustration.svg"
+            alt="Page Not Found"
+            sx={{ maxWidth: 400 }}
+          />
+          
+          <Typography 
+            variant="h2" 
+            component="h1" 
+            fontWeight={700} 
+            gutterBottom
+            sx={{
+              background: 'linear-gradient(45deg, #3a36e0 0%, #6c63ff 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
+          >
             404
           </Typography>
-          <Typography variant="h5" gutterBottom>
+          
+          <Typography variant="h4" fontWeight={600} gutterBottom>
             Page Not Found
           </Typography>
-          <Typography color="text.secondary" paragraph>
-            The page you are looking for doesn't exist or has been moved.
+          
+          <Typography variant="body1" color="text.secondary" paragraph sx={{ maxWidth: 600, mx: 'auto' }}>
+            The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
           </Typography>
+          
           <Button
             variant="contained"
             color="primary"
-            onClick={() => navigate('/')}
+            size="large"
+            component={RouterLink}
+            to="/"
             sx={{ mt: 2 }}
           >
-            Go to Homepage
+            Back to Home
           </Button>
-        </Paper>
-      </Box>
+        </motion.div>
+      </NotFoundContainer>
     </Container>
   );
-}
+};
 
-export default NotFound; 
+export default NotFound;

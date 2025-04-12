@@ -9,7 +9,7 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
 
-class User(UserBase):
+class UserResponse(UserBase):
     id: int
     is_active: bool
     created_at: datetime
@@ -43,7 +43,12 @@ class Transaction(TransactionBase):
     class Config:
         orm_mode = True
 
+class Asset(BaseModel):
+    symbol: str
+    balance: float
+    value_usd: float
+
 class Portfolio(BaseModel):
     total_value: float
-    assets: List[dict]
-    recent_transactions: List[Transaction] 
+    assets: List[Asset]
+    recent_transactions: Optional[List[Transaction]] = []
