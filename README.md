@@ -4,6 +4,10 @@
 ## 🌐 Overview  
 ChainFinity enables secure cross-chain asset management with AI-powered risk assessment and institutional-grade portfolio analytics. Combines multi-chain interoperability with quantitative finance models for professional asset allocation.
 
+<div align="center">
+  <img src="ChainFinity.bmp" alt="Cross-Chain Asset Management" width="100%">
+</div>
+
 > **Note**: This Project is currently under active development. Features and functionalities are being added and improved continuously to enhance user experience.
 
 ## 🚀 Key Features  
