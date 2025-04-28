@@ -86,4 +86,4 @@ kubectl apply -f k8s/risk-engine-deployment.yaml
 ```
 
 ## 📄 License  
-Distributed under MIT License - See LICENSE for details  
+Distributed under MIT License - See LICENSE for details
