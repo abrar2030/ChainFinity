@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Container, Typography, Button, useTheme } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
-import { Link as RouterLink } from 'react-router-dom';
+import Link from 'next/link';
 
 const NotFoundContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -63,8 +63,8 @@ const NotFound = () => {
             variant="contained"
             color="primary"
             size="large"
-            component={RouterLink}
-            to="/"
+            component={Link}
+            href="/"
             sx={{ mt: 2 }}
           >
             Back to Home
