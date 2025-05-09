@@ -1,9 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
-    "types": [
-      "@cloudflare/workers-types/2023-07-01"
-    ],
+    "target": "es5",
     "lib": [
       "dom",
       "dom.iterable",
@@ -30,14 +27,19 @@
         "./src/*"
       ]
     },
+    "types": [
+      "jest",
+      "node",
+      "@testing-library/jest-dom",
+      "@cloudflare/workers-types/2023-07-01"
+    ]
   },
   "include": [
     "next-env.d.ts",
-    "env.d.ts",
+    "src/types/global.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts",
-    "next.config.mjs"
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"
