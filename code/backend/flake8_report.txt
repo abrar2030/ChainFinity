@@ -1,0 +1,206 @@
+[1m./app.py[m[36m:[m5[36m:[m1[36m:[m [1m[31mF401[m 'datetime.timedelta' imported but unused
+[1m./app.py[m[36m:[m6[36m:[m1[36m:[m [1m[31mF401[m 'typing.List' imported but unused
+[1m./app.py[m[36m:[m6[36m:[m1[36m:[m [1m[31mF401[m 'typing.Optional' imported but unused
+[1m./app.py[m[36m:[m14[36m:[m1[36m:[m [1m[31mE402[m module level import not at top of file
+[1m./app.py[m[36m:[m15[36m:[m1[36m:[m [1m[31mF401[m 'models.Transaction' imported but unused
+[1m./app.py[m[36m:[m15[36m:[m1[36m:[m [1m[31mE402[m module level import not at top of file
+[1m./app.py[m[36m:[m16[36m:[m1[36m:[m [1m[31mF401[m 'schemas.TokenData' imported but unused
+[1m./app.py[m[36m:[m16[36m:[m1[36m:[m [1m[31mE402[m module level import not at top of file
+[1m./app.py[m[36m:[m17[36m:[m1[36m:[m [1m[31mE402[m module level import not at top of file
+[1m./app.py[m[36m:[m23[36m:[m1[36m:[m [1m[31mE402[m module level import not at top of file
+[1m./app.py[m[36m:[m37[36m:[m80[36m:[m [1m[31mE501[m line too long (83 > 79 characters)
+[1m./app.py[m[36m:[m44[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./app.py[m[36m:[m52[36m:[m1[36m:[m [1m[31mE305[m expected 2 blank lines after class or function definition, found 1
+[1m./app.py[m[36m:[m54[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./app.py[m[36m:[m63[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./app.py[m[36m:[m76[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./app.py[m[36m:[m85[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./app.py[m[36m:[m89[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./app.py[m[36m:[m93[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./app.py[m[36m:[m104[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./app.py[m[36m:[m106[36m:[m5[36m:[m [1m[31mF841[m local variable 'w3' is assigned to but never used
+[1m./app.py[m[36m:[m126[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./app.py[m[36m:[m137[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./app.py[m[36m:[m139[36m:[m5[36m:[m [1m[31mF841[m local variable 'w3' is assigned to but never used
+[1m./auth.py[m[36m:[m26[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./auth.py[m[36m:[m29[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./auth.py[m[36m:[m32[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./auth.py[m[36m:[m32[36m:[m80[36m:[m [1m[31mE501[m line too long (86 > 79 characters)
+[1m./auth.py[m[36m:[m42[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./auth.py[m[36m:[m59[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./auth.py[m[36m:[m65[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./auth.py[m[36m:[m70[36m:[m24[36m:[m [1m[31mW291[m trailing whitespace
+[1m./auth.py[m[36m:[m70[36m:[m25[36m:[m [1m[31mW292[m no newline at end of file
+[1m./auth_routes.py[m[36m:[m20[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./auth_routes.py[m[36m:[m21[36m:[m80[36m:[m [1m[31mE501[m line too long (80 > 79 characters)
+[1m./auth_routes.py[m[36m:[m29[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./auth_routes.py[m[36m:[m43[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./auth_routes.py[m[36m:[m49[36m:[m80[36m:[m [1m[31mE501[m line too long (81 > 79 characters)
+[1m./auth_routes.py[m[36m:[m55[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./auth_routes.py[m[36m:[m62[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./auth_routes.py[m[36m:[m63[36m:[m80[36m:[m [1m[31mE501[m line too long (86 > 79 characters)
+[1m./auth_routes.py[m[36m:[m64[36m:[m24[36m:[m [1m[31mW291[m trailing whitespace
+[1m./auth_routes.py[m[36m:[m64[36m:[m25[36m:[m [1m[31mW292[m no newline at end of file
+[1m./blockchain.py[m[36m:[m10[36m:[m80[36m:[m [1m[31mE501[m line too long (88 > 79 characters)
+[1m./blockchain.py[m[36m:[m41[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./blockchain.py[m[36m:[m50[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./blockchain.py[m[36m:[m50[36m:[m80[36m:[m [1m[31mE501[m line too long (108 > 79 characters)
+[1m./blockchain.py[m[36m:[m55[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./blockchain.py[m[36m:[m59[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./blockchain.py[m[36m:[m69[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./blockchain.py[m[36m:[m69[36m:[m80[36m:[m [1m[31mE501[m line too long (103 > 79 characters)
+[1m./blockchain.py[m[36m:[m72[36m:[m9[36m:[m [1m[31mF841[m local variable 'w3' is assigned to but never used
+[1m./blockchain.py[m[36m:[m73[36m:[m80[36m:[m [1m[31mE501[m line too long (107 > 79 characters)
+[1m./blockchain.py[m[36m:[m80[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./blockchain.py[m[36m:[m92[36m:[m80[36m:[m [1m[31mE501[m line too long (89 > 79 characters)
+[1m./blockchain.py[m[36m:[m98[36m:[m50[36m:[m [1m[31mW291[m trailing whitespace
+[1m./blockchain.py[m[36m:[m98[36m:[m51[36m:[m [1m[31mW292[m no newline at end of file
+[1m./blockchain_routes.py[m[36m:[m9[36m:[m1[36m:[m [1m[31mF401[m 'blockchain.get_transactions' imported but unused
+[1m./blockchain_routes.py[m[36m:[m18[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./blockchain_routes.py[m[36m:[m26[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./blockchain_routes.py[m[36m:[m31[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./blockchain_routes.py[m[36m:[m37[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./blockchain_routes.py[m[36m:[m48[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./blockchain_routes.py[m[36m:[m53[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./blockchain_routes.py[m[36m:[m70[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./blockchain_routes.py[m[36m:[m79[36m:[m60[36m:[m [1m[31mW291[m trailing whitespace
+[1m./blockchain_routes.py[m[36m:[m79[36m:[m61[36m:[m [1m[31mW292[m no newline at end of file
+[1m./database.py[m[36m:[m20[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./database.py[m[36m:[m25[36m:[m19[36m:[m [1m[31mW291[m trailing whitespace
+[1m./database.py[m[36m:[m25[36m:[m20[36m:[m [1m[31mW292[m no newline at end of file
+[1m./main.py[m[36m:[m3[36m:[m1[36m:[m [1m[31mF401[m 'fastapi.security.OAuth2PasswordBearer' imported but unused
+[1m./main.py[m[36m:[m6[36m:[m1[36m:[m [1m[31mF401[m 'datetime.datetime' imported but unused
+[1m./main.py[m[36m:[m7[36m:[m1[36m:[m [1m[31mF401[m 'typing.List' imported but unused
+[1m./main.py[m[36m:[m7[36m:[m1[36m:[m [1m[31mF401[m 'typing.Optional' imported but unused
+[1m./main.py[m[36m:[m15[36m:[m1[36m:[m [1m[31mE402[m module level import not at top of file
+[1m./main.py[m[36m:[m16[36m:[m1[36m:[m [1m[31mE402[m module level import not at top of file
+[1m./main.py[m[36m:[m17[36m:[m1[36m:[m [1m[31mF401[m 'schemas.TokenData' imported but unused
+[1m./main.py[m[36m:[m17[36m:[m1[36m:[m [1m[31mE402[m module level import not at top of file
+[1m./main.py[m[36m:[m18[36m:[m1[36m:[m [1m[31mF401[m 'services.auth.get_current_user' imported but unused
+[1m./main.py[m[36m:[m18[36m:[m1[36m:[m [1m[31mE402[m module level import not at top of file
+[1m./main.py[m[36m:[m26[36m:[m1[36m:[m [1m[31mF401[m 'services.blockchain.get_web3_provider' imported but unused
+[1m./main.py[m[36m:[m26[36m:[m1[36m:[m [1m[31mF401[m 'services.blockchain.get_transactions' imported but unused
+[1m./main.py[m[36m:[m26[36m:[m1[36m:[m [1m[31mE402[m module level import not at top of file
+[1m./main.py[m[36m:[m33[36m:[m1[36m:[m [1m[31mE402[m module level import not at top of file
+[1m./main.py[m[36m:[m47[36m:[m80[36m:[m [1m[31mE501[m line too long (83 > 79 characters)
+[1m./main.py[m[36m:[m57[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./main.py[m[36m:[m65[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./main.py[m[36m:[m65[36m:[m80[36m:[m [1m[31mE501[m line too long (85 > 79 characters)
+[1m./main.py[m[36m:[m74[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./main.py[m[36m:[m87[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./main.py[m[36m:[m93[36m:[m80[36m:[m [1m[31mE501[m line too long (81 > 79 characters)
+[1m./main.py[m[36m:[m99[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./main.py[m[36m:[m106[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./main.py[m[36m:[m111[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./main.py[m[36m:[m111[36m:[m80[36m:[m [1m[31mE501[m line too long (101 > 79 characters)
+[1m./main.py[m[36m:[m122[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./main.py[m[36m:[m126[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./main.py[m[36m:[m131[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./main.py[m[36m:[m140[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./main.py[m[36m:[m151[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./main.py[m[36m:[m158[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./main.py[m[36m:[m166[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./main.py[m[36m:[m183[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./main.py[m[36m:[m195[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./main.py[m[36m:[m200[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./middleware/auth.py[m[36m:[m6[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./middleware/auth.py[m[36m:[m7[36m:[m19[36m:[m [1m[31mF821[m undefined name 'os'
+[1m./middleware/auth.py[m[36m:[m9[36m:[m19[36m:[m [1m[31mW292[m no newline at end of file
+[1m./middleware/auth_middleware.py[m[36m:[m13[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./middleware/auth_middleware.py[m[36m:[m18[36m:[m80[36m:[m [1m[31mE501[m line too long (98 > 79 characters)
+[1m./middleware/logging_middleware.py[m[36m:[m10[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./middleware/logging_middleware.py[m[36m:[m14[36m:[m80[36m:[m [1m[31mE501[m line too long (80 > 79 characters)
+[1m./middleware/logging_middleware.py[m[36m:[m16[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./middleware/logging_middleware.py[m[36m:[m19[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./middleware/logging_middleware.py[m[36m:[m22[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./middleware/logging_middleware.py[m[36m:[m25[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./middleware/logging_middleware.py[m[36m:[m27[36m:[m80[36m:[m [1m[31mE501[m line too long (139 > 79 characters)
+[1m./middleware/logging_middleware.py[m[36m:[m28[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./middleware/logging_middleware.py[m[36m:[m31[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./models.py[m[36m:[m6[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./models.py[m[36m:[m15[36m:[m80[36m:[m [1m[31mE501[m line too long (84 > 79 characters)
+[1m./models.py[m[36m:[m19[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./models.py[m[36m:[m31[36m:[m63[36m:[m [1m[31mW291[m trailing whitespace
+[1m./models.py[m[36m:[m31[36m:[m64[36m:[m [1m[31mW292[m no newline at end of file
+[1m./schemas.py[m[36m:[m5[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./schemas.py[m[36m:[m9[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./schemas.py[m[36m:[m12[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./schemas.py[m[36m:[m21[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./schemas.py[m[36m:[m25[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./schemas.py[m[36m:[m28[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./schemas.py[m[36m:[m35[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./schemas.py[m[36m:[m38[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./schemas.py[m[36m:[m46[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./schemas.py[m[36m:[m51[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./services/auth.py[m[36m:[m26[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./services/auth.py[m[36m:[m29[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./services/auth.py[m[36m:[m32[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./services/auth.py[m[36m:[m32[36m:[m80[36m:[m [1m[31mE501[m line too long (86 > 79 characters)
+[1m./services/auth.py[m[36m:[m37[36m:[m80[36m:[m [1m[31mE501[m line too long (83 > 79 characters)
+[1m./services/auth.py[m[36m:[m42[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./services/auth.py[m[36m:[m59[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./services/auth.py[m[36m:[m65[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./services/blockchain.py[m[36m:[m10[36m:[m80[36m:[m [1m[31mE501[m line too long (88 > 79 characters)
+[1m./services/blockchain.py[m[36m:[m13[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./services/blockchain.py[m[36m:[m23[36m:[m1[36m:[m [1m[31mE305[m expected 2 blank lines after class or function definition, found 1
+[1m./services/blockchain.py[m[36m:[m47[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./services/blockchain.py[m[36m:[m57[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./services/blockchain.py[m[36m:[m57[36m:[m80[36m:[m [1m[31mE501[m line too long (108 > 79 characters)
+[1m./services/blockchain.py[m[36m:[m62[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./services/blockchain.py[m[36m:[m66[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./services/blockchain.py[m[36m:[m76[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./services/blockchain.py[m[36m:[m76[36m:[m80[36m:[m [1m[31mE501[m line too long (103 > 79 characters)
+[1m./services/blockchain.py[m[36m:[m79[36m:[m9[36m:[m [1m[31mF841[m local variable 'w3' is assigned to but never used
+[1m./services/blockchain.py[m[36m:[m80[36m:[m80[36m:[m [1m[31mE501[m line too long (107 > 79 characters)
+[1m./services/blockchain.py[m[36m:[m87[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./services/blockchain.py[m[36m:[m99[36m:[m80[36m:[m [1m[31mE501[m line too long (89 > 79 characters)
+[1m./services/risk_engine.py[m[36m:[m1[36m:[m19[36m:[m [1m[31mW291[m trailing whitespace
+[1m./services/risk_engine.py[m[36m:[m2[36m:[m1[36m:[m [1m[31mF401[m 'scipy.stats.multivariate_normal' imported but unused
+[1m./services/risk_engine.py[m[36m:[m2[36m:[m44[36m:[m [1m[31mW291[m trailing whitespace
+[1m./services/risk_engine.py[m[36m:[m4[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./services/risk_engine.py[m[36m:[m4[36m:[m22[36m:[m [1m[31mW291[m trailing whitespace
+[1m./services/risk_engine.py[m[36m:[m5[36m:[m55[36m:[m [1m[31mW291[m trailing whitespace
+[1m./services/risk_engine.py[m[36m:[m6[36m:[m62[36m:[m [1m[31mW291[m trailing whitespace
+[1m./services/risk_engine.py[m[36m:[m7[36m:[m30[36m:[m [1m[31mW291[m trailing whitespace
+[1m./services/risk_engine.py[m[36m:[m8[36m:[m32[36m:[m [1m[31mW291[m trailing whitespace
+[1m./services/risk_engine.py[m[36m:[m9[36m:[m80[36m:[m [1m[31mE501[m line too long (91 > 79 characters)
+[1m./services/risk_engine.py[m[36m:[m9[36m:[m92[36m:[m [1m[31mW291[m trailing whitespace
+[1m./services/risk_engine.py[m[36m:[m11[36m:[m51[36m:[m [1m[31mW291[m trailing whitespace
+[1m./services/risk_engine.py[m[36m:[m12[36m:[m67[36m:[m [1m[31mW291[m trailing whitespace
+[1m./services/risk_engine.py[m[36m:[m13[36m:[m71[36m:[m [1m[31mW291[m trailing whitespace
+[1m./services/risk_engine.py[m[36m:[m15[36m:[m37[36m:[m [1m[31mW291[m trailing whitespace
+[1m./services/risk_engine.py[m[36m:[m16[36m:[m48[36m:[m [1m[31mW291[m trailing whitespace
+[1m./services/risk_engine.py[m[36m:[m17[36m:[m17[36m:[m [1m[31mW291[m trailing whitespace
+[1m./services/risk_engine.py[m[36m:[m18[36m:[m44[36m:[m [1m[31mW291[m trailing whitespace
+[1m./services/risk_engine.py[m[36m:[m19[36m:[m72[36m:[m [1m[31mW291[m trailing whitespace
+[1m./services/risk_engine.py[m[36m:[m20[36m:[m80[36m:[m [1m[31mW291[m trailing whitespace
+[1m./services/risk_engine.py[m[36m:[m21[36m:[m10[36m:[m [1m[31mW291[m trailing whitespace
+[1m./services/risk_engine.py[m[36m:[m21[36m:[m12[36m:[m [1m[31mW292[m no newline at end of file
+[1m./test_api.py[m[36m:[m3[36m:[m1[36m:[m [1m[31mF401[m 'json' imported but unused
+[1m./test_api.py[m[36m:[m4[36m:[m1[36m:[m [1m[31mF401[m 'typing.Dict' imported but unused
+[1m./test_api.py[m[36m:[m4[36m:[m1[36m:[m [1m[31mF401[m 'typing.Any' imported but unused
+[1m./test_api.py[m[36m:[m5[36m:[m1[36m:[m [1m[31mF401[m 'datetime.timedelta' imported but unused
+[1m./test_api.py[m[36m:[m9[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./test_api.py[m[36m:[m17[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./test_api.py[m[36m:[m24[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./test_api.py[m[36m:[m35[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./test_api.py[m[36m:[m41[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./test_api.py[m[36m:[m53[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./test_api.py[m[36m:[m88[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./test_api.py[m[36m:[m95[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./test_api.py[m[36m:[m102[36m:[m80[36m:[m [1m[31mE501[m line too long (82 > 79 characters)
+[1m./test_api.py[m[36m:[m104[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./test_api.py[m[36m:[m111[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./test_api.py[m[36m:[m127[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./test_api.py[m[36m:[m158[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./test_api.py[m[36m:[m178[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./test_api.py[m[36m:[m192[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./test_api.py[m[36m:[m214[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./test_api.py[m[36m:[m221[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./test_api.py[m[36m:[m232[36m:[m80[36m:[m [1m[31mE501[m line too long (95 > 79 characters)
+[1m./test_api.py[m[36m:[m239[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1m./test_api.py[m[36m:[m250[36m:[m1[36m:[m [1m[31mW293[m blank line contains whitespace
+[1m./test_api.py[m[36m:[m252[36m:[m80[36m:[m [1m[31mE501[m line too long (82 > 79 characters)
+[1m./test_api.py[m[36m:[m254[36m:[m1[36m:[m [1m[31mE305[m expected 2 blank lines after class or function definition, found 1
+[1m./test_api.py[m[36m:[m255[36m:[m24[36m:[m [1m[31mW291[m trailing whitespace
+[1m./test_api.py[m[36m:[m255[36m:[m25[36m:[m [1m[31mW292[m no newline at end of file
