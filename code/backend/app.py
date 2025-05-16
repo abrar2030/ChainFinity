@@ -20,7 +20,13 @@ from services.auth import (
     create_access_token,
     get_current_user,
 )
-from services.blockchain import get_web3_provider
+from services.blockchain import (
+    get_web3_provider,
+    get_transactions,
+    get_portfolio_value,
+    get_eth_balance,
+    get_token_balance
+)
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -91,8 +97,10 @@ async def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user
 
 @app.get("/transactions/{wallet_address}")
-async def get_transactions(
+async def get_wallet_transactions(
     wallet_address: str,
+    network: str = "ethereum",
+    limit: int = 10,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -103,29 +111,74 @@ async def get_transactions(
         )
     
     # Get transactions from blockchain
-    w3 = get_web3_provider()
     try:
-        # TODO: Implement actual transaction fetching from blockchain
-        # This is a mock implementation
-        transactions = [
-            {
-                "hash": "0x123...",
-                "from": wallet_address,
-                "to": "0x456...",
-                "value": "1.0",
-                "timestamp": datetime.now().timestamp()
-            }
-        ]
+        # Actual implementation of transaction fetching from blockchain
+        w3 = get_web3_provider(network)
+        
+        # Get the latest block number
+        latest_block = w3.eth.block_number
+        
+        # Initialize transactions list
+        transactions = []
+        
+        # Fetch the most recent transactions
+        for i in range(limit):
+            if latest_block - i < 0:
+                break
+                
+            block = w3.eth.get_block(latest_block - i, full_transactions=True)
+            
+            for tx in block.transactions:
+                # Check if transaction involves the wallet address
+                if tx['from'].lower() == wallet_address.lower() or tx['to'] and tx['to'].lower() == wallet_address.lower():
+                    # Format transaction data
+                    transaction = {
+                        "hash": tx['hash'].hex(),
+                        "from": tx['from'],
+                        "to": tx['to'],
+                        "value": w3.from_wei(tx['value'], 'ether'),
+                        "gas": tx['gas'],
+                        "gas_price": w3.from_wei(tx['gasPrice'], 'gwei'),
+                        "block_number": tx['blockNumber'],
+                        "timestamp": block.timestamp,
+                        "network": network
+                    }
+                    
+                    transactions.append(transaction)
+                    
+                    # Break if we've reached the limit
+                    if len(transactions) >= limit:
+                        break
+            
+            # Break if we've reached the limit
+            if len(transactions) >= limit:
+                break
+        
+        # Store transactions in database for future reference
+        for tx in transactions:
+            db_tx = Transaction(
+                tx_hash=tx['hash'],
+                from_address=tx['from'],
+                to_address=tx['to'],
+                value=float(tx['value']),
+                timestamp=datetime.fromtimestamp(tx['timestamp']),
+                user_id=current_user.id
+            )
+            db.add(db_tx)
+        
+        db.commit()
+        
         return transactions
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
+            detail=f"Error fetching transactions: {str(e)}"
         )
 
 @app.get("/portfolio/{wallet_address}")
-async def get_portfolio(
+async def get_wallet_portfolio(
     wallet_address: str,
+    network: str = "ethereum",
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -135,23 +188,73 @@ async def get_portfolio(
             detail="Not authorized to access this wallet"
         )
     
-    # Get portfolio data from blockchain
-    w3 = get_web3_provider()
     try:
-        # TODO: Implement actual portfolio data fetching
-        # This is a mock implementation
+        # Actual implementation of portfolio data fetching
+        w3 = get_web3_provider(network)
+        
+        # Get ETH balance
+        eth_balance = get_eth_balance(wallet_address)
+        
+        # Get current ETH price (in a real implementation, this would come from a price oracle)
+        # For this implementation, we'll use a hardcoded price
+        eth_price = 3000.00  # Example price in USD
+        
+        # Common ERC20 tokens to check (in a real implementation, this would be more comprehensive)
+        tokens = [
+            {"address": "0xdAC17F958D2ee523a2206206994597C13D831ec7", "symbol": "USDT", "price": 1.0},  # Tether
+            {"address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", "symbol": "USDC", "price": 1.0},  # USD Coin
+            {"address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", "symbol": "WBTC", "price": 40000.0},  # Wrapped BTC
+            {"address": "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0", "symbol": "MATIC", "price": 1.5},  # Polygon
+            {"address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984", "symbol": "UNI", "price": 20.0},  # Uniswap
+        ]
+        
+        # Initialize portfolio
         portfolio = {
-            "total_value": "1000.00",
+            "total_value_usd": eth_balance * eth_price,
             "assets": [
-                {"symbol": "ETH", "amount": "1.5", "value": "3000.00"},
-                {"symbol": "BTC", "amount": "0.1", "value": "4000.00"}
+                {
+                    "symbol": "ETH",
+                    "amount": eth_balance,
+                    "value_usd": eth_balance * eth_price,
+                    "price_usd": eth_price
+                }
             ]
         }
+        
+        # Check token balances
+        for token in tokens:
+            try:
+                token_data = get_token_balance(token["address"], wallet_address, network)
+                
+                if token_data["balance"] > 0:
+                    token_value_usd = token_data["balance"] * token["price"]
+                    portfolio["total_value_usd"] += token_value_usd
+                    
+                    portfolio["assets"].append({
+                        "symbol": token_data["symbol"],
+                        "amount": token_data["balance"],
+                        "value_usd": token_value_usd,
+                        "price_usd": token["price"],
+                        "token_address": token["address"]
+                    })
+            except Exception as token_error:
+                print(f"Error fetching token {token['symbol']}: {token_error}")
+                continue
+        
+        # Sort assets by value (highest first)
+        portfolio["assets"] = sorted(portfolio["assets"], key=lambda x: x["value_usd"], reverse=True)
+        
+        # Format values for better readability
+        portfolio["total_value_usd"] = round(portfolio["total_value_usd"], 2)
+        for asset in portfolio["assets"]:
+            asset["value_usd"] = round(asset["value_usd"], 2)
+            asset["amount"] = round(asset["amount"], 6)
+        
         return portfolio
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
+            detail=f"Error fetching portfolio: {str(e)}"
         )
 
 if __name__ == "__main__":

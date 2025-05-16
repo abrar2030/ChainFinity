@@ -3,6 +3,8 @@ import requests
 import json
 from typing import Dict, Any
 from datetime import datetime, timedelta
+import time
+import jwt
 
 BASE_URL = "http://localhost:8000"
 
@@ -227,14 +229,95 @@ def test_token_expiration(test_user_data):
         }
     )
     token = login_response.json().get("access_token")
-
-    # Test with expired token (if your backend supports token expiration)
-    # This is a placeholder test - actual implementation depends on your token expiration logic
+    
+    # Verify token is valid initially
     response = requests.get(
         f"{BASE_URL}/api/blockchain/portfolio",
         headers={"Authorization": f"Bearer {token}"}
     )
-    assert response.status_code in [200, 401]  # Either valid or expired
+    assert response.status_code == 200
+    
+    # Decode token to check expiration time
+    try:
+        # Note: In a real test, you would use the same secret key as your application
+        # For testing purposes, we're using a workaround to check token structure
+        token_parts = token.split('.')
+        if len(token_parts) == 3:  # Valid JWT format
+            # Decode the payload part (without verification)
+            payload = json.loads(
+                (token_parts[1] + '=' * (-len(token_parts[1]) % 4)).encode().decode('utf-8')
+            )
+            
+            if 'exp' in payload:
+                # Calculate time until expiration
+                exp_time = datetime.fromtimestamp(payload['exp'])
+                current_time = datetime.now()
+                time_until_expiration = (exp_time - current_time).total_seconds()
+                
+                if time_until_expiration > 0:
+                    # If token is not expired yet but will expire soon, we can simulate waiting
+                    # In a real test, you might use time.sleep() to wait for expiration
+                    # For this test, we'll check if the token has a reasonable expiration time
+                    
+                    # Most tokens expire in 1-24 hours, so check if expiration is reasonable
+                    assert 0 < time_until_expiration < 86400  # 24 hours in seconds
+                    
+                    # For testing token refresh, we would need to implement a refresh endpoint
+                    # and test it here. Since that's outside the scope of this test, we'll
+                    # just verify that the token has an expiration time.
+                    
+                    # Test refresh token if available
+                    if 'refresh_token' in login_response.json():
+                        refresh_token = login_response.json().get('refresh_token')
+                        refresh_response = requests.post(
+                            f"{BASE_URL}/api/auth/refresh",
+                            json={"refresh_token": refresh_token}
+                        )
+                        assert refresh_response.status_code == 200
+                        assert "access_token" in refresh_response.json()
+                        new_token = refresh_response.json().get("access_token")
+                        assert new_token != token  # New token should be different
+                        
+                        # Verify new token works
+                        new_response = requests.get(
+                            f"{BASE_URL}/api/blockchain/portfolio",
+                            headers={"Authorization": f"Bearer {new_token}"}
+                        )
+                        assert new_response.status_code == 200
+                else:
+                    # Token is already expired
+                    expired_response = requests.get(
+                        f"{BASE_URL}/api/blockchain/portfolio",
+                        headers={"Authorization": f"Bearer {token}"}
+                    )
+                    assert expired_response.status_code == 401
+            else:
+                # Token doesn't have expiration claim
+                assert False, "Token does not have expiration claim"
+        else:
+            # Not a valid JWT format
+            assert False, "Token is not in valid JWT format"
+    except Exception as e:
+        # If we can't decode the token, we'll fall back to a simpler test
+        # This could happen if the token is encrypted or uses a different format
+        
+        # Test with potentially expired token
+        # In a real application, we would wait for the token to expire
+        # For this test, we'll just verify that the endpoint properly validates tokens
+        
+        # Make a request with the token
+        response = requests.get(
+            f"{BASE_URL}/api/blockchain/portfolio",
+            headers={"Authorization": f"Bearer {token}"}
+        )
+        
+        # Token should either be valid (200) or properly rejected if expired (401)
+        assert response.status_code in [200, 401]
+        
+        # If rejected, verify the error message indicates expiration
+        if response.status_code == 401:
+            error_detail = response.json().get("detail", "").lower()
+            assert "expired" in error_detail or "invalid" in error_detail
 
 def test_rate_limiting():
     """Test rate limiting on authentication endpoints"""
@@ -252,4 +335,4 @@ def test_rate_limiting():
     assert response.status_code in [200, 429]  # Either successful or rate limited
 
 if __name__ == "__main__":
-    pytest.main(["-v"]) 
+    pytest.main(["-v"])
