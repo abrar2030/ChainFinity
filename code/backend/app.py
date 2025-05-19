@@ -1,261 +1,323 @@
-from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.orm import Session
-from datetime import datetime, timedelta
-from typing import List, Optional
 import os
-from dotenv import load_dotenv
+import logging
+import requests
+from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks, Query
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from typing import List, Dict, Any, Optional
+from pydantic import BaseModel, Field
+import time
+from datetime import datetime, timedelta
 
-# Load environment variables
-load_dotenv()
+from services.risk_engine import EnhancedRiskEngine
+from services.auth import get_current_user, User
+from blockchain import BlockchainService
 
-# Import database and models
-from database import SessionLocal, engine, Base
-from models import User, Transaction
-from schemas import UserCreate, UserResponse, Token, TokenData
-from services.auth import (
-    verify_password,
-    get_password_hash,
-    create_access_token,
-    get_current_user,
-)
-from services.blockchain import (
-    get_web3_provider,
-    get_transactions,
-    get_portfolio_value,
-    get_eth_balance,
-    get_token_balance
-)
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# Create database tables
-Base.metadata.create_all(bind=engine)
-
+# Initialize FastAPI app
 app = FastAPI(
     title="ChainFinity API",
-    description="API for ChainFinity - DeFi Analytics Platform",
-    version="1.0.0",
+    description="Enhanced API for ChainFinity blockchain governance platform",
+    version="2.0.0"
 )
 
-# Configure CORS
+# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(","),
+    allow_origins=["*"],  # In production, replace with specific origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Dependency to get DB session
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+# Initialize services
+risk_engine = EnhancedRiskEngine()
+blockchain_service = BlockchainService()
 
-# OAuth2 scheme
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+# Cache for API responses
+response_cache = {}
+cache_ttl = {}
 
-@app.post("/auth/register", response_model=UserResponse)
-async def register(user: UserCreate, db: Session = Depends(get_db)):
-    # Check if user already exists
-    db_user = db.query(User).filter(User.email == user.email).first()
-    if db_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered"
-        )
+# Models
+class PortfolioRequest(BaseModel):
+    address: str
+    networks: List[str] = ["ethereum", "polygon", "arbitrum"]
+
+class RiskScoreRequest(BaseModel):
+    portfolio: Dict[str, float]
+    market_conditions: Optional[Dict[str, float]] = None
+
+class StressTestRequest(BaseModel):
+    portfolio: Dict[str, float]
+    scenarios: List[Dict[str, Any]]
+
+class ProposalCreateRequest(BaseModel):
+    title: str
+    description: str
+    actions: List[Dict[str, Any]]
     
-    # Create new user
-    hashed_password = get_password_hash(user.password)
-    db_user = User(
-        email=user.email,
-        hashed_password=hashed_password,
-        wallet_address=user.wallet_address
-    )
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
-
-@app.post("/auth/login", response_model=Token)
-async def login(email: str, password: str, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == email).first()
-    if not user or not verify_password(password, user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+class VoteRequest(BaseModel):
+    proposal_id: str
+    support: int  # 0=against, 1=for, 2=abstain
     
-    access_token = create_access_token(data={"sub": user.email})
-    return {"access_token": access_token, "token_type": "bearer"}
+class DelegateRequest(BaseModel):
+    delegatee: str
 
-@app.get("/users/me", response_model=UserResponse)
-async def read_users_me(current_user: User = Depends(get_current_user)):
-    return current_user
+class TransferRequest(BaseModel):
+    token: str
+    amount: float
+    target_chain_id: int
+    target_address: str
 
-@app.get("/transactions/{wallet_address}")
-async def get_wallet_transactions(
-    wallet_address: str,
-    network: str = "ethereum",
-    limit: int = 10,
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    if current_user.wallet_address != wallet_address:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to access this wallet"
-        )
-    
-    # Get transactions from blockchain
-    try:
-        # Actual implementation of transaction fetching from blockchain
-        w3 = get_web3_provider(network)
-        
-        # Get the latest block number
-        latest_block = w3.eth.block_number
-        
-        # Initialize transactions list
-        transactions = []
-        
-        # Fetch the most recent transactions
-        for i in range(limit):
-            if latest_block - i < 0:
-                break
-                
-            block = w3.eth.get_block(latest_block - i, full_transactions=True)
+# Cache decorator
+def cached(ttl_seconds=300):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            # Create cache key from function name and arguments
+            key = f"{func.__name__}:{str(args)}:{str(kwargs)}"
+            current_time = time.time()
             
-            for tx in block.transactions:
-                # Check if transaction involves the wallet address
-                if tx['from'].lower() == wallet_address.lower() or tx['to'] and tx['to'].lower() == wallet_address.lower():
-                    # Format transaction data
-                    transaction = {
-                        "hash": tx['hash'].hex(),
-                        "from": tx['from'],
-                        "to": tx['to'],
-                        "value": w3.from_wei(tx['value'], 'ether'),
-                        "gas": tx['gas'],
-                        "gas_price": w3.from_wei(tx['gasPrice'], 'gwei'),
-                        "block_number": tx['blockNumber'],
-                        "timestamp": block.timestamp,
-                        "network": network
-                    }
-                    
-                    transactions.append(transaction)
-                    
-                    # Break if we've reached the limit
-                    if len(transactions) >= limit:
-                        break
+            # Return cached response if valid
+            if key in response_cache and current_time < cache_ttl.get(key, 0):
+                return response_cache[key]
             
-            # Break if we've reached the limit
-            if len(transactions) >= limit:
-                break
-        
-        # Store transactions in database for future reference
-        for tx in transactions:
-            db_tx = Transaction(
-                tx_hash=tx['hash'],
-                from_address=tx['from'],
-                to_address=tx['to'],
-                value=float(tx['value']),
-                timestamp=datetime.fromtimestamp(tx['timestamp']),
-                user_id=current_user.id
-            )
-            db.add(db_tx)
-        
-        db.commit()
-        
-        return transactions
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error fetching transactions: {str(e)}"
-        )
+            # Call function and cache result
+            result = func(*args, **kwargs)
+            response_cache[key] = result
+            cache_ttl[key] = current_time + ttl_seconds
+            return result
+        return wrapper
+    return decorator
 
-@app.get("/portfolio/{wallet_address}")
-async def get_wallet_portfolio(
-    wallet_address: str,
-    network: str = "ethereum",
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    if current_user.wallet_address != wallet_address:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to access this wallet"
-        )
-    
+# Health check endpoint
+@app.get("/health")
+def health_check():
+    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+
+# Portfolio endpoints
+@app.post("/api/portfolio")
+async def get_portfolio(request: PortfolioRequest, current_user: User = Depends(get_current_user)):
     try:
-        # Actual implementation of portfolio data fetching
-        w3 = get_web3_provider(network)
-        
-        # Get ETH balance
-        eth_balance = get_eth_balance(wallet_address)
-        
-        # Get current ETH price (in a real implementation, this would come from a price oracle)
-        # For this implementation, we'll use a hardcoded price
-        eth_price = 3000.00  # Example price in USD
-        
-        # Common ERC20 tokens to check (in a real implementation, this would be more comprehensive)
-        tokens = [
-            {"address": "0xdAC17F958D2ee523a2206206994597C13D831ec7", "symbol": "USDT", "price": 1.0},  # Tether
-            {"address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", "symbol": "USDC", "price": 1.0},  # USD Coin
-            {"address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", "symbol": "WBTC", "price": 40000.0},  # Wrapped BTC
-            {"address": "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0", "symbol": "MATIC", "price": 1.5},  # Polygon
-            {"address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984", "symbol": "UNI", "price": 20.0},  # Uniswap
-        ]
-        
-        # Initialize portfolio
-        portfolio = {
-            "total_value_usd": eth_balance * eth_price,
-            "assets": [
-                {
-                    "symbol": "ETH",
-                    "amount": eth_balance,
-                    "value_usd": eth_balance * eth_price,
-                    "price_usd": eth_price
-                }
-            ]
-        }
-        
-        # Check token balances
-        for token in tokens:
-            try:
-                token_data = get_token_balance(token["address"], wallet_address, network)
-                
-                if token_data["balance"] > 0:
-                    token_value_usd = token_data["balance"] * token["price"]
-                    portfolio["total_value_usd"] += token_value_usd
-                    
-                    portfolio["assets"].append({
-                        "symbol": token_data["symbol"],
-                        "amount": token_data["balance"],
-                        "value_usd": token_value_usd,
-                        "price_usd": token["price"],
-                        "token_address": token["address"]
-                    })
-            except Exception as token_error:
-                print(f"Error fetching token {token['symbol']}: {token_error}")
-                continue
-        
-        # Sort assets by value (highest first)
-        portfolio["assets"] = sorted(portfolio["assets"], key=lambda x: x["value_usd"], reverse=True)
-        
-        # Format values for better readability
-        portfolio["total_value_usd"] = round(portfolio["total_value_usd"], 2)
-        for asset in portfolio["assets"]:
-            asset["value_usd"] = round(asset["value_usd"], 2)
-            asset["amount"] = round(asset["amount"], 6)
-        
+        portfolio = blockchain_service.get_portfolio_value(request.address, request.networks)
         return portfolio
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error fetching portfolio: {str(e)}"
+        logger.error(f"Error getting portfolio: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/portfolio/{address}")
+@cached(ttl_seconds=60)
+async def get_portfolio_by_address(address: str, networks: str = None):
+    try:
+        network_list = networks.split(",") if networks else ["ethereum", "polygon", "arbitrum"]
+        portfolio = blockchain_service.get_portfolio_value(address, network_list)
+        return portfolio
+    except Exception as e:
+        logger.error(f"Error getting portfolio: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Risk engine endpoints
+@app.post("/api/risk/score")
+async def calculate_risk_score(request: RiskScoreRequest, current_user: User = Depends(get_current_user)):
+    try:
+        # Update market data first
+        if not risk_engine.market_data:
+            # Mock market data update for demo
+            mock_data = {asset: [100, 101, 99, 102] for asset in request.portfolio.keys()}
+            risk_engine.update_market_data(mock_data)
+            
+        risk_score = risk_engine.risk_score(request.portfolio, request.market_conditions)
+        return risk_score
+    except Exception as e:
+        logger.error(f"Error calculating risk score: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/risk/stress-test")
+async def run_stress_test(request: StressTestRequest, current_user: User = Depends(get_current_user)):
+    try:
+        results = risk_engine.stress_test(request.portfolio, request.scenarios)
+        return results
+    except Exception as e:
+        logger.error(f"Error running stress test: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/risk/report")
+async def generate_risk_report(
+    request: PortfolioRequest, 
+    background_tasks: BackgroundTasks,
+    current_user: User = Depends(get_current_user)
+):
+    try:
+        # This would be a long-running task, so we run it in the background
+        background_tasks.add_task(
+            risk_engine.generate_risk_report, 
+            blockchain_service.get_portfolio_value(request.address)
         )
+        return {"status": "Report generation started", "report_id": f"report_{int(time.time())}"}
+    except Exception as e:
+        logger.error(f"Error generating risk report: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Governance endpoints
+@app.get("/api/governance/data")
+@cached(ttl_seconds=300)
+async def get_governance_data(network: str = "ethereum"):
+    try:
+        data = blockchain_service.get_governance_data(network)
+        return data
+    except Exception as e:
+        logger.error(f"Error getting governance data: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/governance/propose")
+async def create_proposal(
+    request: ProposalCreateRequest, 
+    current_user: User = Depends(get_current_user)
+):
+    try:
+        # This would interact with the blockchain in production
+        return {
+            "status": "success",
+            "message": "Proposal created successfully",
+            "proposal_id": f"proposal_{int(time.time())}"
+        }
+    except Exception as e:
+        logger.error(f"Error creating proposal: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/governance/vote")
+async def cast_vote(
+    request: VoteRequest, 
+    current_user: User = Depends(get_current_user)
+):
+    try:
+        # This would interact with the blockchain in production
+        return {
+            "status": "success",
+            "message": f"Vote cast successfully for proposal {request.proposal_id}"
+        }
+    except Exception as e:
+        logger.error(f"Error casting vote: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/governance/delegate")
+async def delegate_voting_power(
+    request: DelegateRequest, 
+    current_user: User = Depends(get_current_user)
+):
+    try:
+        # This would interact with the blockchain in production
+        return {
+            "status": "success",
+            "message": f"Voting power delegated to {request.delegatee}"
+        }
+    except Exception as e:
+        logger.error(f"Error delegating voting power: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Cross-chain endpoints
+@app.post("/api/cross-chain/transfer")
+async def initiate_transfer(
+    request: TransferRequest, 
+    current_user: User = Depends(get_current_user)
+):
+    try:
+        # This would interact with the blockchain in production
+        return {
+            "status": "success",
+            "message": "Transfer initiated successfully",
+            "transfer_id": f"transfer_{int(time.time())}"
+        }
+    except Exception as e:
+        logger.error(f"Error initiating transfer: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/cross-chain/transfers/{address}")
+@cached(ttl_seconds=60)
+async def get_transfers(address: str, network: str = "ethereum"):
+    try:
+        transfers = blockchain_service.get_cross_chain_transfers(address, network)
+        return {"transfers": transfers}
+    except Exception as e:
+        logger.error(f"Error getting transfers: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Transaction simulation endpoint
+@app.post("/api/simulate")
+async def simulate_transaction(
+    from_address: str,
+    to_address: str,
+    data: str,
+    value: int = 0,
+    network: str = "ethereum",
+    current_user: User = Depends(get_current_user)
+):
+    try:
+        result = blockchain_service.simulate_transaction(
+            from_address, to_address, data, value, network
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Error simulating transaction: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Market data endpoints
+@app.get("/api/market/price/{token}")
+@cached(ttl_seconds=60)
+async def get_token_price(token: str, quote_currency: str = "USD"):
+    try:
+        price = blockchain_service.get_token_price(token, quote_currency)
+        if price is None:
+            raise HTTPException(status_code=404, detail=f"Price not found for {token}")
+        return {"token": token, "quote_currency": quote_currency, "price": price}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting token price: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Webhook for governance events
+@app.post("/api/webhooks/governance")
+async def governance_webhook(payload: Dict[str, Any]):
+    try:
+        # Process governance event
+        event_type = payload.get("event_type")
+        logger.info(f"Received governance event: {event_type}")
+        
+        # In production, this would trigger notifications or other actions
+        return {"status": "success", "message": f"Processed {event_type} event"}
+    except Exception as e:
+        logger.error(f"Error processing webhook: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# GraphQL integration (simplified)
+@app.post("/api/graph/query")
+async def graph_query(query: str, network: str = "ethereum"):
+    try:
+        if network not in blockchain_service.graph_endpoints:
+            raise HTTPException(status_code=400, detail=f"Graph endpoint not configured for {network}")
+            
+        response = requests.post(
+            blockchain_service.graph_endpoints[network],
+            json={"query": query},
+            timeout=10
+        )
+        
+        return response.json()
+    except Exception as e:
+        logger.error(f"Error querying graph: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Error handler
+@app.exception_handler(Exception)
+async def global_exception_handler(request, exc):
+    logger.error(f"Unhandled exception: {str(exc)}")
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "An unexpected error occurred. Please try again later."}
+    )
 
 if __name__ == "__main__":
     import uvicorn
