@@ -5,8 +5,6 @@
 [![Smart Contract Audit](https://img.shields.io/badge/smart%20contracts-audited-brightgreen)](https://github.com/abrar2030/ChainFinity/tree/main/code/blockchain)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-![ChainFinity Dashboard](https://raw.githubusercontent.com/abrar2030/ChainFinity/main/docs/images/dashboard.png)
-
 ## 🔄 Cross-Chain DeFi Risk Management Platform
 
 ChainFinity is an advanced cross-chain DeFi risk management platform that leverages AI and quantitative models to analyze, predict, and mitigate risks across multiple blockchain networks.
