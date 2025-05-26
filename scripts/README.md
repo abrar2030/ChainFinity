@@ -29,7 +29,7 @@ A comprehensive GitHub Actions workflow that implements continuous integration a
 2. Configure necessary secrets in your GitHub repository settings
 3. Push changes to trigger the workflow
 
-### 2. Enhanced Environment Setup (`enhanced_setup.sh`)
+### 2. Enhanced Environment Setup (`env_setup.sh`)
 
 An improved setup script that automates the environment configuration process for ChainFinity development.
 
@@ -41,7 +41,7 @@ An improved setup script that automates the environment configuration process fo
 
 **Usage:**
 ```bash
-./enhanced_setup.sh [options]
+./env_setup.sh [options]
 
 Options:
   --project-dir DIR       Set project directory (default: current directory)
