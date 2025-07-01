@@ -1,0 +1,631 @@
+---
+# ChainFinity Network Security Policies
+# Zero-Trust Network Architecture for Financial Applications
+
+# Default Deny All Network Policy for ChainFinity Namespace
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: chainfinity
+  labels:
+    app.kubernetes.io/name: chainfinity
+    security.compliance/level: "critical"
+    network.policy/type: "deny-all"
+  annotations:
+    security.compliance/description: "Default deny all traffic - zero trust baseline"
+    security.compliance/audit: "required"
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+
+---
+# Allow ChainFinity Application Ingress Traffic
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: chainfinity-app-ingress
+  namespace: chainfinity
+  labels:
+    app.kubernetes.io/name: chainfinity
+    app.kubernetes.io/component: application
+    network.policy/type: "ingress"
+  annotations:
+    security.compliance/description: "Allow ingress traffic to ChainFinity application"
+    security.compliance/ports: "8080,8443"
+spec:
+  podSelector:
+    matchLabels:
+      app: chainfinity-app
+  policyTypes:
+  - Ingress
+  ingress:
+  # Allow traffic from ingress controller
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 8080
+    - protocol: TCP
+      port: 8443
+  # Allow traffic from load balancer
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: kube-system
+    - podSelector:
+        matchLabels:
+          k8s-app: aws-load-balancer-controller
+    ports:
+    - protocol: TCP
+      port: 8080
+    - protocol: TCP
+      port: 8443
+  # Allow health checks from monitoring
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: chainfinity-monitoring
+    - podSelector:
+        matchLabels:
+          app: prometheus
+    ports:
+    - protocol: TCP
+      port: 8080
+
+---
+# Allow ChainFinity Application Egress Traffic
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: chainfinity-app-egress
+  namespace: chainfinity
+  labels:
+    app.kubernetes.io/name: chainfinity
+    app.kubernetes.io/component: application
+    network.policy/type: "egress"
+  annotations:
+    security.compliance/description: "Allow egress traffic from ChainFinity application"
+spec:
+  podSelector:
+    matchLabels:
+      app: chainfinity-app
+  policyTypes:
+  - Egress
+  egress:
+  # Allow DNS resolution
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+  # Allow HTTPS to external APIs (financial data providers)
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+  # Allow connection to database
+  - to:
+    - podSelector:
+        matchLabels:
+          app: chainfinity-db
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow connection to Redis cache
+  - to:
+    - podSelector:
+        matchLabels:
+          app: chainfinity-redis
+    ports:
+    - protocol: TCP
+      port: 6379
+  # Allow connection to Vault for secrets
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: chainfinity-security
+    - podSelector:
+        matchLabels:
+          app: vault
+    ports:
+    - protocol: TCP
+      port: 8200
+  # Allow connection to message queue
+  - to:
+    - podSelector:
+        matchLabels:
+          app: chainfinity-rabbitmq
+    ports:
+    - protocol: TCP
+      port: 5672
+    - protocol: TCP
+      port: 15672
+
+---
+# Database Network Policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: chainfinity-db-policy
+  namespace: chainfinity
+  labels:
+    app.kubernetes.io/name: chainfinity
+    app.kubernetes.io/component: database
+    network.policy/type: "ingress-egress"
+  annotations:
+    security.compliance/description: "Strict database access control"
+    security.compliance/encryption: "required"
+spec:
+  podSelector:
+    matchLabels:
+      app: chainfinity-db
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow connections from application
+  - from:
+    - podSelector:
+        matchLabels:
+          app: chainfinity-app
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow connections from backup service
+  - from:
+    - podSelector:
+        matchLabels:
+          app: chainfinity-backup
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow monitoring connections
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: chainfinity-monitoring
+    - podSelector:
+        matchLabels:
+          app: postgres-exporter
+    ports:
+    - protocol: TCP
+      port: 9187
+  egress:
+  # Allow DNS resolution
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+  # Allow connection to Vault for credentials
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: chainfinity-security
+    - podSelector:
+        matchLabels:
+          app: vault
+    ports:
+    - protocol: TCP
+      port: 8200
+  # Allow backup to S3 (AWS endpoints)
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+
+---
+# Redis Cache Network Policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: chainfinity-redis-policy
+  namespace: chainfinity
+  labels:
+    app.kubernetes.io/name: chainfinity
+    app.kubernetes.io/component: cache
+    network.policy/type: "ingress"
+  annotations:
+    security.compliance/description: "Redis cache access control"
+spec:
+  podSelector:
+    matchLabels:
+      app: chainfinity-redis
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow connections from application
+  - from:
+    - podSelector:
+        matchLabels:
+          app: chainfinity-app
+    ports:
+    - protocol: TCP
+      port: 6379
+  # Allow monitoring
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: chainfinity-monitoring
+    - podSelector:
+        matchLabels:
+          app: redis-exporter
+    ports:
+    - protocol: TCP
+      port: 9121
+  egress:
+  # Allow DNS resolution
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+
+---
+# Message Queue Network Policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: chainfinity-rabbitmq-policy
+  namespace: chainfinity
+  labels:
+    app.kubernetes.io/name: chainfinity
+    app.kubernetes.io/component: messaging
+    network.policy/type: "ingress-egress"
+  annotations:
+    security.compliance/description: "Message queue access control"
+spec:
+  podSelector:
+    matchLabels:
+      app: chainfinity-rabbitmq
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow connections from application
+  - from:
+    - podSelector:
+        matchLabels:
+          app: chainfinity-app
+    ports:
+    - protocol: TCP
+      port: 5672
+    - protocol: TCP
+      port: 15672
+  # Allow monitoring
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: chainfinity-monitoring
+    - podSelector:
+        matchLabels:
+          app: rabbitmq-exporter
+    ports:
+    - protocol: TCP
+      port: 15692
+  egress:
+  # Allow DNS resolution
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+
+---
+# Monitoring Namespace Network Policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: monitoring-access-policy
+  namespace: chainfinity-monitoring
+  labels:
+    app.kubernetes.io/name: monitoring
+    network.policy/type: "ingress-egress"
+  annotations:
+    security.compliance/description: "Monitoring system network access"
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow access to monitoring dashboards
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 3000
+    - protocol: TCP
+      port: 9090
+  # Allow Prometheus to scrape metrics
+  - from:
+    - podSelector:
+        matchLabels:
+          app: prometheus
+  egress:
+  # Allow DNS resolution
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+  # Allow scraping metrics from all namespaces
+  - to:
+    - namespaceSelector: {}
+  # Allow external alerting (email, Slack, etc.)
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 587
+    - protocol: TCP
+      port: 25
+
+---
+# Security Namespace Network Policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: security-tools-policy
+  namespace: chainfinity-security
+  labels:
+    app.kubernetes.io/name: security
+    network.policy/type: "ingress-egress"
+  annotations:
+    security.compliance/description: "Security tools network access"
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow access from applications to Vault
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: chainfinity
+    ports:
+    - protocol: TCP
+      port: 8200
+  # Allow access from monitoring
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: chainfinity-monitoring
+    ports:
+    - protocol: TCP
+      port: 8200
+  egress:
+  # Allow DNS resolution
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+  # Allow HTTPS for external integrations
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+  # Allow Vault cluster communication
+  - to:
+    - podSelector:
+        matchLabels:
+          app: vault
+    ports:
+    - protocol: TCP
+      port: 8200
+    - protocol: TCP
+      port: 8201
+
+---
+# Ingress Network Policy for External Access
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ingress-controller-policy
+  namespace: ingress-nginx
+  labels:
+    app.kubernetes.io/name: ingress-nginx
+    network.policy/type: "egress"
+  annotations:
+    security.compliance/description: "Ingress controller network access"
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: ingress-nginx
+  policyTypes:
+  - Egress
+  egress:
+  # Allow DNS resolution
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+  # Allow access to ChainFinity application
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: chainfinity
+    - podSelector:
+        matchLabels:
+          app: chainfinity-app
+    ports:
+    - protocol: TCP
+      port: 8080
+    - protocol: TCP
+      port: 8443
+  # Allow access to monitoring dashboards
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: chainfinity-monitoring
+    ports:
+    - protocol: TCP
+      port: 3000
+    - protocol: TCP
+      port: 9090
+
+---
+# Network Policy for Backup Operations
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: backup-operations-policy
+  namespace: chainfinity
+  labels:
+    app.kubernetes.io/name: chainfinity
+    app.kubernetes.io/component: backup
+    network.policy/type: "egress"
+  annotations:
+    security.compliance/description: "Backup operations network access"
+spec:
+  podSelector:
+    matchLabels:
+      app: chainfinity-backup
+  policyTypes:
+  - Egress
+  egress:
+  # Allow DNS resolution
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+  # Allow connection to database
+  - to:
+    - podSelector:
+        matchLabels:
+          app: chainfinity-db
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow backup to cloud storage (S3, GCS, etc.)
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+  # Allow connection to Vault for credentials
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: chainfinity-security
+    - podSelector:
+        matchLabels:
+          app: vault
+    ports:
+    - protocol: TCP
+      port: 8200
+
+---
+# Network Policy for Log Aggregation
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: log-aggregation-policy
+  namespace: chainfinity-monitoring
+  labels:
+    app.kubernetes.io/name: logging
+    network.policy/type: "ingress-egress"
+  annotations:
+    security.compliance/description: "Log aggregation network access"
+spec:
+  podSelector:
+    matchLabels:
+      app: elasticsearch
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow log ingestion from all namespaces
+  - from:
+    - namespaceSelector: {}
+    ports:
+    - protocol: TCP
+      port: 9200
+    - protocol: TCP
+      port: 9300
+  # Allow access from Kibana
+  - from:
+    - podSelector:
+        matchLabels:
+          app: kibana
+    ports:
+    - protocol: TCP
+      port: 9200
+  egress:
+  # Allow DNS resolution
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+  # Allow cluster communication
+  - to:
+    - podSelector:
+        matchLabels:
+          app: elasticsearch
+    ports:
+    - protocol: TCP
+      port: 9300
+
+---
+# Calico Global Network Policy (if using Calico CNI)
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: chainfinity-global-security
+  labels:
+    app.kubernetes.io/name: chainfinity
+    security.compliance/level: "global"
+spec:
+  order: 100
+  selector: has(security.compliance/level)
+  types:
+  - Ingress
+  - Egress
+  ingress:
+  # Block known malicious IPs
+  - action: Deny
+    source:
+      nets:
+      - 192.0.2.0/24  # Example malicious network
+      - 198.51.100.0/24  # Example malicious network
+  # Allow only specific countries (example: US, CA, UK)
+  - action: Allow
+    source:
+      selector: country in {'US', 'CA', 'UK', 'DE', 'JP'}
+  egress:
+  # Block access to known malicious domains
+  - action: Deny
+    destination:
+      domains:
+      - "*.malicious-domain.com"
+      - "*.suspicious-site.net"
+  # Allow only necessary external services
+  - action: Allow
+    destination:
+      nets:
+      - 0.0.0.0/0
+    ports:
+    - 53   # DNS
+    - 80   # HTTP
+    - 443  # HTTPS
+    - 587  # SMTP TLS
+

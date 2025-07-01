@@ -1,31 +1,108 @@
+---
+# ChainFinity Prometheus Configuration
+# Financial Grade Monitoring and Compliance
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: chainfinity-monitoring
+  labels:
+    name: chainfinity-monitoring
+    security.compliance/level: "high"
+    app.kubernetes.io/name: monitoring
+  annotations:
+    security.compliance/audit: "enabled"
+    security.compliance/data-retention: "7-years"
+
+---
+# Prometheus Configuration
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: prometheus-config
-  namespace: monitoring
+  namespace: chainfinity-monitoring
+  labels:
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/component: configuration
 data:
   prometheus.yml: |
+    # ChainFinity Prometheus Configuration
+    # Financial Grade Monitoring with Compliance Controls
+    
     global:
       scrape_interval: 15s
       evaluation_interval: 15s
-
+      scrape_timeout: 10s
+      external_labels:
+        cluster: 'chainfinity-production'
+        environment: 'production'
+        compliance: 'financial-grade'
+        region: 'us-west-2'
+    
+    # Rule files for alerting
+    rule_files:
+      - "/etc/prometheus/rules/*.yml"
+    
+    # Alertmanager configuration
+    alerting:
+      alertmanagers:
+        - static_configs:
+            - targets:
+              - alertmanager.chainfinity-monitoring.svc.cluster.local:9093
+          timeout: 10s
+          api_version: v2
+    
+    # Remote write for long-term storage and compliance
+    remote_write:
+      - url: "https://prometheus-remote-write.chainfinity.com/api/v1/write"
+        queue_config:
+          max_samples_per_send: 1000
+          max_shards: 200
+          capacity: 2500
+        metadata_config:
+          send: true
+          send_interval: 30s
+        write_relabel_configs:
+          - source_labels: [__name__]
+            regex: 'chainfinity_.*|kubernetes_.*|node_.*|container_.*|up|scrape_.*'
+            action: keep
+    
+    # Scrape configurations
     scrape_configs:
+      # Kubernetes API Server monitoring
       - job_name: 'kubernetes-apiservers'
         kubernetes_sd_configs:
           - role: endpoints
+            namespaces:
+              names:
+                - default
         scheme: https
         tls_config:
           ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          insecure_skip_verify: false
         bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
         relabel_configs:
           - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
             action: keep
             regex: default;kubernetes;https
-
+          - target_label: __address__
+            replacement: kubernetes.default.svc:443
+          - source_labels: [__meta_kubernetes_service_name]
+            target_label: job
+            replacement: kubernetes-apiservers
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: 'apiserver_.*|etcd_.*|rest_client_.*'
+            action: keep
+        scrape_interval: 30s
+        scrape_timeout: 10s
+    
+      # Kubernetes nodes monitoring
       - job_name: 'kubernetes-nodes'
         scheme: https
         tls_config:
           ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          insecure_skip_verify: false
         bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
         kubernetes_sd_configs:
           - role: node
@@ -38,14 +115,54 @@ data:
             regex: (.+)
             target_label: __metrics_path__
             replacement: /api/v1/nodes/${1}/proxy/metrics
-
+          - source_labels: [__meta_kubernetes_node_name]
+            target_label: instance
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: 'kubelet_.*|container_.*|machine_.*'
+            action: keep
+        scrape_interval: 30s
+        scrape_timeout: 10s
+    
+      # Kubernetes node exporters
+      - job_name: 'kubernetes-node-exporter'
+        kubernetes_sd_configs:
+          - role: endpoints
+            namespaces:
+              names:
+                - chainfinity-monitoring
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_endpoints_name]
+            action: keep
+            regex: node-exporter
+          - source_labels: [__meta_kubernetes_endpoint_address_target_name]
+            target_label: instance
+          - action: labelmap
+            regex: __meta_kubernetes_node_label_(.+)
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: 'node_.*'
+            action: keep
+        scrape_interval: 15s
+        scrape_timeout: 10s
+    
+      # Kubernetes pods monitoring
       - job_name: 'kubernetes-pods'
         kubernetes_sd_configs:
           - role: pod
+            namespaces:
+              names:
+                - chainfinity
+                - chainfinity-monitoring
+                - chainfinity-security
         relabel_configs:
           - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
             action: keep
             regex: true
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scheme]
+            action: replace
+            target_label: __scheme__
+            regex: (https?)
           - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
             action: replace
             target_label: __metrics_path__
@@ -62,4 +179,489 @@ data:
             target_label: kubernetes_namespace
           - source_labels: [__meta_kubernetes_pod_name]
             action: replace
-            target_label: kubernetes_pod_name 
+            target_label: kubernetes_pod_name
+          - source_labels: [__meta_kubernetes_pod_container_name]
+            action: replace
+            target_label: kubernetes_container_name
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: 'chainfinity_.*|http_.*|grpc_.*|process_.*|go_.*'
+            action: keep
+        scrape_interval: 15s
+        scrape_timeout: 10s
+    
+      # ChainFinity application metrics
+      - job_name: 'chainfinity-frontend'
+        kubernetes_sd_configs:
+          - role: endpoints
+            namespaces:
+              names:
+                - chainfinity
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_service_name]
+            action: keep
+            regex: chainfinity-frontend
+          - source_labels: [__meta_kubernetes_endpoint_port_name]
+            action: keep
+            regex: metrics
+          - action: labelmap
+            regex: __meta_kubernetes_service_label_(.+)
+          - source_labels: [__meta_kubernetes_namespace]
+            target_label: kubernetes_namespace
+          - source_labels: [__meta_kubernetes_service_name]
+            target_label: kubernetes_service_name
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: 'chainfinity_frontend_.*|http_requests_.*|http_request_duration_.*'
+            action: keep
+        scrape_interval: 15s
+        scrape_timeout: 10s
+    
+      - job_name: 'chainfinity-backend'
+        kubernetes_sd_configs:
+          - role: endpoints
+            namespaces:
+              names:
+                - chainfinity
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_service_name]
+            action: keep
+            regex: chainfinity-backend
+          - source_labels: [__meta_kubernetes_endpoint_port_name]
+            action: keep
+            regex: metrics
+          - action: labelmap
+            regex: __meta_kubernetes_service_label_(.+)
+          - source_labels: [__meta_kubernetes_namespace]
+            target_label: kubernetes_namespace
+          - source_labels: [__meta_kubernetes_service_name]
+            target_label: kubernetes_service_name
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: 'chainfinity_backend_.*|http_requests_.*|database_.*|cache_.*'
+            action: keep
+        scrape_interval: 15s
+        scrape_timeout: 10s
+    
+      # Database monitoring (PostgreSQL)
+      - job_name: 'postgresql-exporter'
+        static_configs:
+          - targets: ['postgres-exporter.chainfinity-monitoring.svc.cluster.local:9187']
+        relabel_configs:
+          - target_label: instance
+            replacement: 'chainfinity-database'
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: 'pg_.*'
+            action: keep
+        scrape_interval: 30s
+        scrape_timeout: 10s
+    
+      # Redis monitoring
+      - job_name: 'redis-exporter'
+        static_configs:
+          - targets: ['redis-exporter.chainfinity-monitoring.svc.cluster.local:9121']
+        relabel_configs:
+          - target_label: instance
+            replacement: 'chainfinity-redis'
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: 'redis_.*'
+            action: keep
+        scrape_interval: 30s
+        scrape_timeout: 10s
+    
+      # Nginx Ingress Controller monitoring
+      - job_name: 'nginx-ingress-controller'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - ingress-nginx
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+            action: keep
+            regex: ingress-nginx
+          - source_labels: [__meta_kubernetes_pod_container_port_number]
+            action: keep
+            regex: "10254"
+          - source_labels: [__address__]
+            regex: '([^:]+):.*'
+            target_label: __address__
+            replacement: '${1}:10254'
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: 'nginx_.*'
+            action: keep
+        scrape_interval: 15s
+        scrape_timeout: 10s
+    
+      # AWS Load Balancer Controller monitoring
+      - job_name: 'aws-load-balancer-controller'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - kube-system
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+            action: keep
+            regex: aws-load-balancer-controller
+          - source_labels: [__meta_kubernetes_pod_container_port_name]
+            action: keep
+            regex: webhook-server
+        scrape_interval: 30s
+        scrape_timeout: 10s
+    
+      # Vault monitoring
+      - job_name: 'vault'
+        static_configs:
+          - targets: ['vault.chainfinity-security.svc.cluster.local:8200']
+        metrics_path: '/v1/sys/metrics'
+        params:
+          format: ['prometheus']
+        bearer_token_file: /etc/prometheus/vault-token
+        tls_config:
+          ca_file: /etc/prometheus/vault-ca.pem
+          insecure_skip_verify: false
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: 'vault_.*'
+            action: keep
+        scrape_interval: 30s
+        scrape_timeout: 10s
+    
+      # Cert-manager monitoring
+      - job_name: 'cert-manager'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - cert-manager
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+            action: keep
+            regex: cert-manager
+          - source_labels: [__meta_kubernetes_pod_container_port_name]
+            action: keep
+            regex: http-metrics
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: 'certmanager_.*'
+            action: keep
+        scrape_interval: 60s
+        scrape_timeout: 10s
+    
+      # Kubernetes state metrics
+      - job_name: 'kube-state-metrics'
+        static_configs:
+          - targets: ['kube-state-metrics.chainfinity-monitoring.svc.cluster.local:8080']
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: 'kube_.*'
+            action: keep
+        scrape_interval: 30s
+        scrape_timeout: 10s
+    
+      # cAdvisor metrics
+      - job_name: 'kubernetes-cadvisor'
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          insecure_skip_verify: false
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        kubernetes_sd_configs:
+          - role: node
+        relabel_configs:
+          - action: labelmap
+            regex: __meta_kubernetes_node_label_(.+)
+          - target_label: __address__
+            replacement: kubernetes.default.svc:443
+          - source_labels: [__meta_kubernetes_node_name]
+            regex: (.+)
+            target_label: __metrics_path__
+            replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: 'container_.*'
+            action: keep
+          - source_labels: [container]
+            regex: ''
+            action: drop
+          - source_labels: [__name__, container]
+            regex: 'container_network_.*|container_fs_.*'
+            action: drop
+        scrape_interval: 30s
+        scrape_timeout: 10s
+    
+      # Blackbox exporter for external monitoring
+      - job_name: 'blackbox-http'
+        metrics_path: /probe
+        params:
+          module: [http_2xx]
+        static_configs:
+          - targets:
+            - https://chainfinity.com
+            - https://api.chainfinity.com
+            - https://monitoring.chainfinity.com
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: __param_target
+          - source_labels: [__param_target]
+            target_label: instance
+          - target_label: __address__
+            replacement: blackbox-exporter.chainfinity-monitoring.svc.cluster.local:9115
+        scrape_interval: 60s
+        scrape_timeout: 30s
+    
+      # Security monitoring
+      - job_name: 'falco-exporter'
+        static_configs:
+          - targets: ['falco-exporter.chainfinity-security.svc.cluster.local:9376']
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: 'falco_.*'
+            action: keep
+        scrape_interval: 15s
+        scrape_timeout: 10s
+    
+      # Custom business metrics
+      - job_name: 'chainfinity-business-metrics'
+        kubernetes_sd_configs:
+          - role: endpoints
+            namespaces:
+              names:
+                - chainfinity
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape_business]
+            action: keep
+            regex: true
+          - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
+            action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            target_label: __address__
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: 'chainfinity_business_.*|chainfinity_transaction_.*|chainfinity_user_.*'
+            action: keep
+        scrape_interval: 30s
+        scrape_timeout: 10s
+
+---
+# Prometheus Alerting Rules
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-rules
+  namespace: chainfinity-monitoring
+  labels:
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/component: rules
+data:
+  chainfinity-alerts.yml: |
+    groups:
+    - name: chainfinity.critical
+      interval: 30s
+      rules:
+      # Application availability alerts
+      - alert: ChainFinityApplicationDown
+        expr: up{job=~"chainfinity-.*"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          compliance: violation
+          team: platform
+        annotations:
+          summary: "ChainFinity application {{ $labels.job }} is down"
+          description: "ChainFinity application {{ $labels.job }} has been down for more than 1 minute"
+          runbook_url: "https://runbooks.chainfinity.com/application-down"
+      
+      # High error rate alerts
+      - alert: ChainFinityHighErrorRate
+        expr: |
+          (
+            rate(http_requests_total{job=~"chainfinity-.*",code=~"5.."}[5m]) /
+            rate(http_requests_total{job=~"chainfinity-.*"}[5m])
+          ) * 100 > 5
+        for: 2m
+        labels:
+          severity: critical
+          compliance: violation
+          team: platform
+        annotations:
+          summary: "High error rate detected for {{ $labels.job }}"
+          description: "Error rate is {{ $value }}% for {{ $labels.job }}"
+          runbook_url: "https://runbooks.chainfinity.com/high-error-rate"
+      
+      # Database connection alerts
+      - alert: DatabaseConnectionFailure
+        expr: pg_up == 0
+        for: 30s
+        labels:
+          severity: critical
+          compliance: violation
+          team: platform
+        annotations:
+          summary: "Database connection failure"
+          description: "PostgreSQL database is not reachable"
+          runbook_url: "https://runbooks.chainfinity.com/database-down"
+      
+      # High database connection usage
+      - alert: DatabaseHighConnectionUsage
+        expr: |
+          (
+            pg_stat_database_numbackends /
+            pg_settings_max_connections
+          ) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          compliance: monitoring
+          team: platform
+        annotations:
+          summary: "High database connection usage"
+          description: "Database connection usage is {{ $value }}%"
+          runbook_url: "https://runbooks.chainfinity.com/database-connections"
+    
+    - name: chainfinity.performance
+      interval: 30s
+      rules:
+      # Response time alerts
+      - alert: ChainFinityHighResponseTime
+        expr: |
+          histogram_quantile(0.95,
+            rate(http_request_duration_seconds_bucket{job=~"chainfinity-.*"}[5m])
+          ) > 2
+        for: 5m
+        labels:
+          severity: warning
+          compliance: monitoring
+          team: platform
+        annotations:
+          summary: "High response time for {{ $labels.job }}"
+          description: "95th percentile response time is {{ $value }}s"
+          runbook_url: "https://runbooks.chainfinity.com/high-response-time"
+      
+      # Memory usage alerts
+      - alert: ChainFinityHighMemoryUsage
+        expr: |
+          (
+            container_memory_working_set_bytes{pod=~"chainfinity-.*"} /
+            container_spec_memory_limit_bytes{pod=~"chainfinity-.*"}
+          ) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          compliance: monitoring
+          team: platform
+        annotations:
+          summary: "High memory usage for {{ $labels.pod }}"
+          description: "Memory usage is {{ $value }}% for pod {{ $labels.pod }}"
+          runbook_url: "https://runbooks.chainfinity.com/high-memory-usage"
+      
+      # CPU usage alerts
+      - alert: ChainFinityHighCPUUsage
+        expr: |
+          (
+            rate(container_cpu_usage_seconds_total{pod=~"chainfinity-.*"}[5m]) /
+            container_spec_cpu_quota{pod=~"chainfinity-.*"} * container_spec_cpu_period{pod=~"chainfinity-.*"}
+          ) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          compliance: monitoring
+          team: platform
+        annotations:
+          summary: "High CPU usage for {{ $labels.pod }}"
+          description: "CPU usage is {{ $value }}% for pod {{ $labels.pod }}"
+          runbook_url: "https://runbooks.chainfinity.com/high-cpu-usage"
+    
+    - name: chainfinity.security
+      interval: 30s
+      rules:
+      # Security event alerts
+      - alert: SecurityViolationDetected
+        expr: increase(falco_events_total{priority="Critical"}[5m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          compliance: violation
+          team: security
+        annotations:
+          summary: "Critical security violation detected"
+          description: "Falco detected {{ $value }} critical security events"
+          runbook_url: "https://runbooks.chainfinity.com/security-violation"
+      
+      # Certificate expiry alerts
+      - alert: CertificateExpiringSoon
+        expr: (cert_exporter_not_after - time()) / 86400 < 30
+        for: 1h
+        labels:
+          severity: warning
+          compliance: required
+          team: platform
+        annotations:
+          summary: "Certificate expiring soon"
+          description: "Certificate {{ $labels.name }} expires in {{ $value }} days"
+          runbook_url: "https://runbooks.chainfinity.com/certificate-renewal"
+      
+      # Failed login attempts
+      - alert: HighFailedLoginAttempts
+        expr: increase(chainfinity_auth_failed_attempts_total[5m]) > 10
+        for: 1m
+        labels:
+          severity: warning
+          compliance: monitoring
+          team: security
+        annotations:
+          summary: "High number of failed login attempts"
+          description: "{{ $value }} failed login attempts in the last 5 minutes"
+          runbook_url: "https://runbooks.chainfinity.com/failed-logins"
+    
+    - name: chainfinity.compliance
+      interval: 60s
+      rules:
+      # Audit log monitoring
+      - alert: AuditLogMissing
+        expr: absent(rate(chainfinity_audit_events_total[5m]))
+        for: 5m
+        labels:
+          severity: critical
+          compliance: violation
+          team: compliance
+        annotations:
+          summary: "Audit logging not functioning"
+          description: "No audit events detected in the last 5 minutes"
+          runbook_url: "https://runbooks.chainfinity.com/audit-logging"
+      
+      # Data encryption monitoring
+      - alert: UnencryptedDataDetected
+        expr: chainfinity_unencrypted_data_total > 0
+        for: 0m
+        labels:
+          severity: critical
+          compliance: violation
+          team: security
+        annotations:
+          summary: "Unencrypted data detected"
+          description: "{{ $value }} unencrypted data items detected"
+          runbook_url: "https://runbooks.chainfinity.com/data-encryption"
+      
+      # Backup monitoring
+      - alert: BackupFailure
+        expr: chainfinity_backup_success == 0
+        for: 0m
+        labels:
+          severity: critical
+          compliance: violation
+          team: platform
+        annotations:
+          summary: "Backup failure detected"
+          description: "Database backup has failed"
+          runbook_url: "https://runbooks.chainfinity.com/backup-failure"
+

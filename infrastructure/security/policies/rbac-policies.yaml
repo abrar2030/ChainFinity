@@ -1,0 +1,418 @@
+---
+# ChainFinity Kubernetes RBAC Configuration
+# Financial Grade Security and Compliance
+
+# Namespace for ChainFinity application
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: chainfinity
+  labels:
+    name: chainfinity
+    security.compliance/level: "high"
+    security.compliance/pci-dss: "required"
+    security.compliance/sox: "required"
+    app.kubernetes.io/name: chainfinity
+    app.kubernetes.io/version: "1.0.0"
+  annotations:
+    security.compliance/audit: "enabled"
+    security.compliance/encryption: "required"
+    network.policy/isolation: "strict"
+
+---
+# Namespace for monitoring and logging
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: chainfinity-monitoring
+  labels:
+    name: chainfinity-monitoring
+    security.compliance/level: "high"
+    app.kubernetes.io/name: monitoring
+  annotations:
+    security.compliance/audit: "enabled"
+    security.compliance/data-retention: "7-years"
+
+---
+# Namespace for security tools
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: chainfinity-security
+  labels:
+    name: chainfinity-security
+    security.compliance/level: "critical"
+    app.kubernetes.io/name: security
+  annotations:
+    security.compliance/audit: "enabled"
+    security.compliance/access-control: "strict"
+
+---
+# Service Account for ChainFinity Application
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: chainfinity-app
+  namespace: chainfinity
+  labels:
+    app.kubernetes.io/name: chainfinity
+    app.kubernetes.io/component: application
+  annotations:
+    vault.hashicorp.com/agent-inject: "true"
+    vault.hashicorp.com/role: "chainfinity-app"
+    vault.hashicorp.com/agent-inject-secret-config: "secret/data/app/chainfinity"
+automountServiceAccountToken: true
+
+---
+# Service Account for Database Operations
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: chainfinity-db
+  namespace: chainfinity
+  labels:
+    app.kubernetes.io/name: chainfinity
+    app.kubernetes.io/component: database
+  annotations:
+    vault.hashicorp.com/agent-inject: "true"
+    vault.hashicorp.com/role: "chainfinity-db"
+automountServiceAccountToken: true
+
+---
+# Service Account for Monitoring
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: chainfinity-monitoring
+  namespace: chainfinity-monitoring
+  labels:
+    app.kubernetes.io/name: monitoring
+    app.kubernetes.io/component: prometheus
+automountServiceAccountToken: true
+
+---
+# Service Account for Security Scanning
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: chainfinity-security-scanner
+  namespace: chainfinity-security
+  labels:
+    app.kubernetes.io/name: security
+    app.kubernetes.io/component: scanner
+automountServiceAccountToken: true
+
+---
+# ClusterRole for ChainFinity Application (minimal permissions)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: chainfinity-app-role
+  labels:
+    app.kubernetes.io/name: chainfinity
+    security.compliance/principle: "least-privilege"
+rules:
+# Read access to own namespace resources
+- apiGroups: [""]
+  resources: ["pods", "services", "endpoints", "configmaps"]
+  verbs: ["get", "list", "watch"]
+  resourceNames: []
+# Read access to secrets (limited)
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get"]
+  resourceNames: ["chainfinity-app-secrets", "chainfinity-tls-certs"]
+# Read access to own service account
+- apiGroups: [""]
+  resources: ["serviceaccounts"]
+  verbs: ["get"]
+  resourceNames: ["chainfinity-app"]
+# Read access to nodes for health checks
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "list"]
+# Metrics access
+- apiGroups: ["metrics.k8s.io"]
+  resources: ["pods", "nodes"]
+  verbs: ["get", "list"]
+
+---
+# ClusterRole for Database Operations
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: chainfinity-db-role
+  labels:
+    app.kubernetes.io/name: chainfinity
+    app.kubernetes.io/component: database
+rules:
+# Database-specific permissions
+- apiGroups: [""]
+  resources: ["pods", "services", "persistentvolumeclaims"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get"]
+  resourceNames: ["chainfinity-db-secrets"]
+# Backup operations
+- apiGroups: ["batch"]
+  resources: ["jobs", "cronjobs"]
+  verbs: ["get", "list", "watch", "create"]
+# Storage operations
+- apiGroups: ["storage.k8s.io"]
+  resources: ["storageclasses", "volumeattachments"]
+  verbs: ["get", "list"]
+
+---
+# ClusterRole for Monitoring
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: chainfinity-monitoring-role
+  labels:
+    app.kubernetes.io/name: monitoring
+rules:
+# Comprehensive read access for monitoring
+- apiGroups: [""]
+  resources: ["nodes", "nodes/proxy", "nodes/metrics", "services", "endpoints", "pods", "ingresses", "configmaps"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["extensions", "networking.k8s.io"]
+  resources: ["ingresses"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "daemonsets", "replicasets", "statefulsets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["batch"]
+  resources: ["jobs", "cronjobs"]
+  verbs: ["get", "list", "watch"]
+# Metrics access
+- apiGroups: ["metrics.k8s.io"]
+  resources: ["nodes", "pods"]
+  verbs: ["get", "list"]
+# Custom metrics
+- apiGroups: ["custom.metrics.k8s.io"]
+  resources: ["*"]
+  verbs: ["get", "list"]
+
+---
+# ClusterRole for Security Scanning
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: chainfinity-security-scanner-role
+  labels:
+    app.kubernetes.io/name: security
+    app.kubernetes.io/component: scanner
+rules:
+# Security scanning permissions
+- apiGroups: [""]
+  resources: ["pods", "services", "configmaps", "secrets", "serviceaccounts"]
+  verbs: ["get", "list"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "daemonsets", "replicasets", "statefulsets"]
+  verbs: ["get", "list"]
+- apiGroups: ["networking.k8s.io"]
+  resources: ["networkpolicies", "ingresses"]
+  verbs: ["get", "list"]
+- apiGroups: ["rbac.authorization.k8s.io"]
+  resources: ["roles", "rolebindings", "clusterroles", "clusterrolebindings"]
+  verbs: ["get", "list"]
+- apiGroups: ["security.istio.io"]
+  resources: ["*"]
+  verbs: ["get", "list"]
+- apiGroups: ["policy"]
+  resources: ["podsecuritypolicies"]
+  verbs: ["get", "list"]
+
+---
+# ClusterRole for Admin Operations (emergency access)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: chainfinity-admin-role
+  labels:
+    app.kubernetes.io/name: chainfinity
+    security.compliance/access-level: "emergency-only"
+rules:
+# Full admin access (use with extreme caution)
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]
+
+---
+# RoleBinding for ChainFinity Application
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: chainfinity-app-binding
+  namespace: chainfinity
+  labels:
+    app.kubernetes.io/name: chainfinity
+subjects:
+- kind: ServiceAccount
+  name: chainfinity-app
+  namespace: chainfinity
+roleRef:
+  kind: ClusterRole
+  name: chainfinity-app-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# RoleBinding for Database Operations
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: chainfinity-db-binding
+  namespace: chainfinity
+  labels:
+    app.kubernetes.io/name: chainfinity
+    app.kubernetes.io/component: database
+subjects:
+- kind: ServiceAccount
+  name: chainfinity-db
+  namespace: chainfinity
+roleRef:
+  kind: ClusterRole
+  name: chainfinity-db-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# ClusterRoleBinding for Monitoring
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: chainfinity-monitoring-binding
+  labels:
+    app.kubernetes.io/name: monitoring
+subjects:
+- kind: ServiceAccount
+  name: chainfinity-monitoring
+  namespace: chainfinity-monitoring
+roleRef:
+  kind: ClusterRole
+  name: chainfinity-monitoring-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# ClusterRoleBinding for Security Scanning
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: chainfinity-security-scanner-binding
+  labels:
+    app.kubernetes.io/name: security
+subjects:
+- kind: ServiceAccount
+  name: chainfinity-security-scanner
+  namespace: chainfinity-security
+roleRef:
+  kind: ClusterRole
+  name: chainfinity-security-scanner-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Emergency Admin RoleBinding (restricted to specific users)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: chainfinity-emergency-admin-binding
+  labels:
+    app.kubernetes.io/name: chainfinity
+    security.compliance/access-level: "emergency-only"
+  annotations:
+    security.compliance/requires-approval: "true"
+    security.compliance/audit-trail: "mandatory"
+    security.compliance/time-limited: "true"
+subjects:
+# Add specific users who can have emergency admin access
+- kind: User
+  name: admin@chainfinity.com
+  apiGroup: rbac.authorization.k8s.io
+- kind: User
+  name: security-admin@chainfinity.com
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: chainfinity-admin-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Pod Security Policy for ChainFinity
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: chainfinity-psp
+  labels:
+    app.kubernetes.io/name: chainfinity
+    security.compliance/level: "high"
+  annotations:
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'runtime/default'
+    seccomp.security.alpha.kubernetes.io/defaultProfileName: 'runtime/default'
+    apparmor.security.beta.kubernetes.io/allowedProfileNames: 'runtime/default'
+    apparmor.security.beta.kubernetes.io/defaultProfileName: 'runtime/default'
+spec:
+  privileged: false
+  allowPrivilegeEscalation: false
+  requiredDropCapabilities:
+    - ALL
+  volumes:
+    - 'configMap'
+    - 'emptyDir'
+    - 'projected'
+    - 'secret'
+    - 'downwardAPI'
+    - 'persistentVolumeClaim'
+  hostNetwork: false
+  hostIPC: false
+  hostPID: false
+  runAsUser:
+    rule: 'MustRunAsNonRoot'
+  supplementalGroups:
+    rule: 'MustRunAs'
+    ranges:
+      - min: 1
+        max: 65535
+  fsGroup:
+    rule: 'MustRunAs'
+    ranges:
+      - min: 1
+        max: 65535
+  readOnlyRootFilesystem: true
+  seLinux:
+    rule: 'RunAsAny'
+
+---
+# ClusterRole for Pod Security Policy
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: chainfinity-psp-role
+  labels:
+    app.kubernetes.io/name: chainfinity
+rules:
+- apiGroups: ['policy']
+  resources: ['podsecuritypolicies']
+  verbs: ['use']
+  resourceNames: ['chainfinity-psp']
+
+---
+# RoleBinding for Pod Security Policy
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: chainfinity-psp-binding
+  namespace: chainfinity
+  labels:
+    app.kubernetes.io/name: chainfinity
+subjects:
+- kind: ServiceAccount
+  name: chainfinity-app
+  namespace: chainfinity
+- kind: ServiceAccount
+  name: chainfinity-db
+  namespace: chainfinity
+roleRef:
+  kind: ClusterRole
+  name: chainfinity-psp-role
+  apiGroup: rbac.authorization.k8s.io
+
