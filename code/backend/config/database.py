@@ -315,3 +315,95 @@ class CacheManager:
 # Global cache manager instance
 cache = CacheManager()
 
+
+# Database transaction utilities
+class DatabaseManager:
+    """
+    Enhanced database manager for handling complex transactions and operations
+    """
+    
+    @staticmethod
+    @asynccontextmanager
+    async def transaction():
+        """
+        Context manager for database transactions with automatic rollback
+        """
+        async with AsyncSessionLocal() as session:
+            async with session.begin():
+                try:
+                    yield session
+                except Exception:
+                    await session.rollback()
+                    raise
+    
+    @staticmethod
+    async def execute_raw_sql(sql: str, params: dict = None):
+        """
+        Execute raw SQL with parameters
+        """
+        async with AsyncSessionLocal() as session:
+            result = await session.execute(sql, params or {})
+            await session.commit()
+            return result
+    
+    @staticmethod
+    async def get_database_stats() -> dict:
+        """
+        Get database connection pool statistics
+        """
+        pool = async_engine.pool
+        return {
+            "pool_size": pool.size(),
+            "checked_in": pool.checkedin(),
+            "checked_out": pool.checkedout(),
+            "overflow": pool.overflow(),
+            "invalid": pool.invalid()
+        }
+    
+    @staticmethod
+    async def get_redis_stats() -> dict:
+        """
+        Get Redis connection statistics
+        """
+        try:
+            if redis_client:
+                info = await redis_client.info()
+                return {
+                    "connected_clients": info.get("connected_clients", 0),
+                    "used_memory": info.get("used_memory", 0),
+                    "used_memory_human": info.get("used_memory_human", "0B"),
+                    "keyspace_hits": info.get("keyspace_hits", 0),
+                    "keyspace_misses": info.get("keyspace_misses", 0),
+                    "total_commands_processed": info.get("total_commands_processed", 0)
+                }
+        except Exception as e:
+            logger.error(f"Error getting Redis stats: {e}")
+        return {}
+    
+    @staticmethod
+    async def health_check() -> dict:
+        """
+        Comprehensive health check for database and Redis
+        """
+        db_healthy = await check_database_health()
+        redis_healthy = await check_redis_health()
+        
+        db_stats = await DatabaseManager.get_database_stats()
+        redis_stats = await DatabaseManager.get_redis_stats()
+        
+        return {
+            "database": {
+                "healthy": db_healthy,
+                "stats": db_stats
+            },
+            "redis": {
+                "healthy": redis_healthy,
+                "stats": redis_stats
+            },
+            "overall_healthy": db_healthy and redis_healthy
+        }
+
+
+# Global database manager instance
+db_manager = DatabaseManager()
+

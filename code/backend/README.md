@@ -1,6 +1,6 @@
-# ChainFinity Backend - Production Ready
+# ChainFinity Production Backend
 
-A production-ready DeFi analytics platform backend built with FastAPI, designed to meet financial industry standards for security, scalability, and compliance.
+A production-ready, enterprise-grade backend for the ChainFinity cryptocurrency portfolio management platform. Built with financial industry standards, comprehensive security, and regulatory compliance.
 
 ## 🏗️ Architecture Overview
 
@@ -288,34 +288,6 @@ pytest tests/test_auth.py
 - Database tests with test fixtures
 - Security tests for authentication
 - Performance tests for critical paths
-
-## 📦 Deployment
-
-### Production Checklist
-
-- [ ] Update environment variables
-- [ ] Configure SSL certificates
-- [ ] Set up database backups
-- [ ] Configure monitoring alerts
-- [ ] Review security settings
-- [ ] Test disaster recovery
-- [ ] Update documentation
-
-### Scaling Considerations
-
-- Horizontal scaling with load balancer
-- Database read replicas
-- Redis clustering
-- CDN for static assets
-- Microservices architecture
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
 
 ## 📄 License
 
