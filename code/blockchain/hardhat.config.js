@@ -1,25 +1,10 @@
-require("@nomicfoundation/hardhat-toolbox");
-require("dotenv").config();
+import "@nomicfoundation/hardhat-toolbox";
 
-module.exports = {
+export default {
   solidity: "0.8.19",
   networks: {
-    arbitrum: {
-      url: process.env.ARB_RPC_URL,
-      accounts: [process.env.DEPLOYER_KEY]
+    hardhat: {
+      chainId: 31337,
     },
-    polygon: {
-      url: process.env.POLYGON_RPC_URL,
-      accounts: [process.env.DEPLOYER_KEY]
-    }
   },
-  etherscan: {
-    apiKey: {
-      arbitrumOne: process.env.ARBISCAN_KEY,
-      polygon: process.env.POLYGONSCAN_KEY
-    }
-  },
-  sourcify: {
-    enabled: true
-  }
 };
