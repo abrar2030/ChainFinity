@@ -62,36 +62,6 @@ ChainFinity provides comprehensive risk management solutions for DeFi protocols 
 * **Unified Liquidity**: Aggregated liquidity access across multiple DEXs and chains
 * **Cross-Chain Identity**: Unified identity and reputation system across networks
 
-## Roadmap
-
-| Feature | Status | Description | Release |
-|---------|--------|-------------|---------|
-| **Phase 1: Foundation** |  |  |  |
-| Multi-Chain Data Indexing | ✅ Completed | Data collection from 15+ chains | v0.1 |
-| Risk Analytics Engine | ✅ Completed | Core risk calculation framework | v0.1 |
-| Basic Dashboard | ✅ Completed | UI for risk visualization | v0.1 |
-| **Phase 2: Intelligence** |  |  |  |
-| LSTM Prediction Models | ✅ Completed | Volatility prediction models | v0.2 |
-| Protocol Risk Scoring | ✅ Completed | Risk assessment framework | v0.2 |
-| Correlation Matrix | ✅ Completed | Cross-chain correlation analysis | v0.2 |
-| **Phase 3: Automation** |  |  |  |
-| Automated Alerts | ✅ Completed | Risk threshold notifications | v0.3 |
-| Basic Hedging Strategies | ✅ Completed | Cross-chain hedging implementation | v0.3 |
-| Position Monitoring | ✅ Completed | Real-time position tracking | v0.3 |
-| **Phase 4: Advanced Features** |  |  |  |
-| Dynamic Collateral Management | 🔄 In Progress | Optimal collateral allocation | v0.4 |
-| MEV Protection | 🔄 In Progress | MEV mitigation strategies | v0.4 |
-| Flash Loan Defense | 🔄 In Progress | Flash loan attack protection | v0.4 |
-| **Phase 5: Expansion** |  |  |  |
-| Layer 2 Integration | 📅 Planned | Support for all major L2 networks | v0.5 |
-| Cross-Chain Governance | 📅 Planned | Decentralized platform governance | v0.5 |
-| Risk Insurance | 📅 Planned | Automated insurance against identified risks | v0.5 |
-
-**Legend:**
-* ✅ Completed: Feature is implemented and available
-* 🔄 In Progress: Feature is currently being developed
-* 📅 Planned: Feature is planned for future release
-
 ## Tech Stack
 
 **Blockchain**
