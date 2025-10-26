@@ -1,8 +1,7 @@
 # ChainFinity
 
-[![CI/CD Status](https://img.shields.io/github/actions/workflow/status/abrar2030/ChainFinity/ci-cd.yml?branch=main&label=CI/CD&logo=github)](https://github.com/abrar2030/ChainFinity/actions)
+![CI/CD Status](https://img.shields.io/github/actions/workflow/status/abrar2030/ChainFinity/cicd.yml?branch=main&label=CI/CD&logo=github)
 [![Test Coverage](https://img.shields.io/badge/coverage-79%25-yellow)](https://github.com/abrar2030/ChainFinity/actions)
-[![Smart Contract Audit](https://img.shields.io/badge/smart%20contracts-audited-brightgreen)](https://github.com/abrar2030/ChainFinity/tree/main/code/blockchain)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## 🔄 Cross-Chain DeFi Risk Management Platform
