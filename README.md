@@ -33,32 +33,40 @@ ChainFinity provides comprehensive risk management solutions for DeFi protocols 
 ## Key Features
 
 ### Cross-Chain Risk Analytics
-* **Multi-Chain Monitoring**: Real-time data collection and analysis across 15+ blockchain networks
-* **Risk Correlation Matrix**: Identification of cross-chain risk correlations and contagion paths
-* **Protocol Risk Scoring**: Comprehensive risk assessment of DeFi protocols across multiple dimensions
-* **Liquidity Analysis**: Deep liquidity analysis across DEXs and lending platforms
-* **Bridge Security Monitoring**: Risk assessment of cross-chain bridges and wrapped assets
+| Feature | Description |
+| :--- | :--- |
+| **Multi-Chain Monitoring** | Real-time data collection and analysis across 15+ blockchain networks |
+| **Risk Correlation Matrix** | Identification of cross-chain risk correlations and contagion paths |
+| **Protocol Risk Scoring** | Comprehensive risk assessment of DeFi protocols across multiple dimensions |
+| **Liquidity Analysis** | Deep liquidity analysis across DEXs and lending platforms |
+| **Bridge Security Monitoring** | Risk assessment of cross-chain bridges and wrapped assets |
 
 ### AI-Powered Prediction Models
-* **Market Volatility Forecasting**: LSTM-based models for predicting price volatility
-* **Smart Money Tracking**: AI analysis of whale wallet movements across chains
-* **Protocol Exploit Prediction**: Anomaly detection for potential security vulnerabilities
-* **Liquidity Crisis Alerts**: Early warning system for potential liquidity crises
-* **Correlation Breakdown Detection**: Identification of unusual correlation patterns
+| Feature | Description |
+| :--- | :--- |
+| **Market Volatility Forecasting** | LSTM-based models for predicting price volatility |
+| **Smart Money Tracking** | AI analysis of whale wallet movements across chains |
+| **Protocol Exploit Prediction** | Anomaly detection for potential security vulnerabilities |
+| **Liquidity Crisis Alerts** | Early warning system for potential liquidity crises |
+| **Correlation Breakdown Detection** | Identification of unusual correlation patterns |
 
 ### Automated Risk Management
-* **Cross-Chain Hedging**: Automated position hedging across multiple networks
-* **Dynamic Collateral Management**: Optimal collateral allocation based on risk models
-* **Liquidation Protection**: Proactive measures to prevent liquidations
-* **Flash Loan Defense**: Protection against flash loan attack vectors
-* **MEV Protection**: Strategies to mitigate maximal extractable value exposure
+| Feature | Description |
+| :--- | :--- |
+| **Cross-Chain Hedging** | Automated position hedging across multiple networks |
+| **Dynamic Collateral Management** | Optimal collateral allocation based on risk models |
+| **Liquidation Protection** | Proactive measures to prevent liquidations |
+| **Flash Loan Defense** | Protection against flash loan attack vectors |
+| **MEV Protection** | Strategies to mitigate maximal extractable value exposure |
 
 ### Cross-Chain Infrastructure
-* **CCIP Integration**: Chainlink Cross-Chain Interoperability Protocol for secure messaging
-* **Multi-Chain Oracles**: Decentralized price feeds across all supported networks
-* **Gas Optimization**: Efficient cross-chain transactions with optimal gas usage
-* **Unified Liquidity**: Aggregated liquidity access across multiple DEXs and chains
-* **Cross-Chain Identity**: Unified identity and reputation system across networks
+| Feature | Description |
+| :--- | :--- |
+| **CCIP Integration** | Chainlink Cross-Chain Interoperability Protocol for secure messaging |
+| **Multi-Chain Oracles** | Decentralized price feeds across all supported networks |
+| **Gas Optimization** | Efficient cross-chain transactions with optimal gas usage |
+| **Unified Liquidity** | Aggregated liquidity access across multiple DEXs and chains |
+| **Cross-Chain Identity** | Unified identity and reputation system across networks |
 
 ## Tech Stack
 
@@ -209,28 +217,36 @@ The project maintains comprehensive test coverage across all components to ensur
 | Overall | 79% | ✅ |
 
 ### Smart Contract Tests
-* Unit tests for all contract functions
-* Integration tests for cross-chain interactions
-* Security tests using Slither and Mythril
-* Gas optimization tests
+| Test Type | Description |
+| :--- | :--- |
+| Unit tests | For all contract functions |
+| Integration tests | For cross-chain interactions |
+| Security tests | Using Slither and Mythril |
+| Optimization tests | For gas usage |
 
 ### Backend Tests
-* API endpoint tests
-* Service layer unit tests
-* Database integration tests
-* WebSocket communication tests
+| Test Type | Description |
+| :--- | :--- |
+| API endpoint tests | To ensure correct routing and response |
+| Service layer unit tests | For core business logic |
+| Database integration tests | To verify data persistence and retrieval |
+| WebSocket communication tests | For real-time data streaming |
 
 ### AI Model Tests
-* Model accuracy validation
-* Prediction performance tests
-* Data pipeline tests
-* Cross-chain data consistency tests
+| Test Type | Description |
+| :--- | :--- |
+| Model accuracy validation | To ensure predictive power |
+| Prediction performance tests | To check speed and efficiency |
+| Data pipeline tests | To verify data flow and transformation |
+| Cross-chain data consistency tests | To ensure data integrity across networks |
 
 ### Frontend Tests
-* Component tests with React Testing Library
-* Integration tests with Cypress
-* End-to-end user flow tests
-* Web3 integration tests
+| Test Type | Description |
+| :--- | :--- |
+| Component tests | With React Testing Library for UI elements |
+| Integration tests | With Cypress for feature flows |
+| End-to-end user flow tests | To verify complete user journeys |
+| Web3 integration tests | For blockchain connectivity and transactions |
 
 ### Running Tests
 
@@ -251,15 +267,16 @@ npm test
 ./run_all_tests.sh
 ```
 
-## CI/CD Pipeline
-
+### CI/CD Pipeline
 ChainFinity uses GitHub Actions for continuous integration and deployment:
 
-* Automated testing on each pull request
-* Smart contract security scanning
-* Code quality checks
-* Docker image building and publishing
-* Automated deployment to staging and production environments
+| Stage | Description |
+| :--- | :--- |
+| Automated testing | On each pull request to ensure code stability |
+| Security scanning | For smart contracts |
+| Code quality checks | To enforce standards |
+| Docker image building | And publishing to a container registry |
+| Automated deployment | To staging and production environments |s
 
 ## Contributing
 
