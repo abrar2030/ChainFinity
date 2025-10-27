@@ -1,4 +1,4 @@
-# ChainFinity - Enhanced Financial Industry Platform
+# ChainFinity
 
 ## Overview
 
@@ -14,10 +14,7 @@ ChainFinity is a comprehensive blockchain-based financial platform designed for 
 - [Smart Contracts](#smart-contracts)
 - [Security Features](#security-features)
 - [Compliance & Regulatory](#compliance--regulatory)
-- [Deployment](#deployment)
 - [Testing](#testing)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Architecture Overview
 
@@ -66,77 +63,27 @@ ChainFinity follows a microservices architecture with clear separation of concer
 
 ## Key Features
 
-### 🏦 Institutional-Grade Portfolio Management
-- Multi-asset portfolio tracking and management
-- Real-time portfolio valuation and performance analytics
-- Advanced rebalancing algorithms
-- Risk-adjusted return calculations
-- Benchmark comparison and attribution analysis
+The ChainFinity platform offers a robust set of features categorized for institutional use:
 
-### 📊 Advanced Risk Management
-- Value at Risk (VaR) calculations using multiple methodologies
-- Stress testing and scenario analysis
-- Real-time risk monitoring and alerts
-- Compliance limit checking
-- Liquidity risk assessment
-
-### 📈 Market Data & Analytics
-- Real-time and historical market data aggregation
-- Technical indicator calculations
-- Market sentiment analysis
-- Price feed redundancy and validation
-- Custom analytics dashboards
-
-### 🔐 Enterprise Security
-- Multi-factor authentication
-- Role-based access control
-- Audit logging and compliance reporting
-- Encrypted data storage and transmission
-- Smart contract security audits
-
-### 🏛️ Regulatory Compliance
-- KYC/AML integration
-- Regulatory reporting automation
-- Compliance monitoring and alerts
-- Audit trail maintenance
-- GDPR compliance features
-
-### 🌐 DeFi Integration
-- Yield farming and liquidity mining
-- Automated market making (AMM)
-- Cross-chain asset management
-- Institutional-grade DeFi protocols
-- Risk-managed DeFi exposure
+| Category | Feature Description |
+| :--- | :--- |
+| **🏦 Institutional-Grade Portfolio Management** | Multi-asset portfolio tracking and management, real-time valuation, advanced rebalancing algorithms, risk-adjusted return calculations, and benchmark comparison/attribution analysis. |
+| **📊 Advanced Risk Management** | Value at Risk (VaR) calculations (multiple methodologies), stress testing and scenario analysis, real-time risk monitoring and alerts, compliance limit checking, and liquidity risk assessment. |
+| **📈 Market Data & Analytics** | Real-time and historical market data aggregation, technical indicator calculations, market sentiment analysis, price feed redundancy and validation, and custom analytics dashboards. |
+| **🔐 Enterprise Security** | Multi-factor authentication, Role-based Access Control (RBAC), comprehensive audit logging, encrypted data storage and transmission, and external smart contract security audits. |
+| **🏛️ Regulatory Compliance** | Integrated KYC/AML workflows, automated regulatory reporting, compliance monitoring and alerts, robust audit trail maintenance, and GDPR compliance features. |
+| **🌐 DeFi Integration** | Yield farming and liquidity mining capabilities, Automated Market Making (AMM) support, secure cross-chain asset management, integration with institutional-grade DeFi protocols, and risk-managed DeFi exposure. |
 
 ## Technology Stack
 
-### Backend
-- **Framework**: FastAPI (Python 3.11+)
-- **Database**: PostgreSQL 14+
-- **Cache**: Redis 7+
-- **Message Queue**: Celery with Redis
-- **Authentication**: JWT with refresh tokens
-- **API Documentation**: OpenAPI/Swagger
+ChainFinity is built on a modern, high-performance, and scalable technology stack:
 
-### Blockchain
-- **Smart Contracts**: Solidity 0.8.19+
-- **Framework**: Hardhat/Foundry
-- **Networks**: Ethereum, Polygon, BSC
-- **Libraries**: OpenZeppelin Contracts
-- **Testing**: Waffle, Chai
-
-### AI/ML
-- **Framework**: TensorFlow/PyTorch
-- **Data Processing**: Pandas, NumPy
-- **Visualization**: Plotly, Matplotlib
-- **Model Serving**: FastAPI + MLflow
-
-### Infrastructure
-- **Containerization**: Docker
-- **Orchestration**: Kubernetes
-- **CI/CD**: GitHub Actions
-- **Monitoring**: Prometheus + Grafana
-- **Logging**: ELK Stack
+| Component | Stack | Key Technologies |
+| :--- | :--- | :--- |
+| **Backend** | Python/FastAPI | FastAPI (Python 3.11+), PostgreSQL 14+, Redis 7+, Celery, JWT, OpenAPI/Swagger |
+| **Blockchain** | EVM/Solidity | Solidity 0.8.19+, Hardhat/Foundry, Ethereum/Polygon/BSC Networks, OpenZeppelin Contracts, Waffle/Chai |
+| **AI/ML** | Data Science | TensorFlow/PyTorch, Pandas, NumPy, Plotly, Matplotlib, MLflow |
+| **Infrastructure** | DevOps/Cloud | Docker, Kubernetes, GitHub Actions (CI/CD), Prometheus + Grafana (Monitoring), ELK Stack (Logging) |
 
 ## Getting Started
 
@@ -152,7 +99,7 @@ ChainFinity follows a microservices architecture with clear separation of concer
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-org/chainfinity.git
+   git clone https://github.com/abrar2030/chainfinity.git
    cd chainfinity
    ```
 
@@ -343,79 +290,24 @@ await defiProtocol.stake(poolId, amount);
 
 ## Security Features
 
-### Authentication & Authorization
-- JWT-based authentication with refresh tokens
-- Role-based access control (RBAC)
-- Multi-factor authentication (MFA) support
-- Session management and timeout
+The platform's security is structured around multiple layers of protection:
 
-### Data Protection
-- AES-256 encryption for sensitive data
-- TLS 1.3 for data in transit
-- Database encryption at rest
-- PII data anonymization
-
-### Smart Contract Security
-- OpenZeppelin security patterns
-- Reentrancy protection
-- Access control mechanisms
-- Emergency pause functionality
-- Multi-signature requirements
-
-### Audit & Compliance
-- Comprehensive audit logging
-- Real-time security monitoring
-- Automated compliance checks
-- Regular security assessments
+| Security Domain | Key Features |
+| :--- | :--- |
+| **Authentication & Authorization** | JWT-based authentication with refresh tokens, Role-based Access Control (RBAC), Multi-factor Authentication (MFA) support, and robust session management. |
+| **Data Protection** | AES-256 encryption for sensitive data, TLS 1.3 for data in transit, database encryption at rest, and PII data anonymization. |
+| **Smart Contract Security** | Utilization of OpenZeppelin security patterns, reentrancy protection, access control mechanisms, emergency pause functionality, and multi-signature requirements. |
+| **Audit & Compliance** | Comprehensive audit logging, real-time security monitoring, automated compliance checks, and regular security assessments. |
 
 ## Compliance & Regulatory
 
-### KYC/AML Integration
-- Identity verification workflows
-- Document upload and verification
-- Risk scoring and monitoring
-- Sanctions list screening
+ChainFinity is designed to meet stringent financial regulatory requirements:
 
-### Regulatory Reporting
-- Automated report generation
-- Customizable reporting templates
-- Regulatory submission workflows
-- Audit trail maintenance
-
-### Data Privacy
-- GDPR compliance features
-- Data retention policies
-- Right to be forgotten
-- Consent management
-
-## Deployment
-
-### Production Deployment
-
-1. **Infrastructure Setup**
-   ```bash
-   # Using Terraform
-   cd infrastructure/terraform
-   terraform init
-   terraform plan
-   terraform apply
-   ```
-
-2. **Application Deployment**
-   ```bash
-   # Using Kubernetes
-   kubectl apply -f k8s/
-   ```
-
-3. **Database Migration**
-   ```bash
-   alembic upgrade head
-   ```
-
-4. **Smart Contract Deployment**
-   ```bash
-   npx hardhat run scripts/deploy.js --network mainnet
-   ```
+| Compliance Area | Key Features |
+| :--- | :--- |
+| **KYC/AML Integration** | Integrated identity verification workflows, document upload and verification, risk scoring and monitoring, and sanctions list screening. |
+| **Regulatory Reporting** | Automated report generation, customizable reporting templates, regulatory submission workflows, and comprehensive audit trail maintenance. |
+| **Data Privacy** | Full GDPR compliance features, clear data retention policies, support for the Right to be Forgotten, and consent management. |
 
 ### Environment Configuration
 
@@ -437,10 +329,12 @@ export SECRET_KEY=your-production-secret-key
 
 ### Monitoring & Observability
 
-- **Metrics**: Prometheus + Grafana
-- **Logging**: ELK Stack (Elasticsearch, Logstash, Kibana)
-- **Tracing**: Jaeger
-- **Alerting**: AlertManager + PagerDuty
+| Component | Tool/Stack |
+| :--- | :--- |
+| **Metrics** | Prometheus + Grafana |
+| **Logging** | ELK Stack (Elasticsearch, Logstash, Kibana) |
+| **Tracing** | Jaeger |
+| **Alerting** | AlertManager + PagerDuty |
 
 ## Testing
 
@@ -484,45 +378,11 @@ npx hardhat run scripts/stress-test.js
 
 ## Performance Benchmarks
 
-### API Performance
-- **Response Time**: < 100ms (95th percentile)
-- **Throughput**: > 1000 requests/second
-- **Availability**: 99.9% uptime
-
-### Smart Contract Performance
-- **Gas Optimization**: < 100k gas per transaction
-- **Transaction Throughput**: Network dependent
-- **Contract Size**: < 24KB per contract
-
-## Contributing
-
-### Development Workflow
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Run the test suite
-6. Submit a pull request
-
-### Code Standards
-
-- **Python**: Follow PEP 8, use Black formatter
-- **Solidity**: Follow Solidity style guide
-- **Documentation**: Update docs for all changes
-- **Testing**: Maintain >90% test coverage
-
-### Commit Convention
-
-```
-type(scope): description
-
-feat(portfolio): add portfolio rebalancing feature
-fix(auth): resolve JWT token expiration issue
-docs(api): update API documentation
-test(risk): add risk calculation tests
-```
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+| Metric | Target | Notes |
+| :--- | :--- | :--- |
+| **API Response Time** | < 100ms (95th percentile) | High-speed data delivery |
+| **API Throughput** | > 1000 requests/second | Scalability under load |
+| **API Availability** | 99.9% uptime | Enterprise-grade reliability |
+| **Gas Optimization** | < 100k gas per transaction | Cost-efficient contract execution |
+| **Transaction Throughput** | Network dependent | Optimized for selected L1/L2 networks |
+| **Contract Size** | < 24KB per contract | Adherence to contract size limits |

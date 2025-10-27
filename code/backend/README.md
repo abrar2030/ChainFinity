@@ -6,29 +6,35 @@ A production-ready, enterprise-grade backend for the ChainFinity cryptocurrency 
 
 ### Core Features
 
-- **Enterprise Security**: JWT authentication, MFA, field-level encryption, rate limiting
-- **Financial Compliance**: KYC/AML integration, transaction monitoring, regulatory reporting
-- **Risk Management**: Real-time risk assessment, portfolio analytics, alert system
-- **Blockchain Integration**: Multi-chain support (Ethereum, Polygon, BSC)
-- **Scalable Infrastructure**: Async database operations, Redis caching, connection pooling
-- **Monitoring & Observability**: Comprehensive logging, metrics, health checks
+| Feature | Description |
+| :--- | :--- |
+| **Enterprise Security** | JWT authentication, MFA, field-level encryption, rate limiting |
+| **Financial Compliance** | KYC/AML integration, transaction monitoring, regulatory reporting |
+| **Risk Management** | Real-time risk assessment, portfolio analytics, alert system |
+| **Blockchain Integration** | Multi-chain support (Ethereum, Polygon, BSC) |
+| **Scalable Infrastructure** | Async database operations, Redis caching, connection pooling |
+| **Monitoring & Observability** | Comprehensive logging, metrics, health checks |
 
 ### Technology Stack
 
-- **Framework**: FastAPI 0.104.1
-- **Database**: PostgreSQL with async SQLAlchemy
-- **Cache**: Redis for session management and rate limiting
-- **Authentication**: JWT with refresh tokens, TOTP MFA
-- **Blockchain**: Web3.py for Ethereum ecosystem
-- **Monitoring**: Prometheus metrics, structured logging
-- **Deployment**: Docker with production-ready configuration
+| Component | Technology |
+| :--- | :--- |
+| **Framework** | FastAPI 0.104.1 |
+| **Database** | PostgreSQL with async SQLAlchemy |
+| **Cache** | Redis for session management and rate limiting |
+| **Authentication** | JWT with refresh tokens, TOTP MFA |
+| **Blockchain** | Web3.py for Ethereum ecosystem |
+| **Monitoring** | Prometheus metrics, structured logging |
+| **Deployment** | Docker with production-ready configuration |
 
 ## 📋 Prerequisites
 
-- Python 3.11+
-- PostgreSQL 15+
-- Redis 7+
-- Docker & Docker Compose (for containerized deployment)
+The following software is required to run the backend:
+
+*   Python 3.11+
+*   PostgreSQL 15+
+*   Redis 7+
+*   Docker & Docker Compose (for containerized deployment)
 
 ## 🚀 Quick Start
 
@@ -94,143 +100,161 @@ docker-compose up -d --scale api=3
 
 ### Services Included
 
-- **API**: ChainFinity backend application
-- **PostgreSQL**: Primary database
-- **Redis**: Cache and session store
-- **Nginx**: Reverse proxy and load balancer
-- **Prometheus**: Metrics collection
-- **Grafana**: Monitoring dashboard
+| Service | Purpose |
+| :--- | :--- |
+| **API** | ChainFinity backend application |
+| **PostgreSQL** | Primary database |
+| **Redis** | Cache and session store |
+| **Nginx** | Reverse proxy and load balancer |
+| **Prometheus** | Metrics collection |
+| **Grafana** | Monitoring dashboard |
 
 ## 📊 Database Schema
 
 ### Core Models
 
-- **Users**: Enhanced user management with KYC and risk profiling
-- **Transactions**: Comprehensive transaction tracking with compliance
-- **Portfolios**: Multi-asset portfolio management
-- **Compliance**: Audit logs, regulatory reporting, AML checks
-- **Risk**: Risk assessments, metrics, and alerting
-- **Blockchain**: Network management and smart contract integration
+| Model | Description |
+| :--- | :--- |
+| **Users** | Enhanced user management with KYC and risk profiling |
+| **Transactions** | Comprehensive transaction tracking with compliance |
+| **Portfolios** | Multi-asset portfolio management |
+| **Compliance** | Audit logs, regulatory reporting, AML checks |
+| **Risk** | Risk assessments, metrics, and alerting |
+| **Blockchain** | Network management and smart contract integration |
 
 ### Key Features
 
-- **Audit Trail**: Complete audit logging for all operations
-- **Soft Deletes**: Data retention with soft delete functionality
-- **Encryption**: Field-level encryption for sensitive data
-- **Versioning**: Optimistic locking for data consistency
+| Feature | Description |
+| :--- | :--- |
+| **Audit Trail** | Complete audit logging for all operations |
+| **Soft Deletes** | Data retention with soft delete functionality |
+| **Encryption** | Field-level encryption for sensitive data |
+| **Versioning** | Optimistic locking for data consistency |
 
 ## 🔐 Security Features
 
 ### Authentication & Authorization
 
-- JWT access and refresh tokens
-- Multi-factor authentication (TOTP)
-- Role-based access control
-- Session management with Redis
-- Password strength validation
-- Account lockout protection
+| Feature | Details |
+| :--- | :--- |
+| **Tokens** | JWT access and refresh tokens |
+| **MFA** | Multi-factor authentication (TOTP) |
+| **Access Control** | Role-based access control |
+| **Sessions** | Session management with Redis |
+| **Passwords** | Password strength validation |
+| **Lockout** | Account lockout protection |
 
 ### API Security
 
-- Rate limiting with sliding window
-- Request validation and sanitization
-- Security headers (HSTS, CSP, etc.)
-- CORS configuration
-- Input validation with Pydantic
+| Feature | Details |
+| :--- | :--- |
+| **Rate Limiting** | Sliding window rate limiting |
+| **Validation** | Request validation and sanitization |
+| **Headers** | Security headers (HSTS, CSP, etc.) |
+| **CORS** | CORS configuration |
+| **Input** | Input validation with Pydantic |
 
 ### Data Protection
 
-- Field-level encryption for PII
-- Secure password hashing (bcrypt)
-- API key management
-- Audit logging for all operations
+| Feature | Details |
+| :--- | :--- |
+| **PII** | Field-level encryption for PII |
+| **Hashing** | Secure password hashing (bcrypt) |
+| **API Keys** | API key management |
+| **Logging** | Audit logging for all operations |
 
 ## 📈 Compliance & Risk Management
 
 ### KYC/AML Integration
 
-- Identity verification workflows
-- Document verification
-- Sanctions screening
-- PEP (Politically Exposed Person) checks
-- Ongoing monitoring
+| Feature | Details |
+| :--- | :--- |
+| **Identity** | Identity verification workflows |
+| **Documents** | Document verification |
+| **Screening** | Sanctions screening |
+| **PEP Checks** | PEP (Politically Exposed Person) checks |
+| **Monitoring** | Ongoing monitoring |
 
 ### Transaction Monitoring
 
-- Real-time transaction analysis
-- Suspicious activity detection
-- Threshold-based alerting
-- Pattern recognition
-- Regulatory reporting
+| Feature | Details |
+| :--- | :--- |
+| **Analysis** | Real-time transaction analysis |
+| **Detection** | Suspicious activity detection |
+| **Alerting** | Threshold-based alerting |
+| **Patterns** | Pattern recognition |
+| **Reporting** | Regulatory reporting |
 
 ### Risk Assessment
 
-- Portfolio risk metrics
-- Real-time risk scoring
-- Position limits and controls
-- Stress testing capabilities
-- Risk-based alerting
+| Feature | Details |
+| :--- | :--- |
+| **Metrics** | Portfolio risk metrics |
+| **Scoring** | Real-time risk scoring |
+| **Controls** | Position limits and controls |
+| **Testing** | Stress testing capabilities |
+| **Alerting** | Risk-based alerting |
 
 ## 🔧 API Endpoints
 
 ### Authentication
 
-- `POST /api/v1/auth/register` - User registration
-- `POST /api/v1/auth/login` - User login
-- `POST /api/v1/auth/refresh` - Token refresh
-- `POST /api/v1/auth/logout` - User logout
-- `GET /api/v1/auth/me` - Current user info
+*   `POST /api/v1/auth/register` - User registration
+*   `POST /api/v1/auth/login` - User login
+*   `POST /api/v1/auth/refresh` - Token refresh
+*   `POST /api/v1/auth/logout` - User logout
+*   `GET /api/v1/auth/me` - Current user info
 
 ### User Management
 
-- `GET /api/v1/users/profile` - User profile
-- `PUT /api/v1/users/profile` - Update profile
-- `POST /api/v1/users/kyc` - Submit KYC
-- `GET /api/v1/users/risk-profile` - Risk assessment
+*   `GET /api/v1/users/profile` - User profile
+*   `PUT /api/v1/users/profile` - Update profile
+*   `POST /api/v1/users/kyc` - Submit KYC
+*   `GET /api/v1/users/risk-profile` - Risk assessment
 
 ### Portfolio Management
 
-- `GET /api/v1/portfolios` - List portfolios
-- `POST /api/v1/portfolios` - Create portfolio
-- `GET /api/v1/portfolios/{id}` - Portfolio details
-- `PUT /api/v1/portfolios/{id}` - Update portfolio
+*   `GET /api/v1/portfolios` - List portfolios
+*   `POST /api/v1/portfolios` - Create portfolio
+*   `GET /api/v1/portfolios/{id}` - Portfolio details
+*   `PUT /api/v1/portfolios/{id}` - Update portfolio
 
 ### Transactions
 
-- `GET /api/v1/transactions` - List transactions
-- `GET /api/v1/transactions/{id}` - Transaction details
-- `POST /api/v1/transactions/analyze` - Risk analysis
+*   `GET /api/v1/transactions` - List transactions
+*   `GET /api/v1/transactions/{id}` - Transaction details
+*   `POST /api/v1/transactions/analyze` - Risk analysis
 
 ### Compliance
 
-- `GET /api/v1/compliance/checks` - Compliance status
-- `GET /api/v1/compliance/audit-logs` - Audit trail
-- `POST /api/v1/compliance/reports` - Generate reports
+*   `GET /api/v1/compliance/checks` - Compliance status
+*   `GET /api/v1/compliance/audit-logs` - Audit trail
+*   `POST /api/v1/compliance/reports` - Generate reports
 
 ## 📊 Monitoring & Observability
 
 ### Health Checks
 
-- `GET /health` - Application health
-- Database connectivity check
-- Redis connectivity check
-- External service status
+*   `GET /health` - Application health
+*   Database connectivity check
+*   Redis connectivity check
+*   External service status
 
 ### Metrics
 
-- Request/response metrics
-- Database performance
-- Cache hit rates
-- Business metrics
-- Error rates and latency
+*   Request/response metrics
+*   Database performance
+*   Cache hit rates
+*   Business metrics
+*   Error rates and latency
 
 ### Logging
 
-- Structured JSON logging
-- Request/response logging
-- Security event logging
-- Performance logging
-- Error tracking
+*   Structured JSON logging
+*   Request/response logging
+*   Security event logging
+*   Performance logging
+*   Error tracking
 
 ## 🔧 Configuration
 
@@ -283,11 +307,11 @@ pytest tests/test_auth.py
 
 ### Test Categories
 
-- Unit tests for services and utilities
-- Integration tests for API endpoints
-- Database tests with test fixtures
-- Security tests for authentication
-- Performance tests for critical paths
+*   Unit tests for services and utilities
+*   Integration tests for API endpoints
+*   Database tests with test fixtures
+*   Security tests for authentication
+*   Performance tests for critical paths
 
 ## 📄 License
 
