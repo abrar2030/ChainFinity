@@ -2,7 +2,7 @@
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
@@ -14,7 +14,7 @@ import "@chainlink/contracts/src/v0.8/ccip/libraries/Client.sol";
  * @title Enhanced CrossChainManager
  * @dev Manages cross-chain transfers with Chainlink CCIP integration, rate limiting, and circuit breakers
  */
-contract CrossChainManager is ReentrancyGuard, AccessControl, Pausable, Initializable, IAny2EVMMessageReceiver {
+contract CrossChainManager is ReentrancyGuard, AccessControlEnumerable, Pausable, Initializable, IAny2EVMMessageReceiver {
     // Role definitions
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
@@ -286,8 +286,9 @@ contract CrossChainManager is ReentrancyGuard, AccessControl, Pausable, Initiali
         uint256 totalDistributed = 0;
         
         // Distribute to each provider based on their share
-        for (uint256 i = 0; i < getRoleMembers(OPERATOR_ROLE).length; i++) {
-            address provider = getRoleMembers(OPERATOR_ROLE)[i];
+        uint256 memberCount = getRoleMemberCount(OPERATOR_ROLE);
+        for (uint256 i = 0; i < memberCount; i++) {
+            address provider = getRoleMember(OPERATOR_ROLE, i);
             if (liquidityProviderShares[provider] > 0) {
                 uint256 providerShare = (balance * liquidityProviderShares[provider]) / totalLiquidityShares;
                 if (providerShare > 0) {
@@ -305,24 +306,7 @@ contract CrossChainManager is ReentrancyGuard, AccessControl, Pausable, Initiali
      * @param role Role to query
      * @return Array of addresses with the role
      */
-    function getRoleMembers(bytes32 role) public view returns (address[] memory) {
-        uint256 count = 0;
-        for (uint256 i = 0; i < 100; i++) { // Arbitrary upper limit
-            try this.getRoleMember(role, i) returns (address member) {
-                if (member == address(0)) break;
-                count++;
-            } catch {
-                break;
-            }
-        }
-        
-        address[] memory members = new address[](count);
-        for (uint256 i = 0; i < count; i++) {
-            members[i] = getRoleMember(role, i);
-        }
-        
-        return members;
-    }
+
     
     /**
      * @dev Pause the contract

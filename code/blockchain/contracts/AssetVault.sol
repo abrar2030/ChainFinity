@@ -158,9 +158,13 @@ contract AssetVault is ReentrancyGuard, AccessControl, Pausable, Initializable {
         require(amount > 0, "Amount must be greater than 0");
         require(!frozenTokens[token], "Token is frozen");
         require(!frozenUserAssets[msg.sender][token], "User assets are frozen");
+        // Calculate net amount after fee
+        uint256 fee = (amount * withdrawFeeRate) / 10000;
+        uint256 netAmount = amount - fee;
+        
         require(userTokenBalances[msg.sender][token] >= amount, "Insufficient balance");
         
-        // Check if multi-sig is required
+        // Check if multi-sig is required (using gross amount for threshold)
         if (amount >= largeTransferThreshold) {
             _requestWithdrawal(token, amount);
         } else {
@@ -223,7 +227,7 @@ contract AssetVault is ReentrancyGuard, AccessControl, Pausable, Initializable {
         uint256 netAmount = amount - fee;
         
         // Update user balance
-        userTokenBalances[user][token] -= amount;
+        userTokenBalances[user][token] -= netAmount;
         
         // Transfer tokens
         require(IERC20(token).transfer(user, netAmount), "Transfer failed");
