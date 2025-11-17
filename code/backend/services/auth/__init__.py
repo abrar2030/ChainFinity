@@ -9,8 +9,7 @@ from .password_service import PasswordService
 
 __all__ = [
     "AuthService",
-    "JWTService", 
+    "JWTService",
     "MFAService",
     "PasswordService",
 ]
-

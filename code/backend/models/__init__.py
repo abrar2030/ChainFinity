@@ -2,17 +2,17 @@
 Database models package
 """
 
-from .base import BaseModel, TimestampMixin, SoftDeleteMixin
-from .user import User, UserProfile, UserKYC, UserRiskProfile
-from .transaction import Transaction, TransactionStatus, TransactionType
-from .portfolio import Portfolio, PortfolioAsset, AssetAllocation
+from .base import BaseModel, SoftDeleteMixin, TimestampMixin
+from .blockchain import BlockchainNetwork, ContractEvent, SmartContract
 from .compliance import AuditLog, ComplianceCheck, RegulatoryReport
-from .risk import RiskAssessment, RiskMetrics, AlertRule
-from .blockchain import BlockchainNetwork, SmartContract, ContractEvent
+from .portfolio import AssetAllocation, Portfolio, PortfolioAsset
+from .risk import AlertRule, RiskAssessment, RiskMetrics
+from .transaction import Transaction, TransactionStatus, TransactionType
+from .user import User, UserKYC, UserProfile, UserRiskProfile
 
 __all__ = [
     "BaseModel",
-    "TimestampMixin", 
+    "TimestampMixin",
     "SoftDeleteMixin",
     "User",
     "UserProfile",
@@ -34,4 +34,3 @@ __all__ = [
     "SmartContract",
     "ContractEvent",
 ]
-

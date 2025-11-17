@@ -4,19 +4,19 @@ Alembic environment configuration for ChainFinity backend
 
 import asyncio
 from logging.config import fileConfig
+
+from alembic import context
+# Import all models to ensure they are registered with SQLAlchemy
+from models.base import Base
+from models.blockchain import *
+from models.compliance import *
+from models.portfolio import *
+from models.risk import *
+from models.transaction import *
+from models.user import *
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
-from alembic import context
-
-# Import all models to ensure they are registered with SQLAlchemy
-from models.base import Base
-from models.user import *
-from models.transaction import *
-from models.portfolio import *
-from models.compliance import *
-from models.risk import *
-from models.blockchain import *
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -96,4 +96,3 @@ if context.is_offline_mode():
     run_migrations_offline()
 else:
     run_migrations_online()
-

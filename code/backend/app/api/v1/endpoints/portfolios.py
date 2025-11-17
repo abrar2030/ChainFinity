@@ -5,25 +5,25 @@ Comprehensive portfolio operations including creation, management, and analytics
 
 import logging
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, status, Query, Body
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, or_
-from sqlalchemy.orm import selectinload
 
 from config.database import get_async_session
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
+from middleware.audit_middleware import audit_log
 from models.portfolio import Portfolio, PortfolioAsset
 from models.user import User
-from schemas.portfolio import (
-    PortfolioResponse, PortfolioAssetResponse, PortfolioCreate, 
-    PortfolioUpdate, PortfolioAssetUpdate, PortfolioAnalytics,
-    PortfolioPerformance, RebalanceRequest, RebalanceResponse
-)
 from schemas.base import PaginatedResponse, SuccessResponse
+from schemas.portfolio import (PortfolioAnalytics, PortfolioAssetResponse,
+                               PortfolioAssetUpdate, PortfolioCreate,
+                               PortfolioPerformance, PortfolioResponse,
+                               PortfolioUpdate, RebalanceRequest,
+                               RebalanceResponse)
+from services.analytics.analytics_service import AnalyticsService
 from services.auth.auth_service import get_current_active_user
 from services.portfolio.portfolio_service import PortfolioService
-from services.analytics.analytics_service import AnalyticsService
 from services.risk.risk_service import RiskService
-from middleware.audit_middleware import audit_log
+from sqlalchemy import and_, or_, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -35,7 +35,7 @@ async def get_user_portfolios(
     size: int = Query(20, ge=1, le=100),
     include_deleted: bool = Query(False),
     current_user: User = Depends(get_current_active_user),
-    db: AsyncSession = Depends(get_async_session)
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Get user's portfolios with pagination
@@ -45,14 +45,14 @@ async def get_user_portfolios(
         portfolios = await portfolio_service.get_user_portfolios(
             current_user.id, page, size, include_deleted
         )
-        
+
         return portfolios
-        
+
     except Exception as e:
         logger.error(f"Error getting user portfolios: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve portfolios"
+            detail="Failed to retrieve portfolios",
         )
 
 
@@ -60,7 +60,7 @@ async def get_user_portfolios(
 async def create_portfolio(
     portfolio_data: PortfolioCreate,
     current_user: User = Depends(get_current_active_user),
-    db: AsyncSession = Depends(get_async_session)
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Create a new portfolio
@@ -70,25 +70,25 @@ async def create_portfolio(
         portfolio = await portfolio_service.create_portfolio(
             current_user.id, portfolio_data
         )
-        
+
         await audit_log(
-            db, current_user.id, "portfolio_created", 
-            "portfolio", str(portfolio.id),
-            new_values=portfolio_data.dict()
+            db,
+            current_user.id,
+            "portfolio_created",
+            "portfolio",
+            str(portfolio.id),
+            new_values=portfolio_data.dict(),
         )
-        
+
         return PortfolioResponse.from_orm(portfolio)
-        
+
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         logger.error(f"Error creating portfolio: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to create portfolio"
+            detail="Failed to create portfolio",
         )
 
 
@@ -96,35 +96,29 @@ async def create_portfolio(
 async def get_portfolio(
     portfolio_id: str,
     current_user: User = Depends(get_current_active_user),
-    db: AsyncSession = Depends(get_async_session)
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Get portfolio details by ID
     """
     try:
         portfolio_service = PortfolioService(db)
-        portfolio = await portfolio_service.get_portfolio(
-            portfolio_id, current_user.id
-        )
-        
+        portfolio = await portfolio_service.get_portfolio(portfolio_id, current_user.id)
+
         if not portfolio:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Portfolio not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Portfolio not found"
             )
-        
+
         return PortfolioResponse.from_orm(portfolio)
-        
+
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         logger.error(f"Error getting portfolio: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve portfolio"
+            detail="Failed to retrieve portfolio",
         )
 
 
@@ -133,7 +127,7 @@ async def update_portfolio(
     portfolio_id: str,
     portfolio_update: PortfolioUpdate,
     current_user: User = Depends(get_current_active_user),
-    db: AsyncSession = Depends(get_async_session)
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Update portfolio information
@@ -143,25 +137,25 @@ async def update_portfolio(
         portfolio = await portfolio_service.update_portfolio(
             portfolio_id, current_user.id, portfolio_update
         )
-        
+
         await audit_log(
-            db, current_user.id, "portfolio_updated", 
-            "portfolio", portfolio_id,
-            new_values=portfolio_update.dict(exclude_unset=True)
+            db,
+            current_user.id,
+            "portfolio_updated",
+            "portfolio",
+            portfolio_id,
+            new_values=portfolio_update.dict(exclude_unset=True),
         )
-        
+
         return PortfolioResponse.from_orm(portfolio)
-        
+
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         logger.error(f"Error updating portfolio: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to update portfolio"
+            detail="Failed to update portfolio",
         )
 
 
@@ -169,7 +163,7 @@ async def update_portfolio(
 async def delete_portfolio(
     portfolio_id: str,
     current_user: User = Depends(get_current_active_user),
-    db: AsyncSession = Depends(get_async_session)
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Delete (soft delete) a portfolio
@@ -177,26 +171,20 @@ async def delete_portfolio(
     try:
         portfolio_service = PortfolioService(db)
         await portfolio_service.delete_portfolio(portfolio_id, current_user.id)
-        
+
         await audit_log(
-            db, current_user.id, "portfolio_deleted", 
-            "portfolio", portfolio_id
+            db, current_user.id, "portfolio_deleted", "portfolio", portfolio_id
         )
-        
-        return SuccessResponse(
-            message="Portfolio deleted successfully"
-        )
-        
+
+        return SuccessResponse(message="Portfolio deleted successfully")
+
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         logger.error(f"Error deleting portfolio: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to delete portfolio"
+            detail="Failed to delete portfolio",
         )
 
 
@@ -204,7 +192,7 @@ async def delete_portfolio(
 async def get_portfolio_assets(
     portfolio_id: str,
     current_user: User = Depends(get_current_active_user),
-    db: AsyncSession = Depends(get_async_session)
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Get all assets in a portfolio
@@ -214,19 +202,16 @@ async def get_portfolio_assets(
         assets = await portfolio_service.get_portfolio_assets(
             portfolio_id, current_user.id
         )
-        
+
         return [PortfolioAssetResponse.from_orm(asset) for asset in assets]
-        
+
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         logger.error(f"Error getting portfolio assets: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve portfolio assets"
+            detail="Failed to retrieve portfolio assets",
         )
 
 
@@ -235,7 +220,7 @@ async def add_portfolio_asset(
     portfolio_id: str,
     asset_data: PortfolioAssetUpdate,
     current_user: User = Depends(get_current_active_user),
-    db: AsyncSession = Depends(get_async_session)
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Add an asset to a portfolio
@@ -245,25 +230,25 @@ async def add_portfolio_asset(
         asset = await portfolio_service.add_portfolio_asset(
             portfolio_id, current_user.id, asset_data
         )
-        
+
         await audit_log(
-            db, current_user.id, "portfolio_asset_added", 
-            "portfolio_asset", str(asset.id),
-            new_values=asset_data.dict()
+            db,
+            current_user.id,
+            "portfolio_asset_added",
+            "portfolio_asset",
+            str(asset.id),
+            new_values=asset_data.dict(),
         )
-        
+
         return PortfolioAssetResponse.from_orm(asset)
-        
+
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         logger.error(f"Error adding portfolio asset: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to add portfolio asset"
+            detail="Failed to add portfolio asset",
         )
 
 
@@ -273,7 +258,7 @@ async def update_portfolio_asset(
     asset_id: str,
     asset_update: PortfolioAssetUpdate,
     current_user: User = Depends(get_current_active_user),
-    db: AsyncSession = Depends(get_async_session)
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Update a portfolio asset
@@ -283,25 +268,25 @@ async def update_portfolio_asset(
         asset = await portfolio_service.update_portfolio_asset(
             portfolio_id, asset_id, current_user.id, asset_update
         )
-        
+
         await audit_log(
-            db, current_user.id, "portfolio_asset_updated", 
-            "portfolio_asset", asset_id,
-            new_values=asset_update.dict(exclude_unset=True)
+            db,
+            current_user.id,
+            "portfolio_asset_updated",
+            "portfolio_asset",
+            asset_id,
+            new_values=asset_update.dict(exclude_unset=True),
         )
-        
+
         return PortfolioAssetResponse.from_orm(asset)
-        
+
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         logger.error(f"Error updating portfolio asset: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to update portfolio asset"
+            detail="Failed to update portfolio asset",
         )
 
 
@@ -310,7 +295,7 @@ async def remove_portfolio_asset(
     portfolio_id: str,
     asset_id: str,
     current_user: User = Depends(get_current_active_user),
-    db: AsyncSession = Depends(get_async_session)
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Remove an asset from a portfolio
@@ -320,26 +305,20 @@ async def remove_portfolio_asset(
         await portfolio_service.remove_portfolio_asset(
             portfolio_id, asset_id, current_user.id
         )
-        
+
         await audit_log(
-            db, current_user.id, "portfolio_asset_removed", 
-            "portfolio_asset", asset_id
+            db, current_user.id, "portfolio_asset_removed", "portfolio_asset", asset_id
         )
-        
-        return SuccessResponse(
-            message="Portfolio asset removed successfully"
-        )
-        
+
+        return SuccessResponse(message="Portfolio asset removed successfully")
+
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         logger.error(f"Error removing portfolio asset: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to remove portfolio asset"
+            detail="Failed to remove portfolio asset",
         )
 
 
@@ -348,7 +327,7 @@ async def get_portfolio_analytics(
     portfolio_id: str,
     period: str = Query("30d", regex="^(1d|7d|30d|90d|1y|all)$"),
     current_user: User = Depends(get_current_active_user),
-    db: AsyncSession = Depends(get_async_session)
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Get portfolio analytics and performance metrics
@@ -358,19 +337,16 @@ async def get_portfolio_analytics(
         analytics = await analytics_service.get_portfolio_analytics(
             portfolio_id, current_user.id, period
         )
-        
+
         return analytics
-        
+
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         logger.error(f"Error getting portfolio analytics: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve portfolio analytics"
+            detail="Failed to retrieve portfolio analytics",
         )
 
 
@@ -380,7 +356,7 @@ async def get_portfolio_performance(
     period: str = Query("30d", regex="^(1d|7d|30d|90d|1y|all)$"),
     benchmark: Optional[str] = Query(None),
     current_user: User = Depends(get_current_active_user),
-    db: AsyncSession = Depends(get_async_session)
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Get detailed portfolio performance analysis
@@ -390,19 +366,16 @@ async def get_portfolio_performance(
         performance = await analytics_service.get_portfolio_performance(
             portfolio_id, current_user.id, period, benchmark
         )
-        
+
         return performance
-        
+
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         logger.error(f"Error getting portfolio performance: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve portfolio performance"
+            detail="Failed to retrieve portfolio performance",
         )
 
 
@@ -411,7 +384,7 @@ async def rebalance_portfolio(
     portfolio_id: str,
     rebalance_request: RebalanceRequest,
     current_user: User = Depends(get_current_active_user),
-    db: AsyncSession = Depends(get_async_session)
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Rebalance portfolio according to target allocations
@@ -421,25 +394,25 @@ async def rebalance_portfolio(
         rebalance_result = await portfolio_service.rebalance_portfolio(
             portfolio_id, current_user.id, rebalance_request
         )
-        
+
         await audit_log(
-            db, current_user.id, "portfolio_rebalanced", 
-            "portfolio", portfolio_id,
-            new_values=rebalance_request.dict()
+            db,
+            current_user.id,
+            "portfolio_rebalanced",
+            "portfolio",
+            portfolio_id,
+            new_values=rebalance_request.dict(),
         )
-        
+
         return rebalance_result
-        
+
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         logger.error(f"Error rebalancing portfolio: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to rebalance portfolio"
+            detail="Failed to rebalance portfolio",
         )
 
 
@@ -447,7 +420,7 @@ async def rebalance_portfolio(
 async def get_portfolio_risk_assessment(
     portfolio_id: str,
     current_user: User = Depends(get_current_active_user),
-    db: AsyncSession = Depends(get_async_session)
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Get portfolio risk assessment and metrics
@@ -457,19 +430,16 @@ async def get_portfolio_risk_assessment(
         risk_assessment = await risk_service.assess_portfolio_risk(
             portfolio_id, current_user.id
         )
-        
+
         return risk_assessment
-        
+
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         logger.error(f"Error getting portfolio risk assessment: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve portfolio risk assessment"
+            detail="Failed to retrieve portfolio risk assessment",
         )
 
 
@@ -478,7 +448,7 @@ async def sync_portfolio_with_blockchain(
     portfolio_id: str,
     wallet_addresses: List[str] = Body(...),
     current_user: User = Depends(get_current_active_user),
-    db: AsyncSession = Depends(get_async_session)
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Sync portfolio with blockchain wallet addresses
@@ -488,27 +458,25 @@ async def sync_portfolio_with_blockchain(
         await portfolio_service.sync_portfolio_with_blockchain(
             portfolio_id, current_user.id, wallet_addresses
         )
-        
+
         await audit_log(
-            db, current_user.id, "portfolio_synced", 
-            "portfolio", portfolio_id,
-            new_values={"wallet_addresses": wallet_addresses}
+            db,
+            current_user.id,
+            "portfolio_synced",
+            "portfolio",
+            portfolio_id,
+            new_values={"wallet_addresses": wallet_addresses},
         )
-        
-        return SuccessResponse(
-            message="Portfolio synced with blockchain successfully"
-        )
-        
+
+        return SuccessResponse(message="Portfolio synced with blockchain successfully")
+
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         logger.error(f"Error syncing portfolio: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to sync portfolio with blockchain"
+            detail="Failed to sync portfolio with blockchain",
         )
 
 
@@ -518,7 +486,7 @@ async def export_portfolio_data(
     format: str = Query("csv", regex="^(csv|json|pdf)$"),
     include_transactions: bool = Query(True),
     current_user: User = Depends(get_current_active_user),
-    db: AsyncSession = Depends(get_async_session)
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Export portfolio data in various formats
@@ -528,25 +496,25 @@ async def export_portfolio_data(
         export_result = await portfolio_service.export_portfolio_data(
             portfolio_id, current_user.id, format, include_transactions
         )
-        
+
         await audit_log(
-            db, current_user.id, "portfolio_exported", 
-            "portfolio", portfolio_id,
-            new_values={"format": format, "include_transactions": include_transactions}
+            db,
+            current_user.id,
+            "portfolio_exported",
+            "portfolio",
+            portfolio_id,
+            new_values={"format": format, "include_transactions": include_transactions},
         )
-        
+
         return export_result
-        
+
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         logger.error(f"Error exporting portfolio: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to export portfolio data"
+            detail="Failed to export portfolio data",
         )
 
 
@@ -555,7 +523,7 @@ async def get_portfolio_alerts(
     portfolio_id: str,
     active_only: bool = Query(True),
     current_user: User = Depends(get_current_active_user),
-    db: AsyncSession = Depends(get_async_session)
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Get portfolio alerts and notifications
@@ -565,19 +533,16 @@ async def get_portfolio_alerts(
         alerts = await portfolio_service.get_portfolio_alerts(
             portfolio_id, current_user.id, active_only
         )
-        
+
         return alerts
-        
+
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         logger.error(f"Error getting portfolio alerts: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve portfolio alerts"
+            detail="Failed to retrieve portfolio alerts",
         )
 
 
@@ -586,7 +551,7 @@ async def create_portfolio_alert(
     portfolio_id: str,
     alert_data: dict = Body(...),
     current_user: User = Depends(get_current_active_user),
-    db: AsyncSession = Depends(get_async_session)
+    db: AsyncSession = Depends(get_async_session),
 ):
     """
     Create a new portfolio alert
@@ -596,24 +561,23 @@ async def create_portfolio_alert(
         alert = await portfolio_service.create_portfolio_alert(
             portfolio_id, current_user.id, alert_data
         )
-        
+
         await audit_log(
-            db, current_user.id, "portfolio_alert_created", 
-            "portfolio_alert", str(alert["id"]),
-            new_values=alert_data
+            db,
+            current_user.id,
+            "portfolio_alert_created",
+            "portfolio_alert",
+            str(alert["id"]),
+            new_values=alert_data,
         )
-        
+
         return alert
-        
+
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         logger.error(f"Error creating portfolio alert: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to create portfolio alert"
+            detail="Failed to create portfolio alert",
         )
-

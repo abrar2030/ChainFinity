@@ -4,26 +4,26 @@ Main FastAPI application with production-ready configuration
 
 import logging
 from contextlib import asynccontextmanager
+
+import uvicorn
+from app.api.v1.router import api_router
+from config.database import close_database, init_database
+from config.settings import settings
 from fastapi import FastAPI, Request, status
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
-from fastapi.exceptions import RequestValidationError
-from starlette.exceptions import HTTPException as StarletteHTTPException
-import uvicorn
-
-from config.settings import settings
-from config.database import init_database, close_database
 from middleware.auth_middleware import AuthMiddleware
 from middleware.logging_middleware import LoggingMiddleware
 from middleware.rate_limit_middleware import RateLimitMiddleware
 from middleware.security_middleware import SecurityMiddleware
-from app.api.v1.router import api_router
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 # Configure logging
 logging.basicConfig(
     level=getattr(logging, settings.monitoring.LOG_LEVEL),
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -41,9 +41,9 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"Failed to initialize database: {e}")
         raise
-    
+
     yield
-    
+
     # Shutdown
     logger.info("Shutting down ChainFinity API...")
     try:
@@ -58,10 +58,16 @@ app = FastAPI(
     title=settings.app.APP_NAME,
     description=settings.app.APP_DESCRIPTION,
     version=settings.app.APP_VERSION,
-    docs_url=settings.app.DOCS_URL if not settings.app.ENVIRONMENT == "production" else None,
-    redoc_url=settings.app.REDOC_URL if not settings.app.ENVIRONMENT == "production" else None,
-    openapi_url="/openapi.json" if not settings.app.ENVIRONMENT == "production" else None,
-    lifespan=lifespan
+    docs_url=(
+        settings.app.DOCS_URL if not settings.app.ENVIRONMENT == "production" else None
+    ),
+    redoc_url=(
+        settings.app.REDOC_URL if not settings.app.ENVIRONMENT == "production" else None
+    ),
+    openapi_url=(
+        "/openapi.json" if not settings.app.ENVIRONMENT == "production" else None
+    ),
+    lifespan=lifespan,
 )
 
 # Add security middleware
@@ -80,7 +86,7 @@ app.add_middleware(
 if settings.app.ENVIRONMENT == "production":
     app.add_middleware(
         TrustedHostMiddleware,
-        allowed_hosts=["*"]  # Configure with actual allowed hosts
+        allowed_hosts=["*"],  # Configure with actual allowed hosts
     )
 
 # Add rate limiting middleware
@@ -102,8 +108,8 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
         content={
             "success": False,
             "error": exc.detail,
-            "code": f"HTTP_{exc.status_code}"
-        }
+            "code": f"HTTP_{exc.status_code}",
+        },
     )
 
 
@@ -112,20 +118,22 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     """Handle request validation errors"""
     errors = []
     for error in exc.errors():
-        errors.append({
-            "field": " -> ".join(str(x) for x in error["loc"]),
-            "message": error["msg"],
-            "type": error["type"]
-        })
-    
+        errors.append(
+            {
+                "field": " -> ".join(str(x) for x in error["loc"]),
+                "message": error["msg"],
+                "type": error["type"],
+            }
+        )
+
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={
             "success": False,
             "error": "Validation error",
             "details": errors,
-            "code": "VALIDATION_ERROR"
-        }
+            "code": "VALIDATION_ERROR",
+        },
     )
 
 
@@ -133,15 +141,15 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 async def general_exception_handler(request: Request, exc: Exception):
     """Handle general exceptions"""
     logger.error(f"Unhandled exception: {exc}", exc_info=True)
-    
+
     if settings.app.DEBUG:
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={
                 "success": False,
                 "error": str(exc),
-                "code": "INTERNAL_SERVER_ERROR"
-            }
+                "code": "INTERNAL_SERVER_ERROR",
+            },
         )
     else:
         return JSONResponse(
@@ -149,8 +157,8 @@ async def general_exception_handler(request: Request, exc: Exception):
             content={
                 "success": False,
                 "error": "Internal server error",
-                "code": "INTERNAL_SERVER_ERROR"
-            }
+                "code": "INTERNAL_SERVER_ERROR",
+            },
         )
 
 
@@ -159,25 +167,27 @@ async def general_exception_handler(request: Request, exc: Exception):
 async def health_check():
     """Health check endpoint"""
     from config.database import check_database_health, check_redis_health
-    
+
     db_healthy = await check_database_health()
     redis_healthy = await check_redis_health()
-    
+
     services = {
         "database": "healthy" if db_healthy else "unhealthy",
-        "redis": "healthy" if redis_healthy else "unhealthy"
+        "redis": "healthy" if redis_healthy else "unhealthy",
     }
-    
-    overall_status = "healthy" if all(
-        status == "healthy" for status in services.values()
-    ) else "unhealthy"
-    
+
+    overall_status = (
+        "healthy"
+        if all(status == "healthy" for status in services.values())
+        else "unhealthy"
+    )
+
     return {
         "status": overall_status,
         "timestamp": "2025-01-08T12:00:00Z",  # Use actual timestamp
         "version": settings.app.APP_VERSION,
         "services": services,
-        "uptime_seconds": 0  # Calculate actual uptime
+        "uptime_seconds": 0,  # Calculate actual uptime
     }
 
 
@@ -189,7 +199,11 @@ async def root():
         "message": f"Welcome to {settings.app.APP_NAME}",
         "version": settings.app.APP_VERSION,
         "environment": settings.app.ENVIRONMENT,
-        "docs_url": settings.app.DOCS_URL if not settings.app.ENVIRONMENT == "production" else None
+        "docs_url": (
+            settings.app.DOCS_URL
+            if not settings.app.ENVIRONMENT == "production"
+            else None
+        ),
     }
 
 
@@ -205,6 +219,5 @@ if __name__ == "__main__":
         port=settings.app.PORT,
         workers=settings.app.WORKERS if settings.app.ENVIRONMENT == "production" else 1,
         reload=settings.app.DEBUG,
-        log_level=settings.monitoring.LOG_LEVEL.lower()
+        log_level=settings.monitoring.LOG_LEVEL.lower(),
     )
-
