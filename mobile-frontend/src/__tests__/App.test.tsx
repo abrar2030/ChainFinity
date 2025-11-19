@@ -44,7 +44,7 @@ describe('Mobile App Component', () => {
         <App />
       </TestWrapper>
     );
-    
+
     expect(screen.getByText(/welcome/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/password/i)).toBeInTheDocument();
@@ -253,4 +253,4 @@ describe('Mobile App Component', () => {
       expect(screen.getByText(/you are offline/i)).toBeInTheDocument();
     });
   });
-}); 
+});

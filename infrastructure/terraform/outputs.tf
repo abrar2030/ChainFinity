@@ -413,4 +413,3 @@ output "backup_recovery_info" {
     deletion_protection_enabled  = aws_db_instance.chainfinity_db.deletion_protection
   }
 }
-

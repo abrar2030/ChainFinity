@@ -22,4 +22,4 @@ Welcome to the ChainFinity documentation! This directory contains comprehensive 
 
 For additional support, please refer to:
 - [FAQ](./faq.md)
-- [Contact Information](./contact.md) 
+- [Contact Information](./contact.md)

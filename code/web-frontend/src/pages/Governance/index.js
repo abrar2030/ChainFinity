@@ -168,19 +168,19 @@ const Governance = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <GovernanceStats 
+        <GovernanceStats
           totalSupply={governanceData.totalSupply}
           votingDelay={governanceData.votingDelay}
           votingPeriod={governanceData.votingPeriod}
           proposalThreshold={governanceData.proposalThreshold}
         />
-        
-        <VotingPower 
+
+        <VotingPower
           userVotingPower={governanceData.userVotingPower}
           userTokenBalance={governanceData.userTokenBalance}
           totalSupply={governanceData.totalSupply}
         />
-        
+
         <DelegationManager
           delegatedTo={governanceData.delegatedTo}
           delegatedFrom={governanceData.delegatedFrom}
@@ -193,20 +193,20 @@ const Governance = () => {
           <TabsTrigger value="proposals">Proposals</TabsTrigger>
           <TabsTrigger value="create">Create Proposal</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="proposals" className="mt-6">
           {loading ? (
             <div className="flex justify-center py-12">
               <Loader size="lg" />
             </div>
           ) : (
-            <ProposalList 
+            <ProposalList
               proposals={governanceData.activeProposals}
               onVote={handleVote}
             />
           )}
         </TabsContent>
-        
+
         <TabsContent value="create" className="mt-6">
           <CreateProposal onSubmit={handleCreateProposal} />
         </TabsContent>

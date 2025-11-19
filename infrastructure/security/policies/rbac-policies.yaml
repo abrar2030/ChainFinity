@@ -415,4 +415,3 @@ roleRef:
   kind: ClusterRole
   name: chainfinity-psp-role
   apiGroup: rbac.authorization.k8s.io
-

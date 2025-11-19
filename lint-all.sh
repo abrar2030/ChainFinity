@@ -322,11 +322,11 @@ if [ "$YAMLLINT_AVAILABLE" = true ]; then
   echo "yamllint completed."
 else
   echo "Skipping yamllint (not installed)."
-  
+
   # 4.2 Basic YAML validation using Python
   echo "Performing basic YAML validation using Python..."
   pip3 install --upgrade pyyaml
-  
+
   for dir in "${YAML_DIRECTORIES[@]}"; do
     if [ -d "$dir" ]; then
       echo "Validating YAML files in $dir..."
@@ -358,7 +358,7 @@ if [ "$TERRAFORM_AVAILABLE" = true ]; then
     fi
   done
   echo "terraform fmt completed."
-  
+
   # 5.2 Run terraform validate if available
   echo "Running terraform validate for Terraform files..."
   for dir in "${TERRAFORM_DIRECTORIES[@]}"; do

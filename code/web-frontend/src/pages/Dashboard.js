@@ -127,23 +127,23 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useApp();
   const [tabValue, setTabValue] = useState(0);
-  
+
   // Get wallet address from user context
   const walletAddress = user?.wallet_address;
-  
+
   // Fetch portfolio data and transaction history
-  const { 
-    portfolioData: portfolio, 
-    loading: portfolioLoading, 
+  const {
+    portfolioData: portfolio,
+    loading: portfolioLoading,
     error: portfolioError,
-    refreshPortfolio 
+    refreshPortfolio
   } = usePortfolioData(walletAddress);
-  
-  const { 
-    transactions, 
-    loading: transactionsLoading, 
+
+  const {
+    transactions,
+    loading: transactionsLoading,
     error: transactionsError,
-    refreshTransactions 
+    refreshTransactions
   } = useTransactionHistory(walletAddress);
 
   // Redirect to login if not authenticated
@@ -162,11 +162,11 @@ const Dashboard = () => {
   };
 
   // Prepare asset allocation data for pie chart
-  const assetAllocation = portfolio?.assets ? 
+  const assetAllocation = portfolio?.assets ?
     portfolio.assets.map(asset => ({
       name: asset.symbol,
       value: parseFloat(asset.balance) * parseFloat(asset.value_usd || 0)
-    })) : 
+    })) :
     [];
 
   const containerVariants = {
@@ -210,8 +210,8 @@ const Dashboard = () => {
           <Alert severity="error" sx={{ mb: 2 }}>
             {portfolioError?.message || transactionsError?.message || 'An error occurred while loading your data.'}
           </Alert>
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             onClick={handleRefresh}
             startIcon={<Refresh />}
           >
@@ -241,11 +241,11 @@ const Dashboard = () => {
                   Welcome back, {user?.email}! Here's your portfolio overview.
                 </Typography>
               </Box>
-              <Button 
-                variant="contained" 
+              <Button
+                variant="contained"
                 startIcon={<Refresh />}
                 onClick={handleRefresh}
-                sx={{ 
+                sx={{
                   borderRadius: '12px',
                   boxShadow: 'none'
                 }}
@@ -266,10 +266,10 @@ const Dashboard = () => {
                         Portfolio Value
                       </Typography>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Chip 
-                          icon={<TrendingUp />} 
-                          label="+12.5% this month" 
-                          color="success" 
+                        <Chip
+                          icon={<TrendingUp />}
+                          label="+12.5% this month"
+                          color="success"
                           size="small"
                           sx={{ mr: 1 }}
                         />
@@ -308,29 +308,29 @@ const Dashboard = () => {
                             </linearGradient>
                           </defs>
                           <CartesianGrid strokeDasharray="3 3" stroke={theme.palette.divider} />
-                          <XAxis 
-                            dataKey="name" 
+                          <XAxis
+                            dataKey="name"
                             stroke={theme.palette.text.secondary}
                             tick={{ fontSize: 12 }}
                           />
-                          <YAxis 
+                          <YAxis
                             stroke={theme.palette.text.secondary}
                             tick={{ fontSize: 12 }}
                           />
-                          <Tooltip 
-                            contentStyle={{ 
+                          <Tooltip
+                            contentStyle={{
                               backgroundColor: theme.palette.background.paper,
                               borderColor: theme.palette.divider,
                               borderRadius: 8,
                               boxShadow: theme.shadows[3]
                             }}
                           />
-                          <Area 
-                            type="monotone" 
-                            dataKey="value" 
-                            stroke={theme.palette.primary.main} 
-                            fillOpacity={1} 
-                            fill="url(#colorValue)" 
+                          <Area
+                            type="monotone"
+                            dataKey="value"
+                            stroke={theme.palette.primary.main}
+                            fillOpacity={1}
+                            fill="url(#colorValue)"
                           />
                         </AreaChart>
                       </ResponsiveContainer>
@@ -366,9 +366,9 @@ const Dashboard = () => {
                                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                               ))}
                             </Pie>
-                            <Tooltip 
+                            <Tooltip
                               formatter={(value) => [`$${value.toFixed(2)}`, 'Value']}
-                              contentStyle={{ 
+                              contentStyle={{
                                 backgroundColor: theme.palette.background.paper,
                                 borderColor: theme.palette.divider,
                                 borderRadius: 8,
@@ -388,14 +388,14 @@ const Dashboard = () => {
                       {portfolio?.assets && portfolio.assets.map((asset, index) => (
                         <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Box 
-                              sx={{ 
-                                width: 12, 
-                                height: 12, 
-                                borderRadius: '50%', 
+                            <Box
+                              sx={{
+                                width: 12,
+                                height: 12,
+                                borderRadius: '50%',
                                 backgroundColor: COLORS[index % COLORS.length],
                                 mr: 1
-                              }} 
+                              }}
                             />
                             <Typography variant="body2">{asset.symbol}</Typography>
                           </Box>
@@ -501,11 +501,11 @@ const Dashboard = () => {
           {/* Assets & Transactions */}
           <motion.div variants={itemVariants}>
             <Paper sx={{ borderRadius: theme.shape.borderRadius, overflow: 'hidden', mb: 4 }}>
-              <Tabs 
-                value={tabValue} 
+              <Tabs
+                value={tabValue}
                 onChange={handleTabChange}
-                sx={{ 
-                  borderBottom: 1, 
+                sx={{
+                  borderBottom: 1,
                   borderColor: 'divider',
                   px: 2,
                   '& .MuiTabs-indicator': {
@@ -517,7 +517,7 @@ const Dashboard = () => {
                 <Tab label="Assets" />
                 <Tab label="Recent Transactions" />
               </Tabs>
-              
+
               <Box sx={{ p: 3 }}>
                 <TabPanel value={tabValue} index={0}>
                   {portfolio?.assets && portfolio.assets.length > 0 ? (
@@ -555,9 +555,9 @@ const Dashboard = () => {
                               </Typography>
                             </Grid>
                             <Grid item xs={2} sm={2} sx={{ textAlign: 'right' }}>
-                              <Chip 
-                                label={asset.change || '+0.0%'} 
-                                color={asset.change && asset.change.startsWith('-') ? 'error' : 'success'} 
+                              <Chip
+                                label={asset.change || '+0.0%'}
+                                color={asset.change && asset.change.startsWith('-') ? 'error' : 'success'}
                                 size="small"
                                 icon={asset.change && asset.change.startsWith('-') ? <ArrowDownward fontSize="small" /> : <ArrowUpward fontSize="small" />}
                               />
@@ -571,8 +571,8 @@ const Dashboard = () => {
                       <Typography variant="body1" color="text.secondary">
                         No assets found in your portfolio
                       </Typography>
-                      <Button 
-                        variant="outlined" 
+                      <Button
+                        variant="outlined"
                         sx={{ mt: 2 }}
                         onClick={handleRefresh}
                         startIcon={<Refresh />}
@@ -582,7 +582,7 @@ const Dashboard = () => {
                     </Box>
                   )}
                 </TabPanel>
-                
+
                 <TabPanel value={tabValue} index={1}>
                   {transactions && transactions.length > 0 ? (
                     transactions.map((tx, index) => (
@@ -590,12 +590,12 @@ const Dashboard = () => {
                         <CardContent sx={{ p: 2 }}>
                           <Grid container alignItems="center">
                             <Grid item xs={1}>
-                              <Avatar 
-                                sx={{ 
-                                  bgcolor: tx.type === 'receive' 
-                                    ? 'success.light' 
-                                    : tx.type === 'send' 
-                                      ? 'error.light' 
+                              <Avatar
+                                sx={{
+                                  bgcolor: tx.type === 'receive'
+                                    ? 'success.light'
+                                    : tx.type === 'send'
+                                      ? 'error.light'
                                       : 'info.light',
                                   width: 40,
                                   height: 40
@@ -631,9 +631,9 @@ const Dashboard = () => {
                               </Typography>
                             </Grid>
                             <Grid item xs={2} sm={2} sx={{ textAlign: 'right' }}>
-                              <Chip 
-                                label={tx.status} 
-                                color="success" 
+                              <Chip
+                                label={tx.status}
+                                color="success"
                                 size="small"
                                 variant="outlined"
                               />
@@ -647,8 +647,8 @@ const Dashboard = () => {
                       <Typography variant="body1" color="text.secondary">
                         No transactions found
                       </Typography>
-                      <Button 
-                        variant="outlined" 
+                      <Button
+                        variant="outlined"
                         sx={{ mt: 2 }}
                         onClick={handleRefresh}
                         startIcon={<Refresh />}

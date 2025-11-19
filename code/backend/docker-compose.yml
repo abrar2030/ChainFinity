@@ -120,4 +120,3 @@ volumes:
 networks:
   default:
     name: chainfinity_network
-

@@ -22,4 +22,3 @@ window.matchMedia = jest.fn().mockImplementation(query => {
     dispatchEvent: jest.fn(),
   };
 });
-

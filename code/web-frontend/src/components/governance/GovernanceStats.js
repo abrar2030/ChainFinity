@@ -17,21 +17,21 @@ const GovernanceStats = ({ totalSupply, votingDelay, votingPeriod, proposalThres
               {formatNumber(totalSupply)} CFG
             </Badge>
           </div>
-          
+
           <div className="flex justify-between items-center">
             <span className="text-sm">Voting Delay</span>
             <Badge variant="outline">
               {votingDelay}
             </Badge>
           </div>
-          
+
           <div className="flex justify-between items-center">
             <span className="text-sm">Voting Period</span>
             <Badge variant="outline">
               {votingPeriod}
             </Badge>
           </div>
-          
+
           <div className="flex justify-between items-center">
             <span className="text-sm">Proposal Threshold</span>
             <Badge variant="outline">

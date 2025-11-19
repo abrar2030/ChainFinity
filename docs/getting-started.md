@@ -57,4 +57,4 @@ http://localhost:3000
 
 - Visit our [FAQ](./faq.md)
 - Check the [Troubleshooting Guide](./troubleshooting.md)
-- Join our [Discord Community](https://discord.gg/chainfinity) 
+- Join our [Discord Community](https://discord.gg/chainfinity)

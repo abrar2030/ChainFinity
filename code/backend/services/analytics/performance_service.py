@@ -14,8 +14,11 @@ import numpy as np
 from config.settings import settings
 from models.portfolio import Portfolio, PortfolioAsset, PortfolioSnapshot
 from models.transaction import Transaction, TransactionStatus
-from schemas.analytics import (AttributionAnalysis, BenchmarkComparison,
-                               PerformanceMetrics)
+from schemas.analytics import (
+    AttributionAnalysis,
+    BenchmarkComparison,
+    PerformanceMetrics,
+)
 from services.market.market_data_service import MarketDataService
 from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession

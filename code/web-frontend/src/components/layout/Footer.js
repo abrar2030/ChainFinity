@@ -1,15 +1,15 @@
 import React from 'react';
-import { 
-  Box, 
-  Container, 
-  Typography, 
-  Link, 
-  IconButton, 
+import {
+  Box,
+  Container,
+  Typography,
+  Link,
+  IconButton,
   Grid,
   useTheme,
   Divider
 } from '@mui/material';
-import { 
+import {
   GitHub as GitHubIcon,
   Twitter as TwitterIcon,
   LinkedIn as LinkedInIcon,
@@ -19,8 +19,8 @@ import { styled } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 
 const FooterContainer = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'light' 
-    ? 'rgba(248, 249, 252, 0.8)' 
+  backgroundColor: theme.palette.mode === 'light'
+    ? 'rgba(248, 249, 252, 0.8)'
     : 'rgba(18, 18, 18, 0.8)',
   backdropFilter: 'blur(8px)',
   borderTop: `1px solid ${theme.palette.divider}`,
@@ -46,8 +46,8 @@ const SocialIcon = styled(IconButton)(({ theme }) => ({
   color: theme.palette.text.secondary,
   '&:hover': {
     color: theme.palette.primary.main,
-    backgroundColor: theme.palette.mode === 'light' 
-      ? 'rgba(58, 54, 224, 0.08)' 
+    backgroundColor: theme.palette.mode === 'light'
+      ? 'rgba(58, 54, 224, 0.08)'
       : 'rgba(108, 99, 255, 0.08)',
   },
 }));
@@ -61,10 +61,10 @@ const Footer = () => {
       <Container maxWidth="lg">
         <Grid container spacing={4}>
           <Grid item xs={12} sm={6} md={3}>
-            <Typography 
-              variant="h6" 
-              sx={{ 
-                fontWeight: 700, 
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 700,
                 mb: 2,
                 background: 'linear-gradient(45deg, #3a36e0 0%, #6c63ff 100%)',
                 WebkitBackgroundClip: 'text',
@@ -91,7 +91,7 @@ const Footer = () => {
               </SocialIcon>
             </Box>
           </Grid>
-          
+
           <Grid item xs={6} sm={6} md={3}>
             <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2 }}>
               Product
@@ -103,7 +103,7 @@ const Footer = () => {
               <FooterLink href="#">Changelog</FooterLink>
             </Box>
           </Grid>
-          
+
           <Grid item xs={6} sm={6} md={3}>
             <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2 }}>
               Resources
@@ -115,7 +115,7 @@ const Footer = () => {
               <FooterLink href="#">Blog</FooterLink>
             </Box>
           </Grid>
-          
+
           <Grid item xs={6} sm={6} md={3}>
             <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2 }}>
               Company
@@ -128,9 +128,9 @@ const Footer = () => {
             </Box>
           </Grid>
         </Grid>
-        
+
         <Divider sx={{ my: 4 }} />
-        
+
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
           <Typography variant="body2" color="text.secondary">
             © {currentYear} ChainFinity. All rights reserved.

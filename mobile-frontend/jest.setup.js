@@ -51,4 +51,4 @@ Object.defineProperty(global, 'IntersectionObserver', {
   writable: true,
   configurable: true,
   value: IntersectionObserver,
-}); 
+});

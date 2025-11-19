@@ -7,7 +7,7 @@ This guide helps you resolve common issues with ChainFinity.
 ### Installation Problems
 
 **Issue**: npm install fails
-- **Solution**: 
+- **Solution**:
   1. Clear npm cache: `npm cache clean --force`
   2. Delete node_modules: `rm -rf node_modules`
   3. Delete package-lock.json: `rm package-lock.json`
@@ -96,4 +96,4 @@ When reporting bugs, include:
 3. Actual behavior
 4. Environment details
 5. Error messages
-6. Screenshots if relevant 
+6. Screenshots if relevant

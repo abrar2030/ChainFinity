@@ -11,7 +11,7 @@ import { motion } from 'framer-motion';
 export default function DashboardPage() {
   return (
     <main className="container mx-auto px-4 py-8 flex flex-col items-center space-y-8">
-      <motion.h1 
+      <motion.h1
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -19,7 +19,7 @@ export default function DashboardPage() {
       >
         Dashboard
       </motion.h1>
-      
+
       {/* Wallet Information Card */}
       <div className="w-full max-w-md">
         <WalletInfo />
@@ -42,4 +42,3 @@ export default function DashboardPage() {
     </main>
   );
 }
-

@@ -48,8 +48,8 @@ const DelegationManager = ({ delegatedTo, delegatedFrom, onDelegate }) => {
               <p className="text-sm font-medium mb-1">Currently delegated to:</p>
               <div className="flex items-center justify-between">
                 <span className="text-sm">{formatAddress(delegatedTo)}</span>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => onDelegate(account)}
                   disabled={loading}
@@ -87,8 +87,8 @@ const DelegationManager = ({ delegatedTo, delegatedFrom, onDelegate }) => {
               <p className="text-sm font-medium mb-2">Delegated from:</p>
               <div className="space-y-2 max-h-32 overflow-y-auto">
                 {delegatedFrom.map((delegation, index) => (
-                  <div 
-                    key={index} 
+                  <div
+                    key={index}
                     className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-800 rounded"
                   >
                     <span className="text-xs">{formatAddress(delegation.address)}</span>

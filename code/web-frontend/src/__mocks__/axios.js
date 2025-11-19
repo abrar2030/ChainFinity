@@ -21,4 +21,3 @@ const mockAxios = {
 };
 
 export default mockAxios;
-

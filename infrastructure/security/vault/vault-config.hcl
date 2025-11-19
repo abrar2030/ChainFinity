@@ -5,7 +5,7 @@
 storage "consul" {
   address = "127.0.0.1:8500"
   path    = "vault/"
-  
+
   # Enable TLS for Consul communication
   scheme = "https"
   tls_ca_file = "/opt/vault/tls/consul-ca.pem"
@@ -18,7 +18,7 @@ storage "consul" {
 storage "raft" {
   path    = "/opt/vault/data"
   node_id = "vault-node-1"
-  
+
   # Retry configuration for network resilience
   retry_join {
     leader_api_addr = "https://vault-node-2:8200"
@@ -26,7 +26,7 @@ storage "raft" {
     leader_client_cert_file = "/opt/vault/tls/vault-cert.pem"
     leader_client_key_file = "/opt/vault/tls/vault-key.pem"
   }
-  
+
   retry_join {
     leader_api_addr = "https://vault-node-3:8200"
     leader_ca_cert_file = "/opt/vault/tls/vault-ca.pem"
@@ -41,13 +41,13 @@ listener "tcp" {
   tls_cert_file = "/opt/vault/tls/vault-cert.pem"
   tls_key_file  = "/opt/vault/tls/vault-key.pem"
   tls_ca_file   = "/opt/vault/tls/vault-ca.pem"
-  
+
   # Financial grade TLS configuration
   tls_min_version = "tls12"
   tls_cipher_suites = "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384"
   tls_prefer_server_cipher_suites = true
   tls_require_and_verify_client_cert = true
-  
+
   # Security headers
   tls_disable_client_certs = false
   x_forwarded_for_authorized_addrs = "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
@@ -81,10 +81,10 @@ seal "awskms" {
 telemetry {
   prometheus_retention_time = "30s"
   disable_hostname = true
-  
+
   # Send metrics to monitoring system
   statsd_address = "localhost:8125"
-  
+
   # Enable detailed metrics for financial compliance
   enable_hostname_label = true
   usage_gauge_period = "10m"
@@ -125,4 +125,3 @@ disable_performance_standby = true
 
 # License path for Vault Enterprise
 license_path = "/opt/vault/license/vault.hclic"
-

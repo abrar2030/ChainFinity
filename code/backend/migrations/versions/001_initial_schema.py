@@ -1,7 +1,7 @@
 """Initial schema migration
 
 Revision ID: 001
-Revises: 
+Revises:
 Create Date: 2025-01-08 12:00:00.000000
 
 """

@@ -41,7 +41,7 @@ export const usePortfolioData = (walletAddress) => {
       if (!address) {
         throw new Error('No wallet address available');
       }
-      
+
       const response = await blockchainAPI.getPortfolio(address);
       setPortfolioData(response.data);
       setError(null);
@@ -96,7 +96,7 @@ export const useTransactionHistory = (walletAddress) => {
       if (!address) {
         throw new Error('No wallet address available');
       }
-      
+
       const response = await blockchainAPI.getTransactions(address);
       setTransactions(response.data);
       setError(null);
@@ -143,7 +143,7 @@ export const useTokenBalance = (tokenAddress, network = 'ethereum') => {
     if (!tokenAddress) {
       return false;
     }
-    
+
     setLoading(true);
     try {
       const response = await blockchainAPI.getTokenBalance(tokenAddress, network);

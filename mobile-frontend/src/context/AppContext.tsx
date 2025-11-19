@@ -96,7 +96,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
           }
         }
       }
-      
+
       setState(prevState => ({
         ...prevState,
         darkMode: initialDarkMode,
@@ -187,11 +187,11 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 
         // Get provider
         const provider = new ethers.BrowserProvider(window.ethereum);
-        
+
         // Get balance
         const balanceWei = await provider.getBalance(address);
         const balanceEth = ethers.formatEther(balanceWei);
-        
+
         // Get network info
         const network = await provider.getNetwork();
         const networkName = network.name === 'homestead' ? 'Ethereum Mainnet' : network.name;
@@ -276,4 +276,3 @@ export const useApp = () => {
 };
 
 export default AppContext;
-

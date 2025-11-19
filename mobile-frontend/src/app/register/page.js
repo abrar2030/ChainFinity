@@ -79,7 +79,7 @@ const Register = () => {
   const theme = useTheme();
   const router = useRouter();
   const { register, error, loading, clearError } = useApp();
-  
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [name, setName] = useState('');
@@ -103,35 +103,35 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Clear previous errors
     clearError();
     setFormError('');
-    
+
     // Form validation
     if (!name || !email || !password || !confirmPassword) {
       setFormError('Please fill in all required fields');
       return;
     }
-    
+
     if (password !== confirmPassword) {
       setFormError('Passwords do not match');
       return;
     }
-    
+
     if (password.length < 8) {
       setFormError('Password must be at least 8 characters long');
       return;
     }
-    
+
     try {
-      const result = await register({ 
-        name, 
-        email, 
+      const result = await register({
+        name,
+        email,
         password,
         wallet_address: walletAddress || undefined
       });
-      
+
       if (result.success) {
         // Redirect to login on success
         // Note: Next.js router.push doesn't directly support passing state like react-router

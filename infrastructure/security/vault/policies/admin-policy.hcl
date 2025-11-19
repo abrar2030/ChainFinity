@@ -84,4 +84,3 @@ path "sys/namespaces/*" {
 path "sys/control-group/*" {
   capabilities = ["create", "read", "update", "delete", "list", "sudo"]
 }
-

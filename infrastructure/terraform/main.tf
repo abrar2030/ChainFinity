@@ -3,7 +3,7 @@
 
 terraform {
   required_version = ">= 1.0"
-  
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -26,7 +26,7 @@ terraform {
       version = "~> 3.5"
     }
   }
-  
+
   # Enhanced backend configuration with encryption
   backend "s3" {
     bucket         = "chainfinity-terraform-state"
@@ -35,7 +35,7 @@ terraform {
     encrypt        = true
     kms_key_id     = "arn:aws:kms:us-west-2:123456789012:key/12345678-1234-1234-1234-123456789012"
     dynamodb_table = "chainfinity-terraform-locks"
-    
+
     # Additional security settings
     versioning                = true
     server_side_encryption_configuration {
@@ -64,14 +64,14 @@ locals {
     CreatedBy           = "Terraform"
     CreatedDate         = timestamp()
   }
-  
+
   # Network configuration
   vpc_cidr = "10.0.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
-  
+
   # Security configuration
   allowed_cidr_blocks = var.allowed_cidr_blocks
-  
+
   # Compliance settings
   backup_retention_days = 2555  # 7 years for financial compliance
   log_retention_days   = 2555   # 7 years for financial compliance
@@ -89,7 +89,7 @@ resource "aws_kms_key" "chainfinity" {
   description             = "ChainFinity encryption key for financial data"
   deletion_window_in_days = 30
   enable_key_rotation     = true
-  
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -119,7 +119,7 @@ resource "aws_kms_key" "chainfinity" {
       }
     ]
   })
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-encryption-key"
     Type = "KMS"
@@ -136,11 +136,11 @@ resource "aws_vpc" "main" {
   cidr_block           = local.vpc_cidr
   enable_dns_hostnames = true
   enable_dns_support   = true
-  
+
   # Enhanced security features
   assign_generated_ipv6_cidr_block = false
   instance_tenancy                 = "default"
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-vpc"
     Type = "VPC"
@@ -153,7 +153,7 @@ resource "aws_flow_log" "vpc_flow_log" {
   log_destination = aws_cloudwatch_log_group.vpc_flow_log.arn
   traffic_type    = "ALL"
   vpc_id          = aws_vpc.main.id
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-vpc-flow-logs"
     Type = "FlowLog"
@@ -165,7 +165,7 @@ resource "aws_cloudwatch_log_group" "vpc_flow_log" {
   name              = "/aws/vpc/chainfinity-flow-logs"
   retention_in_days = local.log_retention_days
   kms_key_id        = aws_kms_key.chainfinity.arn
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-vpc-flow-logs"
     Type = "LogGroup"
@@ -175,7 +175,7 @@ resource "aws_cloudwatch_log_group" "vpc_flow_log" {
 # IAM role for VPC Flow Logs
 resource "aws_iam_role" "flow_log" {
   name = "chainfinity-flow-log-role"
-  
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -188,14 +188,14 @@ resource "aws_iam_role" "flow_log" {
       }
     ]
   })
-  
+
   tags = local.common_tags
 }
 
 resource "aws_iam_role_policy" "flow_log" {
   name = "chainfinity-flow-log-policy"
   role = aws_iam_role.flow_log.id
-  
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -217,14 +217,14 @@ resource "aws_iam_role_policy" "flow_log" {
 # Private Subnets for enhanced security
 resource "aws_subnet" "private" {
   count = length(local.azs)
-  
+
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.${count.index + 1}.0/24"
   availability_zone = local.azs[count.index]
-  
+
   # Security: Do not assign public IPs
   map_public_ip_on_launch = false
-  
+
   tags = merge(local.common_tags, {
     Name                              = "chainfinity-private-${local.azs[count.index]}"
     Type                              = "PrivateSubnet"
@@ -236,13 +236,13 @@ resource "aws_subnet" "private" {
 # Public Subnets (minimal, for load balancers only)
 resource "aws_subnet" "public" {
   count = length(local.azs)
-  
+
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.${count.index + 10}.0/24"
   availability_zone = local.azs[count.index]
-  
+
   map_public_ip_on_launch = true
-  
+
   tags = merge(local.common_tags, {
     Name                     = "chainfinity-public-${local.azs[count.index]}"
     Type                     = "PublicSubnet"
@@ -254,14 +254,14 @@ resource "aws_subnet" "public" {
 # Database Subnets (isolated)
 resource "aws_subnet" "database" {
   count = length(local.azs)
-  
+
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.${count.index + 20}.0/24"
   availability_zone = local.azs[count.index]
-  
+
   # Security: No public IPs for database subnets
   map_public_ip_on_launch = false
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-database-${local.azs[count.index]}"
     Type = "DatabaseSubnet"
@@ -271,7 +271,7 @@ resource "aws_subnet" "database" {
 # Internet Gateway
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-igw"
     Type = "InternetGateway"
@@ -281,11 +281,11 @@ resource "aws_internet_gateway" "main" {
 # Elastic IPs for NAT Gateways
 resource "aws_eip" "nat" {
   count = length(local.azs)
-  
+
   domain = "vpc"
-  
+
   depends_on = [aws_internet_gateway.main]
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-nat-eip-${local.azs[count.index]}"
     Type = "ElasticIP"
@@ -295,12 +295,12 @@ resource "aws_eip" "nat" {
 # NAT Gateways for private subnet internet access
 resource "aws_nat_gateway" "main" {
   count = length(local.azs)
-  
+
   allocation_id = aws_eip.nat[count.index].id
   subnet_id     = aws_subnet.public[count.index].id
-  
+
   depends_on = [aws_internet_gateway.main]
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-nat-${local.azs[count.index]}"
     Type = "NATGateway"
@@ -310,12 +310,12 @@ resource "aws_nat_gateway" "main" {
 # Route Tables
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
-  
+
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.main.id
   }
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-public-rt"
     Type = "RouteTable"
@@ -324,14 +324,14 @@ resource "aws_route_table" "public" {
 
 resource "aws_route_table" "private" {
   count = length(local.azs)
-  
+
   vpc_id = aws_vpc.main.id
-  
+
   route {
     cidr_block     = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.main[count.index].id
   }
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-private-rt-${local.azs[count.index]}"
     Type = "RouteTable"
@@ -340,7 +340,7 @@ resource "aws_route_table" "private" {
 
 resource "aws_route_table" "database" {
   vpc_id = aws_vpc.main.id
-  
+
   # No internet access for database subnets
   tags = merge(local.common_tags, {
     Name = "chainfinity-database-rt"
@@ -351,21 +351,21 @@ resource "aws_route_table" "database" {
 # Route Table Associations
 resource "aws_route_table_association" "public" {
   count = length(aws_subnet.public)
-  
+
   subnet_id      = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public.id
 }
 
 resource "aws_route_table_association" "private" {
   count = length(aws_subnet.private)
-  
+
   subnet_id      = aws_subnet.private[count.index].id
   route_table_id = aws_route_table.private[count.index].id
 }
 
 resource "aws_route_table_association" "database" {
   count = length(aws_subnet.database)
-  
+
   subnet_id      = aws_subnet.database[count.index].id
   route_table_id = aws_route_table.database.id
 }
@@ -374,7 +374,7 @@ resource "aws_route_table_association" "database" {
 resource "aws_network_acl" "private" {
   vpc_id     = aws_vpc.main.id
   subnet_ids = aws_subnet.private[*].id
-  
+
   # Allow inbound HTTPS from VPC
   ingress {
     protocol   = "tcp"
@@ -384,7 +384,7 @@ resource "aws_network_acl" "private" {
     from_port  = 443
     to_port    = 443
   }
-  
+
   # Allow inbound HTTP from VPC (for health checks)
   ingress {
     protocol   = "tcp"
@@ -394,7 +394,7 @@ resource "aws_network_acl" "private" {
     from_port  = 80
     to_port    = 80
   }
-  
+
   # Allow inbound ephemeral ports
   ingress {
     protocol   = "tcp"
@@ -404,7 +404,7 @@ resource "aws_network_acl" "private" {
     from_port  = 1024
     to_port    = 65535
   }
-  
+
   # Allow outbound HTTPS
   egress {
     protocol   = "tcp"
@@ -414,7 +414,7 @@ resource "aws_network_acl" "private" {
     from_port  = 443
     to_port    = 443
   }
-  
+
   # Allow outbound HTTP
   egress {
     protocol   = "tcp"
@@ -424,7 +424,7 @@ resource "aws_network_acl" "private" {
     from_port  = 80
     to_port    = 80
   }
-  
+
   # Allow outbound ephemeral ports
   egress {
     protocol   = "tcp"
@@ -434,7 +434,7 @@ resource "aws_network_acl" "private" {
     from_port  = 1024
     to_port    = 65535
   }
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-private-nacl"
     Type = "NetworkACL"
@@ -444,7 +444,7 @@ resource "aws_network_acl" "private" {
 resource "aws_network_acl" "database" {
   vpc_id     = aws_vpc.main.id
   subnet_ids = aws_subnet.database[*].id
-  
+
   # Allow inbound PostgreSQL from private subnets only
   ingress {
     protocol   = "tcp"
@@ -454,7 +454,7 @@ resource "aws_network_acl" "database" {
     from_port  = 5432
     to_port    = 5432
   }
-  
+
   # Allow inbound ephemeral ports for responses
   ingress {
     protocol   = "tcp"
@@ -464,7 +464,7 @@ resource "aws_network_acl" "database" {
     from_port  = 1024
     to_port    = 65535
   }
-  
+
   # Allow outbound ephemeral ports
   egress {
     protocol   = "tcp"
@@ -474,7 +474,7 @@ resource "aws_network_acl" "database" {
     from_port  = 1024
     to_port    = 65535
   }
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-database-nacl"
     Type = "NetworkACL"
@@ -486,7 +486,7 @@ resource "aws_security_group" "alb" {
   name_prefix = "chainfinity-alb-"
   vpc_id      = aws_vpc.main.id
   description = "Security group for Application Load Balancer"
-  
+
   # Inbound HTTPS from allowed CIDRs
   ingress {
     description = "HTTPS from allowed networks"
@@ -495,7 +495,7 @@ resource "aws_security_group" "alb" {
     protocol    = "tcp"
     cidr_blocks = local.allowed_cidr_blocks
   }
-  
+
   # Inbound HTTP (redirect to HTTPS)
   ingress {
     description = "HTTP redirect to HTTPS"
@@ -504,7 +504,7 @@ resource "aws_security_group" "alb" {
     protocol    = "tcp"
     cidr_blocks = local.allowed_cidr_blocks
   }
-  
+
   # Outbound to EKS nodes
   egress {
     description     = "To EKS nodes"
@@ -513,12 +513,12 @@ resource "aws_security_group" "alb" {
     protocol        = "tcp"
     security_groups = [aws_security_group.eks_nodes.id]
   }
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-alb-sg"
     Type = "SecurityGroup"
   })
-  
+
   lifecycle {
     create_before_destroy = true
   }
@@ -528,7 +528,7 @@ resource "aws_security_group" "eks_cluster" {
   name_prefix = "chainfinity-eks-cluster-"
   vpc_id      = aws_vpc.main.id
   description = "Security group for EKS cluster control plane"
-  
+
   # Inbound from nodes
   ingress {
     description     = "From EKS nodes"
@@ -537,7 +537,7 @@ resource "aws_security_group" "eks_cluster" {
     protocol        = "tcp"
     security_groups = [aws_security_group.eks_nodes.id]
   }
-  
+
   # Outbound to nodes
   egress {
     description     = "To EKS nodes"
@@ -546,7 +546,7 @@ resource "aws_security_group" "eks_cluster" {
     protocol        = "tcp"
     security_groups = [aws_security_group.eks_nodes.id]
   }
-  
+
   # Outbound HTTPS for API calls
   egress {
     description = "HTTPS outbound"
@@ -555,12 +555,12 @@ resource "aws_security_group" "eks_cluster" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-eks-cluster-sg"
     Type = "SecurityGroup"
   })
-  
+
   lifecycle {
     create_before_destroy = true
   }
@@ -570,7 +570,7 @@ resource "aws_security_group" "eks_nodes" {
   name_prefix = "chainfinity-eks-nodes-"
   vpc_id      = aws_vpc.main.id
   description = "Security group for EKS worker nodes"
-  
+
   # Inbound from ALB
   ingress {
     description     = "From ALB"
@@ -579,7 +579,7 @@ resource "aws_security_group" "eks_nodes" {
     protocol        = "tcp"
     security_groups = [aws_security_group.alb.id]
   }
-  
+
   # Inbound from cluster
   ingress {
     description     = "From EKS cluster"
@@ -588,7 +588,7 @@ resource "aws_security_group" "eks_nodes" {
     protocol        = "tcp"
     security_groups = [aws_security_group.eks_cluster.id]
   }
-  
+
   # Node-to-node communication
   ingress {
     description = "Node to node"
@@ -597,7 +597,7 @@ resource "aws_security_group" "eks_nodes" {
     protocol    = "tcp"
     self        = true
   }
-  
+
   # Outbound all (managed by network ACLs)
   egress {
     description = "All outbound"
@@ -606,12 +606,12 @@ resource "aws_security_group" "eks_nodes" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-eks-nodes-sg"
     Type = "SecurityGroup"
   })
-  
+
   lifecycle {
     create_before_destroy = true
   }
@@ -621,7 +621,7 @@ resource "aws_security_group" "rds" {
   name_prefix = "chainfinity-rds-"
   vpc_id      = aws_vpc.main.id
   description = "Security group for RDS database"
-  
+
   # Inbound PostgreSQL from EKS nodes only
   ingress {
     description     = "PostgreSQL from EKS nodes"
@@ -630,14 +630,14 @@ resource "aws_security_group" "rds" {
     protocol        = "tcp"
     security_groups = [aws_security_group.eks_nodes.id]
   }
-  
+
   # No outbound rules (database doesn't need internet)
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-rds-sg"
     Type = "SecurityGroup"
   })
-  
+
   lifecycle {
     create_before_destroy = true
   }
@@ -648,7 +648,7 @@ resource "aws_security_group" "rds" {
 resource "aws_db_subnet_group" "main" {
   name       = "chainfinity-db-subnet-group"
   subnet_ids = aws_subnet.database[*].id
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-db-subnet-group"
     Type = "DBSubnetGroup"
@@ -659,48 +659,48 @@ resource "aws_db_subnet_group" "main" {
 resource "aws_db_parameter_group" "postgresql" {
   family = "postgres15"
   name   = "chainfinity-postgres-params"
-  
+
   # Security parameters
   parameter {
     name  = "log_statement"
     value = "all"
   }
-  
+
   parameter {
     name  = "log_min_duration_statement"
     value = "1000"  # Log queries taking more than 1 second
   }
-  
+
   parameter {
     name  = "log_connections"
     value = "1"
   }
-  
+
   parameter {
     name  = "log_disconnections"
     value = "1"
   }
-  
+
   parameter {
     name  = "log_checkpoints"
     value = "1"
   }
-  
+
   parameter {
     name  = "log_lock_waits"
     value = "1"
   }
-  
+
   parameter {
     name  = "ssl"
     value = "1"
   }
-  
+
   parameter {
     name  = "ssl_ciphers"
     value = "HIGH:MEDIUM:+3DES:!aNULL"
   }
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-postgres-params"
     Type = "DBParameterGroup"
@@ -713,7 +713,7 @@ resource "aws_db_option_group" "postgresql" {
   option_group_description = "ChainFinity PostgreSQL options"
   engine_name              = "postgres"
   major_engine_version     = "15"
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-postgres-options"
     Type = "DBOptionGroup"
@@ -723,67 +723,67 @@ resource "aws_db_option_group" "postgresql" {
 # RDS Database with enhanced security
 resource "aws_db_instance" "chainfinity_db" {
   identifier = "chainfinity-db"
-  
+
   # Engine configuration
   engine         = "postgres"
   engine_version = "15.4"
   instance_class = var.db_instance_class
-  
+
   # Storage configuration with encryption
   allocated_storage     = var.db_allocated_storage
   max_allocated_storage = var.db_max_allocated_storage
   storage_type          = "gp3"
   storage_encrypted     = true
   kms_key_id           = aws_kms_key.chainfinity.arn
-  
+
   # Database configuration
   db_name  = var.db_name
   username = var.db_username
   password = var.db_password
   port     = 5432
-  
+
   # Network configuration
   vpc_security_group_ids = [aws_security_group.rds.id]
   db_subnet_group_name   = aws_db_subnet_group.main.name
   publicly_accessible    = false
-  
+
   # Parameter and option groups
   parameter_group_name = aws_db_parameter_group.postgresql.name
   option_group_name    = aws_db_option_group.postgresql.name
-  
+
   # Backup configuration for compliance
   backup_retention_period = local.backup_retention_days
   backup_window          = "03:00-04:00"  # UTC
   maintenance_window     = "sun:04:00-sun:05:00"  # UTC
-  
+
   # Security features
   copy_tags_to_snapshot                = true
   deletion_protection                  = true
   skip_final_snapshot                 = false
   final_snapshot_identifier           = "chainfinity-db-final-snapshot-${formatdate("YYYY-MM-DD-hhmm", timestamp())}"
   delete_automated_backups            = false
-  
+
   # Monitoring and logging
   monitoring_interval = 60
   monitoring_role_arn = aws_iam_role.rds_monitoring.arn
-  
+
   enabled_cloudwatch_logs_exports = [
     "postgresql"
   ]
-  
+
   # Performance insights
   performance_insights_enabled          = true
   performance_insights_kms_key_id      = aws_kms_key.chainfinity.arn
   performance_insights_retention_period = 731  # 2 years
-  
+
   # Multi-AZ for high availability
   multi_az = var.environment == "production" ? true : false
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-database"
     Type = "RDSInstance"
   })
-  
+
   depends_on = [
     aws_cloudwatch_log_group.rds
   ]
@@ -794,7 +794,7 @@ resource "aws_cloudwatch_log_group" "rds" {
   name              = "/aws/rds/instance/chainfinity-db/postgresql"
   retention_in_days = local.log_retention_days
   kms_key_id        = aws_kms_key.chainfinity.arn
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-rds-logs"
     Type = "LogGroup"
@@ -804,7 +804,7 @@ resource "aws_cloudwatch_log_group" "rds" {
 # IAM role for RDS monitoring
 resource "aws_iam_role" "rds_monitoring" {
   name = "chainfinity-rds-monitoring-role"
-  
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -817,7 +817,7 @@ resource "aws_iam_role" "rds_monitoring" {
       }
     ]
   })
-  
+
   tags = local.common_tags
 }
 
@@ -829,7 +829,7 @@ resource "aws_iam_role_policy_attachment" "rds_monitoring" {
 # EKS Cluster IAM Role
 resource "aws_iam_role" "eks_cluster" {
   name = "chainfinity-eks-cluster-role"
-  
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -842,7 +842,7 @@ resource "aws_iam_role" "eks_cluster" {
       }
     ]
   })
-  
+
   tags = local.common_tags
 }
 
@@ -860,7 +860,7 @@ resource "aws_iam_role_policy_attachment" "eks_vpc_resource_controller" {
 # EKS Node Group IAM Role
 resource "aws_iam_role" "eks_nodes" {
   name = "chainfinity-eks-nodes-role"
-  
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -873,7 +873,7 @@ resource "aws_iam_role" "eks_nodes" {
       }
     ]
   })
-  
+
   tags = local.common_tags
 }
 
@@ -897,7 +897,7 @@ resource "aws_iam_role_policy_attachment" "eks_container_registry_readonly" {
 resource "aws_iam_role_policy" "eks_nodes_additional" {
   name = "chainfinity-eks-nodes-additional-policy"
   role = aws_iam_role.eks_nodes.id
-  
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -941,7 +941,7 @@ resource "aws_eks_cluster" "chainfinity" {
   name     = "chainfinity-cluster"
   role_arn = aws_iam_role.eks_cluster.arn
   version  = var.kubernetes_version
-  
+
   vpc_config {
     subnet_ids              = aws_subnet.private[*].id
     endpoint_private_access = true
@@ -949,7 +949,7 @@ resource "aws_eks_cluster" "chainfinity" {
     public_access_cidrs     = var.eks_endpoint_public_access ? local.allowed_cidr_blocks : []
     security_group_ids      = [aws_security_group.eks_cluster.id]
   }
-  
+
   # Enhanced logging
   enabled_cluster_log_types = [
     "api",
@@ -958,7 +958,7 @@ resource "aws_eks_cluster" "chainfinity" {
     "controllerManager",
     "scheduler"
   ]
-  
+
   # Encryption configuration
   encryption_config {
     provider {
@@ -966,12 +966,12 @@ resource "aws_eks_cluster" "chainfinity" {
     }
     resources = ["secrets"]
   }
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-cluster"
     Type = "EKSCluster"
   })
-  
+
   depends_on = [
     aws_iam_role_policy_attachment.eks_cluster_policy,
     aws_iam_role_policy_attachment.eks_vpc_resource_controller,
@@ -984,7 +984,7 @@ resource "aws_cloudwatch_log_group" "eks_cluster" {
   name              = "/aws/eks/chainfinity-cluster/cluster"
   retention_in_days = local.log_retention_days
   kms_key_id        = aws_kms_key.chainfinity.arn
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-eks-cluster-logs"
     Type = "LogGroup"
@@ -996,9 +996,9 @@ resource "aws_launch_template" "eks_nodes" {
   name_prefix   = "chainfinity-eks-nodes-"
   image_id      = data.aws_ssm_parameter.eks_ami_release_version.value
   instance_type = var.node_instance_type
-  
+
   vpc_security_group_ids = [aws_security_group.eks_nodes.id]
-  
+
   # Enhanced security configuration
   metadata_options {
     http_endpoint               = "enabled"
@@ -1006,11 +1006,11 @@ resource "aws_launch_template" "eks_nodes" {
     http_put_response_hop_limit = 2
     instance_metadata_tags      = "enabled"
   }
-  
+
   monitoring {
     enabled = true
   }
-  
+
   block_device_mappings {
     device_name = "/dev/xvda"
     ebs {
@@ -1021,14 +1021,14 @@ resource "aws_launch_template" "eks_nodes" {
       delete_on_termination = true
     }
   }
-  
+
   user_data = base64encode(templatefile("${path.module}/user_data.sh", {
     cluster_name        = aws_eks_cluster.chainfinity.name
     cluster_endpoint    = aws_eks_cluster.chainfinity.endpoint
     cluster_ca          = aws_eks_cluster.chainfinity.certificate_authority[0].data
     bootstrap_arguments = "--container-runtime containerd"
   }))
-  
+
   tag_specifications {
     resource_type = "instance"
     tags = merge(local.common_tags, {
@@ -1036,7 +1036,7 @@ resource "aws_launch_template" "eks_nodes" {
       Type = "EKSNode"
     })
   }
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-eks-nodes-template"
     Type = "LaunchTemplate"
@@ -1054,38 +1054,38 @@ resource "aws_eks_node_group" "chainfinity" {
   node_group_name = "chainfinity-nodes"
   node_role_arn   = aws_iam_role.eks_nodes.arn
   subnet_ids      = aws_subnet.private[*].id
-  
+
   # Instance configuration
   capacity_type  = var.node_capacity_type
   instance_types = var.node_instance_types
-  
+
   # Scaling configuration
   scaling_config {
     desired_size = var.node_desired_size
     max_size     = var.node_max_size
     min_size     = var.node_min_size
   }
-  
+
   # Update configuration
   update_config {
     max_unavailable_percentage = 25
   }
-  
+
   # Launch template
   launch_template {
     id      = aws_launch_template.eks_nodes.id
     version = aws_launch_template.eks_nodes.latest_version
   }
-  
+
   # Security
   ami_type       = "AL2_x86_64"
   disk_size      = var.node_disk_size
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-node-group"
     Type = "EKSNodeGroup"
   })
-  
+
   depends_on = [
     aws_iam_role_policy_attachment.eks_worker_node_policy,
     aws_iam_role_policy_attachment.eks_cni_policy,
@@ -1100,18 +1100,18 @@ resource "aws_lb" "main" {
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
   subnets            = aws_subnet.public[*].id
-  
+
   # Security features
   enable_deletion_protection = var.environment == "production" ? true : false
   drop_invalid_header_fields = true
-  
+
   # Logging
   access_logs {
     bucket  = aws_s3_bucket.alb_logs.bucket
     prefix  = "alb-logs"
     enabled = true
   }
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-alb"
     Type = "ApplicationLoadBalancer"
@@ -1122,7 +1122,7 @@ resource "aws_lb" "main" {
 resource "aws_s3_bucket" "alb_logs" {
   bucket        = "chainfinity-alb-logs-${random_string.bucket_suffix.result}"
   force_destroy = var.environment != "production"
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-alb-logs"
     Type = "S3Bucket"
@@ -1138,7 +1138,7 @@ resource "aws_s3_bucket_versioning" "alb_logs" {
 
 resource "aws_s3_bucket_encryption" "alb_logs" {
   bucket = aws_s3_bucket.alb_logs.id
-  
+
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
@@ -1151,7 +1151,7 @@ resource "aws_s3_bucket_encryption" "alb_logs" {
 
 resource "aws_s3_bucket_public_access_block" "alb_logs" {
   bucket = aws_s3_bucket.alb_logs.id
-  
+
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
@@ -1160,15 +1160,15 @@ resource "aws_s3_bucket_public_access_block" "alb_logs" {
 
 resource "aws_s3_bucket_lifecycle_configuration" "alb_logs" {
   bucket = aws_s3_bucket.alb_logs.id
-  
+
   rule {
     id     = "log_retention"
     status = "Enabled"
-    
+
     expiration {
       days = local.log_retention_days
     }
-    
+
     noncurrent_version_expiration {
       noncurrent_days = 30
     }
@@ -1188,9 +1188,9 @@ resource "aws_lb_target_group" "app" {
   port     = 80
   protocol = "HTTP"
   vpc_id   = aws_vpc.main.id
-  
+
   target_type = "ip"
-  
+
   health_check {
     enabled             = true
     healthy_threshold   = 2
@@ -1202,7 +1202,7 @@ resource "aws_lb_target_group" "app" {
     port                = "traffic-port"
     protocol            = "HTTP"
   }
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-app-tg"
     Type = "TargetGroup"
@@ -1216,12 +1216,12 @@ resource "aws_lb_listener" "https" {
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
   certificate_arn   = aws_acm_certificate_validation.main.certificate_arn
-  
+
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.app.arn
   }
-  
+
   tags = local.common_tags
 }
 
@@ -1230,17 +1230,17 @@ resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.main.arn
   port              = "80"
   protocol          = "HTTP"
-  
+
   default_action {
     type = "redirect"
-    
+
     redirect {
       port        = "443"
       protocol    = "HTTPS"
       status_code = "HTTP_301"
     }
   }
-  
+
   tags = local.common_tags
 }
 
@@ -1249,17 +1249,17 @@ resource "aws_lb_listener" "http" {
 resource "aws_acm_certificate" "main" {
   domain_name       = var.domain_name
   validation_method = "DNS"
-  
+
   subject_alternative_names = [
     "*.${var.domain_name}",
     "api.${var.domain_name}",
     "app.${var.domain_name}"
   ]
-  
+
   lifecycle {
     create_before_destroy = true
   }
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-certificate"
     Type = "ACMCertificate"
@@ -1270,7 +1270,7 @@ resource "aws_acm_certificate" "main" {
 resource "aws_route53_zone" "main" {
   count = var.manage_dns ? 1 : 0
   name  = var.domain_name
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-zone"
     Type = "Route53Zone"
@@ -1286,7 +1286,7 @@ resource "aws_route53_record" "cert_validation" {
       type   = dvo.resource_record_type
     }
   } : {}
-  
+
   allow_overwrite = true
   name            = each.value.name
   records         = [each.value.record]
@@ -1299,7 +1299,7 @@ resource "aws_route53_record" "cert_validation" {
 resource "aws_acm_certificate_validation" "main" {
   certificate_arn         = aws_acm_certificate.main.arn
   validation_record_fqdns = var.manage_dns ? [for record in aws_route53_record.cert_validation : record.fqdn] : []
-  
+
   timeouts {
     create = "5m"
   }
@@ -1311,7 +1311,7 @@ resource "aws_route53_record" "main" {
   zone_id = aws_route53_zone.main[0].zone_id
   name    = var.domain_name
   type    = "A"
-  
+
   alias {
     name                   = aws_lb.main.dns_name
     zone_id                = aws_lb.main.zone_id
@@ -1325,7 +1325,7 @@ resource "aws_secretsmanager_secret" "db_credentials" {
   description             = "Database credentials for ChainFinity"
   kms_key_id             = aws_kms_key.chainfinity.arn
   recovery_window_in_days = 30
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-db-credentials"
     Type = "Secret"
@@ -1350,7 +1350,7 @@ resource "aws_secretsmanager_secret" "app_secrets" {
   description             = "Application secrets for ChainFinity"
   kms_key_id             = aws_kms_key.chainfinity.arn
   recovery_window_in_days = 30
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-app-secrets"
     Type = "Secret"
@@ -1387,7 +1387,7 @@ resource "aws_cloudwatch_log_group" "application" {
   name              = "/aws/eks/chainfinity/application"
   retention_in_days = local.log_retention_days
   kms_key_id        = aws_kms_key.chainfinity.arn
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-application-logs"
     Type = "LogGroup"
@@ -1397,7 +1397,7 @@ resource "aws_cloudwatch_log_group" "application" {
 # CloudWatch Dashboard
 resource "aws_cloudwatch_dashboard" "main" {
   dashboard_name = "ChainFinity-Infrastructure"
-  
+
   dashboard_body = jsonencode({
     widgets = [
       {
@@ -1406,7 +1406,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         y      = 0
         width  = 12
         height = 6
-        
+
         properties = {
           metrics = [
             ["AWS/EKS", "cluster_failed_request_count", "ClusterName", aws_eks_cluster.chainfinity.name],
@@ -1425,7 +1425,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         y      = 6
         width  = 12
         height = 6
-        
+
         properties = {
           metrics = [
             ["AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", aws_db_instance.chainfinity_db.id],
@@ -1445,7 +1445,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         y      = 12
         width  = 12
         height = 6
-        
+
         properties = {
           metrics = [
             ["AWS/ApplicationELB", "RequestCount", "LoadBalancer", aws_lb.main.arn_suffix],
@@ -1463,7 +1463,7 @@ resource "aws_cloudwatch_dashboard" "main" {
       }
     ]
   })
-  
+
   tags = local.common_tags
 }
 
@@ -1479,11 +1479,11 @@ resource "aws_cloudwatch_metric_alarm" "high_cpu" {
   threshold           = "80"
   alarm_description   = "This metric monitors RDS CPU utilization"
   alarm_actions       = [aws_sns_topic.alerts.arn]
-  
+
   dimensions = {
     DBInstanceIdentifier = aws_db_instance.chainfinity_db.id
   }
-  
+
   tags = local.common_tags
 }
 
@@ -1498,11 +1498,11 @@ resource "aws_cloudwatch_metric_alarm" "database_connections" {
   threshold           = "80"
   alarm_description   = "This metric monitors RDS connection count"
   alarm_actions       = [aws_sns_topic.alerts.arn]
-  
+
   dimensions = {
     DBInstanceIdentifier = aws_db_instance.chainfinity_db.id
   }
-  
+
   tags = local.common_tags
 }
 
@@ -1517,11 +1517,11 @@ resource "aws_cloudwatch_metric_alarm" "alb_response_time" {
   threshold           = "1"
   alarm_description   = "This metric monitors ALB response time"
   alarm_actions       = [aws_sns_topic.alerts.arn]
-  
+
   dimensions = {
     LoadBalancer = aws_lb.main.arn_suffix
   }
-  
+
   tags = local.common_tags
 }
 
@@ -1529,7 +1529,7 @@ resource "aws_cloudwatch_metric_alarm" "alb_response_time" {
 resource "aws_sns_topic" "alerts" {
   name              = "chainfinity-alerts"
   kms_master_key_id = aws_kms_key.chainfinity.arn
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-alerts"
     Type = "SNSTopic"
@@ -1547,90 +1547,90 @@ resource "aws_sns_topic_subscription" "email_alerts" {
 resource "aws_wafv2_web_acl" "main" {
   name  = "chainfinity-web-acl"
   scope = "REGIONAL"
-  
+
   default_action {
     allow {}
   }
-  
+
   # Rate limiting rule
   rule {
     name     = "RateLimitRule"
     priority = 1
-    
+
     override_action {
       none {}
     }
-    
+
     statement {
       rate_based_statement {
         limit              = 2000
         aggregate_key_type = "IP"
       }
     }
-    
+
     visibility_config {
       cloudwatch_metrics_enabled = true
       metric_name                = "RateLimitRule"
       sampled_requests_enabled   = true
     }
-    
+
     action {
       block {}
     }
   }
-  
+
   # AWS Managed Rules
   rule {
     name     = "AWSManagedRulesCommonRuleSet"
     priority = 2
-    
+
     override_action {
       none {}
     }
-    
+
     statement {
       managed_rule_group_statement {
         name        = "AWSManagedRulesCommonRuleSet"
         vendor_name = "AWS"
       }
     }
-    
+
     visibility_config {
       cloudwatch_metrics_enabled = true
       metric_name                = "CommonRuleSetMetric"
       sampled_requests_enabled   = true
     }
   }
-  
+
   # Known bad inputs rule
   rule {
     name     = "AWSManagedRulesKnownBadInputsRuleSet"
     priority = 3
-    
+
     override_action {
       none {}
     }
-    
+
     statement {
       managed_rule_group_statement {
         name        = "AWSManagedRulesKnownBadInputsRuleSet"
         vendor_name = "AWS"
       }
     }
-    
+
     visibility_config {
       cloudwatch_metrics_enabled = true
       metric_name                = "KnownBadInputsRuleSetMetric"
       sampled_requests_enabled   = true
     }
   }
-  
+
   visibility_config {
     cloudwatch_metrics_enabled = true
     metric_name                = "ChainFinityWebACL"
     sampled_requests_enabled   = true
   }
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-web-acl"
     Type = "WAFv2WebACL"
@@ -1647,7 +1647,7 @@ resource "aws_wafv2_web_acl_association" "main" {
 resource "aws_s3_bucket" "backups" {
   bucket        = "chainfinity-backups-${random_string.bucket_suffix.result}"
   force_destroy = var.environment != "production"
-  
+
   tags = merge(local.common_tags, {
     Name = "chainfinity-backups"
     Type = "S3Bucket"
@@ -1663,7 +1663,7 @@ resource "aws_s3_bucket_versioning" "backups" {
 
 resource "aws_s3_bucket_encryption" "backups" {
   bucket = aws_s3_bucket.backups.id
-  
+
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
@@ -1676,7 +1676,7 @@ resource "aws_s3_bucket_encryption" "backups" {
 
 resource "aws_s3_bucket_public_access_block" "backups" {
   bucket = aws_s3_bucket.backups.id
-  
+
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
@@ -1685,30 +1685,30 @@ resource "aws_s3_bucket_public_access_block" "backups" {
 
 resource "aws_s3_bucket_lifecycle_configuration" "backups" {
   bucket = aws_s3_bucket.backups.id
-  
+
   rule {
     id     = "backup_lifecycle"
     status = "Enabled"
-    
+
     transition {
       days          = 30
       storage_class = "STANDARD_IA"
     }
-    
+
     transition {
       days          = 90
       storage_class = "GLACIER"
     }
-    
+
     transition {
       days          = 365
       storage_class = "DEEP_ARCHIVE"
     }
-    
+
     expiration {
       days = local.backup_retention_days
     }
-    
+
     noncurrent_version_expiration {
       noncurrent_days = 30
     }
@@ -1724,4 +1724,3 @@ resource "local_file" "user_data" {
   })
   filename = "${path.module}/user_data.sh"
 }
-

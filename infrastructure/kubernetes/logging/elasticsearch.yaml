@@ -61,4 +61,4 @@ spec:
     name: http
   - port: 9300
     name: transport
-  clusterIP: None 
+  clusterIP: None

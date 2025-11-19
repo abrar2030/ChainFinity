@@ -6,7 +6,7 @@ import { formatNumber } from '../../utils/formatters';
 const VotingPower = ({ userVotingPower, userTokenBalance, totalSupply }) => {
   // Calculate percentage of total supply
   const votingPowerPercentage = (parseFloat(userVotingPower) / parseFloat(totalSupply)) * 100;
-  
+
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -24,13 +24,13 @@ const VotingPower = ({ userVotingPower, userTokenBalance, totalSupply }) => {
               {votingPowerPercentage.toFixed(4)}% of total supply
             </p>
           </div>
-          
+
           <div className="pt-2">
             <div className="flex justify-between text-sm">
               <span>Token Balance:</span>
               <span className="font-medium">{formatNumber(userTokenBalance)} CFG</span>
             </div>
-            
+
             <div className="flex justify-between text-sm mt-2">
               <span>Delegated Power:</span>
               <span className="font-medium">

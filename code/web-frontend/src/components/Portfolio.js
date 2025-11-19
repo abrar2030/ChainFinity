@@ -75,4 +75,3 @@ const Portfolio = ({ fetchData }) => {
 };
 
 export default Portfolio;
-

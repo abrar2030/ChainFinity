@@ -12,13 +12,13 @@ import "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.so
  * @title ChainFinityGovernor
  * @dev Governance contract for ChainFinity platform with timelock, voting, and quorum capabilities
  */
-contract ChainFinityGovernor is 
-    Governor, 
-    GovernorSettings, 
-    GovernorCountingSimple, 
-    GovernorVotes, 
-    GovernorVotesQuorumFraction, 
-    GovernorTimelockControl 
+contract ChainFinityGovernor is
+    Governor,
+    GovernorSettings,
+    GovernorCountingSimple,
+    GovernorVotes,
+    GovernorVotesQuorumFraction,
+    GovernorTimelockControl
 {
     /**
      * @dev Constructor that initializes the governor with required parameters
@@ -59,7 +59,7 @@ contract ChainFinityGovernor is
         if (params.length > 0) {
             // Extract quadratic voting flag from params
             bool useQuadratic = abi.decode(params, (bool));
-            
+
             if (useQuadratic) {
                 // Apply quadratic voting formula: sqrt(weight)
                 uint256 quadraticWeight = sqrt(weight);
@@ -67,7 +67,7 @@ contract ChainFinityGovernor is
                 return;
             }
         }
-        
+
         // Default to standard voting if quadratic not specified
         super._countVote(proposalId, account, support, weight, "");
     }

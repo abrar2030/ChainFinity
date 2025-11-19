@@ -10,18 +10,18 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  */
 contract GovernanceToken is ERC20Votes, Ownable {
     uint256 private constant _INITIAL_SUPPLY = 100_000_000 * 10**18; // 100 million tokens
-    
+
     /**
      * @dev Constructor that initializes the token with name, symbol, and mints initial supply
      */
-    constructor() 
-        ERC20("ChainFinity Governance", "CFG") 
+    constructor()
+        ERC20("ChainFinity Governance", "CFG")
         ERC20Permit("ChainFinity Governance")
-        Ownable(msg.sender) 
+        Ownable(msg.sender)
     {
         _mint(msg.sender, _INITIAL_SUPPLY);
     }
-    
+
     /**
      * @dev Allows the owner to mint additional tokens if needed
      * @param to Address to receive the minted tokens
@@ -30,7 +30,7 @@ contract GovernanceToken is ERC20Votes, Ownable {
     function mint(address to, uint256 amount) external onlyOwner {
         _mint(to, amount);
     }
-    
+
     /**
      * @dev Override _afterTokenTransfer to update voting power
      */

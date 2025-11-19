@@ -26,7 +26,7 @@ const ProposalList = ({ proposals, onVote }) => {
   const calculateProgress = (forVotes, againstVotes, abstainVotes) => {
     const total = parseFloat(forVotes) + parseFloat(againstVotes) + parseFloat(abstainVotes);
     if (total === 0) return { forPercentage: 0, againstPercentage: 0, abstainPercentage: 0 };
-    
+
     return {
       forPercentage: (parseFloat(forVotes) / total) * 100,
       againstPercentage: (parseFloat(againstVotes) / total) * 100,
@@ -74,12 +74,12 @@ const ProposalList = ({ proposals, onVote }) => {
                 </div>
               </CardHeader>
             </div>
-            
+
             <CardContent className="pb-6">
               <div className="mb-4">
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                  {proposal.description.length > 200 
-                    ? `${proposal.description.substring(0, 200)}...` 
+                  {proposal.description.length > 200
+                    ? `${proposal.description.substring(0, 200)}...`
                     : proposal.description}
                 </p>
                 <div className="flex items-center text-xs text-gray-500">
@@ -88,7 +88,7 @@ const ProposalList = ({ proposals, onVote }) => {
                   <span>Ends {formatDate(proposal.eta)}</span>
                 </div>
               </div>
-              
+
               <div className="space-y-3 mb-6">
                 <div>
                   <div className="flex justify-between mb-1">
@@ -97,7 +97,7 @@ const ProposalList = ({ proposals, onVote }) => {
                   </div>
                   <Progress value={forPercentage} className="h-1 bg-gray-200" indicatorColor="bg-green-500" />
                 </div>
-                
+
                 <div>
                   <div className="flex justify-between mb-1">
                     <span className="text-xs">Against</span>
@@ -105,7 +105,7 @@ const ProposalList = ({ proposals, onVote }) => {
                   </div>
                   <Progress value={againstPercentage} className="h-1 bg-gray-200" indicatorColor="bg-red-500" />
                 </div>
-                
+
                 <div>
                   <div className="flex justify-between mb-1">
                     <span className="text-xs">Abstain</span>
@@ -114,25 +114,25 @@ const ProposalList = ({ proposals, onVote }) => {
                   <Progress value={abstainPercentage} className="h-1 bg-gray-200" indicatorColor="bg-gray-500" />
                 </div>
               </div>
-              
+
               {proposal.status === 'active' && (
                 <div className="flex space-x-2">
-                  <Button 
-                    variant="default" 
+                  <Button
+                    variant="default"
                     className="flex-1"
                     onClick={() => handleVote(proposal.id, 1)}
                   >
                     Vote For
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="flex-1"
                     onClick={() => handleVote(proposal.id, 0)}
                   >
                     Vote Against
                   </Button>
-                  <Button 
-                    variant="ghost" 
+                  <Button
+                    variant="ghost"
                     className="flex-1"
                     onClick={() => handleVote(proposal.id, 2)}
                   >
@@ -140,7 +140,7 @@ const ProposalList = ({ proposals, onVote }) => {
                   </Button>
                 </div>
               )}
-              
+
               {proposal.status === 'succeeded' && !proposal.executed && (
                 <Button className="w-full">Execute Proposal</Button>
               )}

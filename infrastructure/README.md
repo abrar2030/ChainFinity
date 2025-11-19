@@ -379,7 +379,7 @@ nslookup chainfinity.com
    ```bash
    # Deploy to DR region
    terraform apply -var="region=us-east-1"
-   
+
    # Update DNS to point to DR region
    aws route53 change-resource-record-sets \
      --hosted-zone-id Z123456789 \
@@ -424,4 +424,3 @@ This infrastructure configuration is proprietary to ChainFinity and contains con
 ---
 
 **⚠️ Important Security Notice**: This infrastructure contains sensitive security configurations. Ensure all credentials are properly secured and access is restricted to authorized personnel only. Regular security audits and compliance reviews are mandatory for production deployments.
-

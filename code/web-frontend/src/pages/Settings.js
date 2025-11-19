@@ -176,11 +176,11 @@ const Settings = () => {
 
           <motion.div variants={itemVariants}>
             <Paper sx={{ borderRadius: theme.shape.borderRadius, overflow: 'hidden', mb: 4 }}>
-              <Tabs 
-                value={tabValue} 
+              <Tabs
+                value={tabValue}
                 onChange={handleTabChange}
-                sx={{ 
-                  borderBottom: 1, 
+                sx={{
+                  borderBottom: 1,
                   borderColor: 'divider',
                   px: 2,
                   '& .MuiTabs-indicator': {
@@ -189,28 +189,28 @@ const Settings = () => {
                   },
                 }}
               >
-                <Tab 
-                  label="Profile" 
-                  icon={<AccountCircle />} 
+                <Tab
+                  label="Profile"
+                  icon={<AccountCircle />}
                   iconPosition="start"
                 />
-                <Tab 
-                  label="Security" 
-                  icon={<Security />} 
+                <Tab
+                  label="Security"
+                  icon={<Security />}
                   iconPosition="start"
                 />
-                <Tab 
-                  label="Notifications" 
-                  icon={<Notifications />} 
+                <Tab
+                  label="Notifications"
+                  icon={<Notifications />}
                   iconPosition="start"
                 />
-                <Tab 
-                  label="Preferences" 
-                  icon={<Language />} 
+                <Tab
+                  label="Preferences"
+                  icon={<Language />}
                   iconPosition="start"
                 />
               </Tabs>
-              
+
               <Box sx={{ p: 3 }}>
                 {/* Profile Tab */}
                 <TabPanel value={tabValue} index={0}>
@@ -218,10 +218,10 @@ const Settings = () => {
                     <Grid container spacing={4}>
                       <Grid item xs={12} md={4}>
                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                          <Avatar 
-                            sx={{ 
-                              width: 120, 
-                              height: 120, 
+                          <Avatar
+                            sx={{
+                              width: 120,
+                              height: 120,
                               mb: 2,
                               bgcolor: theme.palette.primary.main
                             }}
@@ -230,8 +230,8 @@ const Settings = () => {
                               {profileForm.name.charAt(0)}
                             </Typography>
                           </Avatar>
-                          <Button 
-                            variant="outlined" 
+                          <Button
+                            variant="outlined"
                             startIcon={<Edit />}
                             sx={{ mb: 3 }}
                           >
@@ -242,7 +242,7 @@ const Settings = () => {
                           </Typography>
                         </Box>
                       </Grid>
-                      
+
                       <Grid item xs={12} md={8}>
                         <Grid container spacing={3}>
                           <Grid item xs={12}>
@@ -297,9 +297,9 @@ const Settings = () => {
                               <Button variant="outlined" color="inherit">
                                 Cancel
                               </Button>
-                              <Button 
-                                type="submit" 
-                                variant="contained" 
+                              <Button
+                                type="submit"
+                                variant="contained"
                                 color="primary"
                                 startIcon={<Save />}
                               >
@@ -312,7 +312,7 @@ const Settings = () => {
                     </Grid>
                   </form>
                 </TabPanel>
-                
+
                 {/* Security Tab */}
                 <TabPanel value={tabValue} index={1}>
                   <form onSubmit={handleSaveSecurity}>
@@ -384,7 +384,7 @@ const Settings = () => {
                           </Grid>
                         </Grid>
                       </Grid>
-                      
+
                       <Grid item xs={12} md={6}>
                         <Typography variant="h6" fontWeight={600} gutterBottom>
                           Two-Factor Authentication
@@ -408,7 +408,7 @@ const Settings = () => {
                             </Box>
                           </CardContent>
                         </Card>
-                        
+
                         <Typography variant="h6" fontWeight={600} gutterBottom>
                           Connected Wallets
                         </Typography>
@@ -433,7 +433,7 @@ const Settings = () => {
                           </CardContent>
                         </Card>
                       </Grid>
-                      
+
                       <Grid item xs={12}>
                         <Divider sx={{ my: 2 }} />
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -445,8 +445,8 @@ const Settings = () => {
                               Once you delete your account, there is no going back. Please be certain.
                             </Typography>
                           </Box>
-                          <Button 
-                            variant="outlined" 
+                          <Button
+                            variant="outlined"
                             color="error"
                             startIcon={<Delete />}
                           >
@@ -454,15 +454,15 @@ const Settings = () => {
                           </Button>
                         </Box>
                       </Grid>
-                      
+
                       <Grid item xs={12}>
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
                           <Button variant="outlined" color="inherit">
                             Cancel
                           </Button>
-                          <Button 
-                            type="submit" 
-                            variant="contained" 
+                          <Button
+                            type="submit"
+                            variant="contained"
                             color="primary"
                             startIcon={<Save />}
                           >
@@ -473,7 +473,7 @@ const Settings = () => {
                     </Grid>
                   </form>
                 </TabPanel>
-                
+
                 {/* Notifications Tab */}
                 <TabPanel value={tabValue} index={2}>
                   <Grid container spacing={4}>
@@ -529,7 +529,7 @@ const Settings = () => {
                         </List>
                       </Card>
                     </Grid>
-                    
+
                     <Grid item xs={12} md={6}>
                       <Typography variant="h6" fontWeight={600} gutterBottom>
                         Push Notifications
@@ -582,14 +582,14 @@ const Settings = () => {
                         </List>
                       </Card>
                     </Grid>
-                    
+
                     <Grid item xs={12}>
                       <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
                         <Button variant="outlined" color="inherit">
                           Cancel
                         </Button>
-                        <Button 
-                          variant="contained" 
+                        <Button
+                          variant="contained"
                           color="primary"
                           startIcon={<Save />}
                         >
@@ -599,7 +599,7 @@ const Settings = () => {
                     </Grid>
                   </Grid>
                 </TabPanel>
-                
+
                 {/* Preferences Tab */}
                 <TabPanel value={tabValue} index={3}>
                   <Grid container spacing={4}>
@@ -629,7 +629,7 @@ const Settings = () => {
                           </Box>
                         </CardContent>
                       </Card>
-                      
+
                       <Typography variant="h6" fontWeight={600} gutterBottom>
                         Language
                       </Typography>
@@ -655,7 +655,7 @@ const Settings = () => {
                         </CardContent>
                       </Card>
                     </Grid>
-                    
+
                     <Grid item xs={12} md={6}>
                       <Typography variant="h6" fontWeight={600} gutterBottom>
                         Currency
@@ -681,7 +681,7 @@ const Settings = () => {
                           </TextField>
                         </CardContent>
                       </Card>
-                      
+
                       <Typography variant="h6" fontWeight={600} gutterBottom>
                         Time Zone
                       </Typography>
@@ -707,14 +707,14 @@ const Settings = () => {
                         </CardContent>
                       </Card>
                     </Grid>
-                    
+
                     <Grid item xs={12}>
                       <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
                         <Button variant="outlined" color="inherit">
                           Cancel
                         </Button>
-                        <Button 
-                          variant="contained" 
+                        <Button
+                          variant="contained"
                           color="primary"
                           startIcon={<Save />}
                         >

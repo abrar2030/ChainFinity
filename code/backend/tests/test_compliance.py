@@ -10,8 +10,7 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 from config.database import get_async_session
-from models.compliance import (ComplianceCheck, RegulatoryReport,
-                               SuspiciousActivity)
+from models.compliance import ComplianceCheck, RegulatoryReport, SuspiciousActivity
 from models.transaction import Transaction, TransactionStatus, TransactionType
 from models.user import KYCStatus, RiskLevel, User, UserKYC, UserRiskProfile
 from services.compliance.compliance_service import ComplianceService

@@ -68,10 +68,10 @@ export default function Home() {
               {optimisticStats.count}
             </motion.div>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button 
-                onClick={handleClick} 
-                disabled={isPending} 
-                size="lg" 
+              <Button
+                onClick={handleClick}
+                disabled={isPending}
+                size="lg"
                 className="w-full bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-700 hover:to-cyan-700 text-white font-semibold shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-1 dark:text-gray-900"
               >
                 <Plus className="h-5 w-5 mr-2" />
@@ -108,4 +108,3 @@ export default function Home() {
     </main>
   )
 }
-

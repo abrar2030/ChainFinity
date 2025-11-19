@@ -199,11 +199,11 @@ contract AdvancedAssetVault is ReentrancyGuard, Pausable, AccessControl {
         address token,
         uint256 amount,
         string calldata metadata
-    ) 
-        external 
-        nonReentrant 
-        whenNotPaused 
-        onlyKYCVerified 
+    )
+        external
+        nonReentrant
+        whenNotPaused
+        onlyKYCVerified
         notBlacklisted(msg.sender)
         validAsset(token)
     {
@@ -251,10 +251,10 @@ contract AdvancedAssetVault is ReentrancyGuard, Pausable, AccessControl {
         address token,
         uint256 amount,
         string calldata reason
-    ) 
-        external 
-        nonReentrant 
-        whenNotPaused 
+    )
+        external
+        nonReentrant
+        whenNotPaused
         notBlacklisted(msg.sender)
         validAsset(token)
         returns (uint256 requestId)
@@ -299,9 +299,9 @@ contract AdvancedAssetVault is ReentrancyGuard, Pausable, AccessControl {
      * @dev Approve withdrawal request
      * @param requestId Request ID
      */
-    function approveWithdrawal(uint256 requestId) 
-        external 
-        onlyRole(OPERATOR_ROLE) 
+    function approveWithdrawal(uint256 requestId)
+        external
+        onlyRole(OPERATOR_ROLE)
     {
         WithdrawalRequest storage request = withdrawalRequests[requestId];
         require(request.user != address(0), "Invalid request");
@@ -318,10 +318,10 @@ contract AdvancedAssetVault is ReentrancyGuard, Pausable, AccessControl {
      * @dev Execute approved withdrawal
      * @param requestId Request ID
      */
-    function executeWithdrawal(uint256 requestId) 
-        external 
-        nonReentrant 
-        whenNotPaused 
+    function executeWithdrawal(uint256 requestId)
+        external
+        nonReentrant
+        whenNotPaused
     {
         WithdrawalRequest storage request = withdrawalRequests[requestId];
         require(request.user == msg.sender, "Not request owner");
@@ -362,9 +362,9 @@ contract AdvancedAssetVault is ReentrancyGuard, Pausable, AccessControl {
         uint256 amount,
         address recipient,
         string calldata reason
-    ) 
-        external 
-        onlyRole(EMERGENCY_ROLE) 
+    )
+        external
+        onlyRole(EMERGENCY_ROLE)
     {
         require(recipient != address(0), "Invalid recipient");
         require(amount > 0, "Amount must be greater than 0");
@@ -387,9 +387,9 @@ contract AdvancedAssetVault is ReentrancyGuard, Pausable, AccessControl {
         uint256 maxAllocation,
         uint256 riskRating,
         bool requiresKYC
-    ) 
-        external 
-        onlyRole(ADMIN_ROLE) 
+    )
+        external
+        onlyRole(ADMIN_ROLE)
     {
         require(token != address(0), "Invalid token address");
         require(riskRating >= 1 && riskRating <= 10, "Invalid risk rating");
@@ -411,13 +411,13 @@ contract AdvancedAssetVault is ReentrancyGuard, Pausable, AccessControl {
      * @dev Update vault configuration
      * @param newConfig New vault configuration
      */
-    function updateVaultConfig(VaultConfig calldata newConfig) 
-        external 
-        onlyRole(ADMIN_ROLE) 
+    function updateVaultConfig(VaultConfig calldata newConfig)
+        external
+        onlyRole(ADMIN_ROLE)
     {
         require(newConfig.maxDepositAmount > newConfig.minDepositAmount, "Invalid deposit limits");
         require(newConfig.withdrawalTimelock <= 7 days, "Timelock too long");
-        
+
         vaultConfig = newConfig;
     }
 
@@ -426,9 +426,9 @@ contract AdvancedAssetVault is ReentrancyGuard, Pausable, AccessControl {
      * @param user User address
      * @param verified Verification status
      */
-    function setKYCVerification(address user, bool verified) 
-        external 
-        onlyCompliance 
+    function setKYCVerification(address user, bool verified)
+        external
+        onlyCompliance
     {
         kycVerified[user] = verified;
     }
@@ -438,9 +438,9 @@ contract AdvancedAssetVault is ReentrancyGuard, Pausable, AccessControl {
      * @param user User address
      * @param isBlacklisted Blacklist status
      */
-    function setBlacklist(address user, bool isBlacklisted) 
-        external 
-        onlyCompliance 
+    function setBlacklist(address user, bool isBlacklisted)
+        external
+        onlyCompliance
     {
         blacklisted[user] = isBlacklisted;
     }
@@ -465,10 +465,10 @@ contract AdvancedAssetVault is ReentrancyGuard, Pausable, AccessControl {
      * @param token Token address
      * @return Total balance
      */
-    function getUserBalance(address user, address token) 
-        external 
-        view 
-        returns (uint256) 
+    function getUserBalance(address user, address token)
+        external
+        view
+        returns (uint256)
     {
         return _getUserBalance(user, token);
     }
@@ -479,10 +479,10 @@ contract AdvancedAssetVault is ReentrancyGuard, Pausable, AccessControl {
      * @param token Token address
      * @return Array of user deposits
      */
-    function getUserDeposits(address user, address token) 
-        external 
-        view 
-        returns (UserDeposit[] memory) 
+    function getUserDeposits(address user, address token)
+        external
+        view
+        returns (UserDeposit[] memory)
     {
         return userDeposits[user][token];
     }
@@ -492,10 +492,10 @@ contract AdvancedAssetVault is ReentrancyGuard, Pausable, AccessControl {
      * @param requestId Request ID
      * @return Withdrawal request details
      */
-    function getWithdrawalRequest(uint256 requestId) 
-        external 
-        view 
-        returns (WithdrawalRequest memory) 
+    function getWithdrawalRequest(uint256 requestId)
+        external
+        view
+        returns (WithdrawalRequest memory)
     {
         return withdrawalRequests[requestId];
     }
@@ -505,10 +505,10 @@ contract AdvancedAssetVault is ReentrancyGuard, Pausable, AccessControl {
      * @param token Token address
      * @return Asset information
      */
-    function getAssetInfo(address token) 
-        external 
-        view 
-        returns (AssetInfo memory) 
+    function getAssetInfo(address token)
+        external
+        view
+        returns (AssetInfo memory)
     {
         return supportedAssets[token];
     }
@@ -517,14 +517,14 @@ contract AdvancedAssetVault is ReentrancyGuard, Pausable, AccessControl {
      * @dev Get vault statistics
      * @return Various vault statistics
      */
-    function getVaultStats() 
-        external 
-        view 
+    function getVaultStats()
+        external
+        view
         returns (
             uint256 _totalValueLocked,
             uint256 _nextRequestId,
             uint256 _supportedAssetsCount
-        ) 
+        )
     {
         _totalValueLocked = totalValueLocked;
         _nextRequestId = nextRequestId;
@@ -540,20 +540,20 @@ contract AdvancedAssetVault is ReentrancyGuard, Pausable, AccessControl {
      * @param token Token address
      * @return Total balance
      */
-    function _getUserBalance(address user, address token) 
-        internal 
-        view 
-        returns (uint256) 
+    function _getUserBalance(address user, address token)
+        internal
+        view
+        returns (uint256)
     {
         uint256 totalBalance = 0;
         UserDeposit[] storage deposits = userDeposits[user][token];
-        
+
         for (uint256 i = 0; i < deposits.length; i++) {
             if (!deposits[i].isLocked || block.timestamp >= deposits[i].unlockTime) {
                 totalBalance = totalBalance.add(deposits[i].amount);
             }
         }
-        
+
         return totalBalance;
     }
 
@@ -563,12 +563,12 @@ contract AdvancedAssetVault is ReentrancyGuard, Pausable, AccessControl {
      * @param token Token address
      * @param amount Amount to deduct
      */
-    function _deductFromUserDeposits(address user, address token, uint256 amount) 
-        internal 
+    function _deductFromUserDeposits(address user, address token, uint256 amount)
+        internal
     {
         UserDeposit[] storage deposits = userDeposits[user][token];
         uint256 remaining = amount;
-        
+
         for (uint256 i = 0; i < deposits.length && remaining > 0; i++) {
             if (!deposits[i].isLocked || block.timestamp >= deposits[i].unlockTime) {
                 if (deposits[i].amount <= remaining) {
@@ -580,7 +580,7 @@ contract AdvancedAssetVault is ReentrancyGuard, Pausable, AccessControl {
                 }
             }
         }
-        
+
         require(remaining == 0, "Insufficient unlocked balance");
     }
 
@@ -597,9 +597,9 @@ contract AdvancedAssetVault is ReentrancyGuard, Pausable, AccessControl {
         address token,
         uint256 amount,
         string memory operation
-    ) 
-        internal 
-        returns (bool) 
+    )
+        internal
+        returns (bool)
     {
         // Basic compliance checks
         if (blacklisted[user]) {
@@ -634,4 +634,3 @@ contract AdvancedAssetVault is ReentrancyGuard, Pausable, AccessControl {
         revert("Function not found");
     }
 }
-

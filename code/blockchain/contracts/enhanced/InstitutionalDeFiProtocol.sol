@@ -167,7 +167,7 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
     address public treasury;
     address public insurance;
     address public priceOracle;
-    
+
     uint256 public constant PRECISION = 1e18;
     uint256 public constant MAX_FEE = 1000; // 10%
     uint256 public constant SECONDS_PER_YEAR = 365 days;
@@ -244,10 +244,10 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
         uint256 maximumStake,
         uint256 lockupPeriod,
         bool requiresKYC
-    ) 
-        external 
-        onlyRole(ADMIN_ROLE) 
-        returns (uint256 poolId) 
+    )
+        external
+        onlyRole(ADMIN_ROLE)
+        returns (uint256 poolId)
     {
         require(stakingToken != address(0), "Invalid staking token");
         require(rewardToken != address(0), "Invalid reward token");
@@ -292,19 +292,19 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
      * @param poolId Pool ID
      * @param amount Amount to stake
      */
-    function stake(uint256 poolId, uint256 amount) 
-        external 
-        nonReentrant 
-        whenNotPaused 
-        validPool(poolId) 
+    function stake(uint256 poolId, uint256 amount)
+        external
+        nonReentrant
+        whenNotPaused
+        validPool(poolId)
         onlyKYCVerified(poolId)
         riskCheck(poolId, amount)
     {
         require(amount > 0, "Amount must be greater than 0");
-        
+
         PoolInfo storage pool = pools[poolId];
         UserInfo storage user = pool.users[msg.sender];
-        
+
         require(amount >= pool.minimumStake, "Below minimum stake");
         require(
             user.stakedAmount.add(amount) <= pool.maximumStake,
@@ -321,7 +321,7 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
         user.stakedAmount = user.stakedAmount.add(amount);
         user.lastStakeTime = block.timestamp;
         user.lockupEndTime = block.timestamp.add(pool.lockupPeriod);
-        
+
         pool.totalStaked = pool.totalStaked.add(amount);
 
         emit Staked(msg.sender, poolId, amount, block.timestamp);
@@ -332,17 +332,17 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
      * @param poolId Pool ID
      * @param amount Amount to withdraw
      */
-    function withdraw(uint256 poolId, uint256 amount) 
-        external 
-        nonReentrant 
-        whenNotPaused 
-        validPool(poolId) 
+    function withdraw(uint256 poolId, uint256 amount)
+        external
+        nonReentrant
+        whenNotPaused
+        validPool(poolId)
     {
         require(amount > 0, "Amount must be greater than 0");
-        
+
         PoolInfo storage pool = pools[poolId];
         UserInfo storage user = pool.users[msg.sender];
-        
+
         require(user.stakedAmount >= amount, "Insufficient staked amount");
 
         // Update rewards before changing stake
@@ -362,7 +362,7 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
 
         // Transfer tokens
         pool.stakingToken.safeTransfer(msg.sender, withdrawAmount);
-        
+
         if (fee > 0) {
             pool.stakingToken.safeTransfer(treasury, fee);
         }
@@ -374,17 +374,17 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
      * @dev Claim rewards from a pool
      * @param poolId Pool ID
      */
-    function claimReward(uint256 poolId) 
-        external 
-        nonReentrant 
-        whenNotPaused 
-        validPool(poolId) 
+    function claimReward(uint256 poolId)
+        external
+        nonReentrant
+        whenNotPaused
+        validPool(poolId)
     {
         _updateReward(poolId, msg.sender);
-        
+
         PoolInfo storage pool = pools[poolId];
         UserInfo storage user = pool.users[msg.sender];
-        
+
         uint256 reward = user.rewards;
         require(reward > 0, "No rewards to claim");
 
@@ -396,7 +396,7 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
 
         // Transfer rewards
         pool.rewardToken.safeTransfer(msg.sender, userReward);
-        
+
         if (performanceFee > 0) {
             pool.rewardToken.safeTransfer(treasury, performanceFee);
         }
@@ -416,11 +416,11 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
         uint256 amount0,
         uint256 amount1,
         uint256 minLiquidity
-    ) 
-        external 
-        nonReentrant 
-        whenNotPaused 
-        returns (uint256 liquidity) 
+    )
+        external
+        nonReentrant
+        whenNotPaused
+        returns (uint256 liquidity)
     {
         require(poolId < liquidityPoolCount, "Invalid liquidity pool");
         require(amount0 > 0 && amount1 > 0, "Invalid amounts");
@@ -465,11 +465,11 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
         uint256 liquidity,
         uint256 minAmount0,
         uint256 minAmount1
-    ) 
-        external 
-        nonReentrant 
-        whenNotPaused 
-        returns (uint256 amount0, uint256 amount1) 
+    )
+        external
+        nonReentrant
+        whenNotPaused
+        returns (uint256 amount0, uint256 amount1)
     {
         require(poolId < liquidityPoolCount, "Invalid liquidity pool");
         require(liquidity > 0, "Invalid liquidity amount");
@@ -510,11 +510,11 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
         address tokenIn,
         uint256 amountIn,
         uint256 minAmountOut
-    ) 
-        external 
-        nonReentrant 
-        whenNotPaused 
-        returns (uint256 amountOut) 
+    )
+        external
+        nonReentrant
+        whenNotPaused
+        returns (uint256 amountOut)
     {
         require(poolId < liquidityPoolCount, "Invalid liquidity pool");
         require(amountIn > 0, "Invalid input amount");
@@ -566,14 +566,14 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
      * @param poolId Pool ID
      * @param user User address
      */
-    function emergencyWithdraw(uint256 poolId, address user) 
-        external 
-        onlyRole(EMERGENCY_ROLE) 
-        validPool(poolId) 
+    function emergencyWithdraw(uint256 poolId, address user)
+        external
+        onlyRole(EMERGENCY_ROLE)
+        validPool(poolId)
     {
         PoolInfo storage pool = pools[poolId];
         UserInfo storage userInfo = pool.users[user];
-        
+
         uint256 amount = userInfo.stakedAmount;
         require(amount > 0, "No staked amount");
 
@@ -597,10 +597,10 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
      * @param user User address
      * @param verified Verification status
      */
-    function setKYCVerification(uint256 poolId, address user, bool verified) 
-        external 
-        onlyRole(OPERATOR_ROLE) 
-        validPool(poolId) 
+    function setKYCVerification(uint256 poolId, address user, bool verified)
+        external
+        onlyRole(OPERATOR_ROLE)
+        validPool(poolId)
     {
         pools[poolId].users[user].isKYCVerified = verified;
     }
@@ -610,9 +610,9 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
      * @param token Token address
      * @param authorized Authorization status
      */
-    function setAuthorizedToken(address token, bool authorized) 
-        external 
-        onlyRole(ADMIN_ROLE) 
+    function setAuthorizedToken(address token, bool authorized)
+        external
+        onlyRole(ADMIN_ROLE)
     {
         authorizedTokens[token] = authorized;
     }
@@ -622,13 +622,13 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
      * @param poolId Pool ID
      * @param params New risk parameters
      */
-    function updateRiskParameters(uint256 poolId, RiskParameters memory params) 
-        external 
-        onlyRole(RISK_MANAGER_ROLE) 
-        validPool(poolId) 
+    function updateRiskParameters(uint256 poolId, RiskParameters memory params)
+        external
+        onlyRole(RISK_MANAGER_ROLE)
+        validPool(poolId)
     {
         riskParameters[poolId] = params;
-        
+
         emit RiskParametersUpdated(poolId, params.maxTotalValueLocked, params.maxUserStake);
     }
 
@@ -654,21 +654,21 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
      * @param user User address
      * @return User information
      */
-    function getUserInfo(uint256 poolId, address user) 
-        external 
-        view 
-        validPool(poolId) 
+    function getUserInfo(uint256 poolId, address user)
+        external
+        view
+        validPool(poolId)
         returns (
             uint256 stakedAmount,
             uint256 pendingRewards,
             uint256 lastStakeTime,
             uint256 lockupEndTime,
             bool isKYCVerified
-        ) 
+        )
     {
         PoolInfo storage pool = pools[poolId];
         UserInfo storage userInfo = pool.users[user];
-        
+
         stakedAmount = userInfo.stakedAmount;
         pendingRewards = _pendingReward(poolId, user);
         lastStakeTime = userInfo.lastStakeTime;
@@ -681,10 +681,10 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
      * @param poolId Pool ID
      * @return Pool information
      */
-    function getPoolInfo(uint256 poolId) 
-        external 
-        view 
-        validPool(poolId) 
+    function getPoolInfo(uint256 poolId)
+        external
+        view
+        validPool(poolId)
         returns (
             address stakingToken,
             address rewardToken,
@@ -694,10 +694,10 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
             uint256 rewardRate,
             uint256 periodFinish,
             bool isActive
-        ) 
+        )
     {
         PoolInfo storage pool = pools[poolId];
-        
+
         stakingToken = address(pool.stakingToken);
         rewardToken = address(pool.rewardToken);
         poolType = pool.poolType;
@@ -714,11 +714,11 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
      * @param user User address
      * @return Pending rewards
      */
-    function pendingReward(uint256 poolId, address user) 
-        external 
-        view 
-        validPool(poolId) 
-        returns (uint256) 
+    function pendingReward(uint256 poolId, address user)
+        external
+        view
+        validPool(poolId)
+        returns (uint256)
     {
         return _pendingReward(poolId, user);
     }
@@ -733,10 +733,10 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
     function _updateReward(uint256 poolId, address user) internal {
         PoolInfo storage pool = pools[poolId];
         UserInfo storage userInfo = pool.users[user];
-        
+
         pool.rewardPerTokenStored = _rewardPerToken(poolId);
         pool.lastUpdateTime = _lastTimeRewardApplicable(poolId);
-        
+
         if (user != address(0)) {
             userInfo.rewards = _pendingReward(poolId, user);
             userInfo.rewardPerTokenPaid = pool.rewardPerTokenStored;
@@ -750,11 +750,11 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
      */
     function _rewardPerToken(uint256 poolId) internal view returns (uint256) {
         PoolInfo storage pool = pools[poolId];
-        
+
         if (pool.totalStaked == 0) {
             return pool.rewardPerTokenStored;
         }
-        
+
         return pool.rewardPerTokenStored.add(
             _lastTimeRewardApplicable(poolId)
                 .sub(pool.lastUpdateTime)
@@ -773,7 +773,7 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
     function _pendingReward(uint256 poolId, address user) internal view returns (uint256) {
         PoolInfo storage pool = pools[poolId];
         UserInfo storage userInfo = pool.users[user];
-        
+
         return userInfo.stakedAmount
             .mul(_rewardPerToken(poolId).sub(userInfo.rewardPerTokenPaid))
             .div(PRECISION)
@@ -798,19 +798,19 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
     function _performRiskCheck(uint256 poolId, address user, uint256 amount) internal view {
         PoolInfo storage pool = pools[poolId];
         RiskParameters storage riskParams = riskParameters[poolId];
-        
+
         // Check maximum TVL
         require(
             pool.totalStaked.add(amount) <= riskParams.maxTotalValueLocked,
             "Exceeds maximum TVL"
         );
-        
+
         // Check maximum user stake
         require(
             pool.users[user].stakedAmount.add(amount) <= riskParams.maxUserStake,
             "Exceeds maximum user stake"
         );
-        
+
         // Additional risk checks can be added here
     }
 
@@ -870,4 +870,3 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
         revert("Direct ETH transfers not allowed");
     }
 }
-

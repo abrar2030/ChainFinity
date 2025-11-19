@@ -41,7 +41,7 @@ const GovernanceAnalytics = ({ governanceData }) => {
             <TabsTrigger value="proposals">Proposals</TabsTrigger>
             <TabsTrigger value="distribution">Distribution</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="participation" className="pt-4">
             <h3 className="text-sm font-medium mb-4">Monthly Voting Participation</h3>
             <div className="h-64">
@@ -59,7 +59,7 @@ const GovernanceAnalytics = ({ governanceData }) => {
               Average participation rate: 54.8%
             </p>
           </TabsContent>
-          
+
           <TabsContent value="proposals" className="pt-4">
             <h3 className="text-sm font-medium mb-4">Proposal Outcomes</h3>
             <div className="h-64">
@@ -88,7 +88,7 @@ const GovernanceAnalytics = ({ governanceData }) => {
               Total proposals: {proposalStatusData.reduce((sum, item) => sum + item.value, 0)}
             </p>
           </TabsContent>
-          
+
           <TabsContent value="distribution" className="pt-4">
             <h3 className="text-sm font-medium mb-4">Voting Power Distribution</h3>
             <div className="h-64">

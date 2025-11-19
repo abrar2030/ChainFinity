@@ -46,7 +46,7 @@ export const authAPI = {
 export const blockchainAPI = {
   getPortfolio: (walletAddress) => api.get(`/api/blockchain/portfolio/${walletAddress}`),
   getTransactions: (walletAddress) => api.get(`/api/blockchain/transactions/${walletAddress}`),
-  getTokenBalance: (tokenAddress, network = 'ethereum') => 
+  getTokenBalance: (tokenAddress, network = 'ethereum') =>
     api.get(`/api/blockchain/balance/${tokenAddress}?network=${network}`),
   getEthBalance: () => api.get('/api/blockchain/eth-balance'),
 };

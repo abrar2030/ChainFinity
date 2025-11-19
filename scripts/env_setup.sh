@@ -88,7 +88,7 @@ log() {
   local level="$1"
   local message="$2"
   local timestamp=$(date +"%Y-%m-%d %H:%M:%S")
-  
+
   case $level in
     "$INFO")
       echo -e "${BLUE}[${timestamp}] [${level}] ${message}${NC}"
@@ -103,7 +103,7 @@ log() {
       echo -e "${GREEN}[${timestamp}] [${level}] ${message}${NC}"
       ;;
   esac
-  
+
   echo "[${timestamp}] [${level}] ${message}" >> "$LOG_FILE"
 }
 
@@ -118,25 +118,25 @@ check_version() {
   local version_arg="$2"
   local min_version="$3"
   local current_version
-  
+
   if ! command_exists "$command"; then
     return 1
   fi
-  
+
   current_version=$($command $version_arg | head -n 1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -n 1)
-  
+
   if [[ -z "$current_version" ]]; then
     return 1
   fi
-  
+
   local IFS=.
   local i ver1=($current_version) ver2=($min_version)
-  
+
   # Fill empty fields with zeros
   for ((i=${#ver1[@]}; i<${#ver2[@]}; i++)); do
     ver1[i]=0
   done
-  
+
   for ((i=0; i<${#ver1[@]}; i++)); do
     if [[ -z ${ver2[i]} ]]; then
       ver2[i]=0
@@ -154,7 +154,7 @@ check_version() {
 handle_error() {
   local exit_code=$1
   local error_message=$2
-  
+
   if [ $exit_code -ne 0 ]; then
     log "$ERROR" "$error_message (Exit code: $exit_code)"
     log "$ERROR" "Check the log file for more details: $LOG_FILE"
@@ -204,20 +204,20 @@ done
 log "$INFO" "Setting up Node.js environment..."
 if ! command_exists node || ! check_version "node" "-v" "$NODE_VERSION.0.0"; then
   log "$INFO" "Installing Node.js $NODE_VERSION..."
-  
+
   # Use NVM for Node.js version management
   if ! command_exists nvm; then
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
   fi
-  
+
   nvm install "$NODE_VERSION"
   handle_error $? "Failed to install Node.js $NODE_VERSION"
-  
+
   nvm use "$NODE_VERSION"
   handle_error $? "Failed to use Node.js $NODE_VERSION"
-  
+
   log "$SUCCESS" "Node.js $NODE_VERSION installed successfully"
 else
   log "$INFO" "Node.js $(node -v) is already installed"
@@ -240,7 +240,7 @@ done
 log "$INFO" "Setting up Python environment..."
 if ! command_exists python3 || ! check_version "python3" "--version" "$PYTHON_VERSION.0"; then
   log "$INFO" "Installing Python $PYTHON_VERSION..."
-  
+
   # Install Python using pyenv
   if ! command_exists pyenv; then
     curl https://pyenv.run | bash
@@ -248,13 +248,13 @@ if ! command_exists python3 || ! check_version "python3" "--version" "$PYTHON_VE
     eval "$(pyenv init -)"
     eval "$(pyenv virtualenv-init -)"
   fi
-  
+
   pyenv install "$PYTHON_VERSION"
   handle_error $? "Failed to install Python $PYTHON_VERSION"
-  
+
   pyenv global "$PYTHON_VERSION"
   handle_error $? "Failed to set Python $PYTHON_VERSION as global"
-  
+
   log "$SUCCESS" "Python $PYTHON_VERSION installed successfully"
 else
   log "$INFO" "Python $(python3 --version) is already installed"
@@ -298,16 +298,16 @@ if [ "$INSTALL_DOCKER" = true ]; then
     curl -fsSL https://get.docker.com -o get-docker.sh
     sudo sh get-docker.sh
     handle_error $? "Failed to install Docker"
-    
+
     # Add current user to docker group
     sudo usermod -aG docker "$USER"
     handle_error $? "Failed to add user to docker group"
-    
+
     log "$SUCCESS" "Docker installed successfully"
   else
     log "$INFO" "Docker is already installed"
   fi
-  
+
   # Install Docker Compose
   if ! command_exists docker-compose; then
     log "$INFO" "Installing Docker Compose..."
@@ -387,14 +387,14 @@ fi
 # Setup databases if needed
 if [ "$SETUP_DATABASES" = true ]; then
   log "$INFO" "Setting up databases..."
-  
+
   # Check if Docker is running
   if ! docker info > /dev/null 2>&1; then
     log "$WARNING" "Docker is not running. Starting Docker..."
     sudo systemctl start docker
     handle_error $? "Failed to start Docker"
   fi
-  
+
   # Create docker-compose file for databases if it doesn't exist
   if [ ! -f "$PROJECT_DIR/infrastructure/docker-compose.dev.yml" ]; then
     mkdir -p "$PROJECT_DIR/infrastructure"
@@ -428,7 +428,7 @@ volumes:
 EOF
     log "$INFO" "Created docker-compose.dev.yml for databases"
   fi
-  
+
   # Start database containers
   log "$INFO" "Starting database containers..."
   docker-compose -f "$PROJECT_DIR/infrastructure/docker-compose.dev.yml" up -d

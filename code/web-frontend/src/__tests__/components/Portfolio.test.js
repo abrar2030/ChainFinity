@@ -208,4 +208,4 @@ describe('Portfolio Component', () => {
       expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
     });
   });
-}); 
+});

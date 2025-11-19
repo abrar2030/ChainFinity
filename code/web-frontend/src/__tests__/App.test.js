@@ -92,7 +92,7 @@ describe("App Component", () => {
         // Check if login screen elements are gone
         expect(screen.queryByText(/login/i)).not.toBeInTheDocument();
         // Check for an element that appears after login
-        // expect(screen.getByRole("button", { name: /logout/i })).toBeInTheDocument(); 
+        // expect(screen.getByRole("button", { name: /logout/i })).toBeInTheDocument();
     });
   });
 
@@ -147,9 +147,9 @@ describe("App Component", () => {
   //   const { authAPI } = require("../services/api");
   //   authAPI.login.mockResolvedValue({ data: { access_token: "fake_token" } });
   //   authAPI.getCurrentUser.mockResolvedValue({ data: { id: "1", name: "Test User" } });
-    
+
   //   // Assume another API call fetches portfolio data, e.g., within a Dashboard component
-  //   // const { portfolioAPI } = require("../services/api"); 
+  //   // const { portfolioAPI } = require("../services/api");
   //   // portfolioAPI.getPortfolio.mockResolvedValue({ data: { tokens: [{ symbol: 'ETH', balance: '1.0'}] }});
 
   //   render(
@@ -167,4 +167,3 @@ describe("App Component", () => {
   //   });
   // });
 });
-

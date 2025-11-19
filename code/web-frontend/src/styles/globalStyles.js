@@ -639,7 +639,7 @@ export const globalStyles = {
   '.m-5': { margin: '2rem' },
   '.m-6': { margin: '3rem' },
   '.m-auto': { margin: 'auto' },
-  
+
   '.mx-0': { marginLeft: '0', marginRight: '0' },
   '.mx-1': { marginLeft: '0.25rem', marginRight: '0.25rem' },
   '.mx-2': { marginLeft: '0.5rem', marginRight: '0.5rem' },
@@ -648,7 +648,7 @@ export const globalStyles = {
   '.mx-5': { marginLeft: '2rem', marginRight: '2rem' },
   '.mx-6': { marginLeft: '3rem', marginRight: '3rem' },
   '.mx-auto': { marginLeft: 'auto', marginRight: 'auto' },
-  
+
   '.my-0': { marginTop: '0', marginBottom: '0' },
   '.my-1': { marginTop: '0.25rem', marginBottom: '0.25rem' },
   '.my-2': { marginTop: '0.5rem', marginBottom: '0.5rem' },
@@ -657,7 +657,7 @@ export const globalStyles = {
   '.my-5': { marginTop: '2rem', marginBottom: '2rem' },
   '.my-6': { marginTop: '3rem', marginBottom: '3rem' },
   '.my-auto': { marginTop: 'auto', marginBottom: 'auto' },
-  
+
   '.mt-0': { marginTop: '0' },
   '.mt-1': { marginTop: '0.25rem' },
   '.mt-2': { marginTop: '0.5rem' },
@@ -666,7 +666,7 @@ export const globalStyles = {
   '.mt-5': { marginTop: '2rem' },
   '.mt-6': { marginTop: '3rem' },
   '.mt-auto': { marginTop: 'auto' },
-  
+
   '.mb-0': { marginBottom: '0' },
   '.mb-1': { marginBottom: '0.25rem' },
   '.mb-2': { marginBottom: '0.5rem' },
@@ -675,7 +675,7 @@ export const globalStyles = {
   '.mb-5': { marginBottom: '2rem' },
   '.mb-6': { marginBottom: '3rem' },
   '.mb-auto': { marginBottom: 'auto' },
-  
+
   '.ml-0': { marginLeft: '0' },
   '.ml-1': { marginLeft: '0.25rem' },
   '.ml-2': { marginLeft: '0.5rem' },
@@ -684,7 +684,7 @@ export const globalStyles = {
   '.ml-5': { marginLeft: '2rem' },
   '.ml-6': { marginLeft: '3rem' },
   '.ml-auto': { marginLeft: 'auto' },
-  
+
   '.mr-0': { marginRight: '0' },
   '.mr-1': { marginRight: '0.25rem' },
   '.mr-2': { marginRight: '0.5rem' },
@@ -693,7 +693,7 @@ export const globalStyles = {
   '.mr-5': { marginRight: '2rem' },
   '.mr-6': { marginRight: '3rem' },
   '.mr-auto': { marginRight: 'auto' },
-  
+
   '.p-0': { padding: '0' },
   '.p-1': { padding: '0.25rem' },
   '.p-2': { padding: '0.5rem' },
@@ -701,7 +701,7 @@ export const globalStyles = {
   '.p-4': { padding: '1.5rem' },
   '.p-5': { padding: '2rem' },
   '.p-6': { padding: '3rem' },
-  
+
   '.px-0': { paddingLeft: '0', paddingRight: '0' },
   '.px-1': { paddingLeft: '0.25rem', paddingRight: '0.25rem' },
   '.px-2': { paddingLeft: '0.5rem', paddingRight: '0.5rem' },
@@ -709,7 +709,7 @@ export const globalStyles = {
   '.px-4': { paddingLeft: '1.5rem', paddingRight: '1.5rem' },
   '.px-5': { paddingLeft: '2rem', paddingRight: '2rem' },
   '.px-6': { paddingLeft: '3rem', paddingRight: '3rem' },
-  
+
   '.py-0': { paddingTop: '0', paddingBottom: '0' },
   '.py-1': { paddingTop: '0.25rem', paddingBottom: '0.25rem' },
   '.py-2': { paddingTop: '0.5rem', paddingBottom: '0.5rem' },
@@ -717,7 +717,7 @@ export const globalStyles = {
   '.py-4': { paddingTop: '1.5rem', paddingBottom: '1.5rem' },
   '.py-5': { paddingTop: '2rem', paddingBottom: '2rem' },
   '.py-6': { paddingTop: '3rem', paddingBottom: '3rem' },
-  
+
   '.pt-0': { paddingTop: '0' },
   '.pt-1': { paddingTop: '0.25rem' },
   '.pt-2': { paddingTop: '0.5rem' },
@@ -725,7 +725,7 @@ export const globalStyles = {
   '.pt-4': { paddingTop: '1.5rem' },
   '.pt-5': { paddingTop: '2rem' },
   '.pt-6': { paddingTop: '3rem' },
-  
+
   '.pb-0': { paddingBottom: '0' },
   '.pb-1': { paddingBottom: '0.25rem' },
   '.pb-2': { paddingBottom: '0.5rem' },
@@ -733,7 +733,7 @@ export const globalStyles = {
   '.pb-4': { paddingBottom: '1.5rem' },
   '.pb-5': { paddingBottom: '2rem' },
   '.pb-6': { paddingBottom: '3rem' },
-  
+
   '.pl-0': { paddingLeft: '0' },
   '.pl-1': { paddingLeft: '0.25rem' },
   '.pl-2': { paddingLeft: '0.5rem' },
@@ -741,7 +741,7 @@ export const globalStyles = {
   '.pl-4': { paddingLeft: '1.5rem' },
   '.pl-5': { paddingLeft: '2rem' },
   '.pl-6': { paddingLeft: '3rem' },
-  
+
   '.pr-0': { paddingRight: '0' },
   '.pr-1': { paddingRight: '0.25rem' },
   '.pr-2': { paddingRight: '0.5rem' },
@@ -749,7 +749,7 @@ export const globalStyles = {
   '.pr-4': { paddingRight: '1.5rem' },
   '.pr-5': { paddingRight: '2rem' },
   '.pr-6': { paddingRight: '3rem' },
-  
+
   // Responsive utilities
   '@media (max-width: 640px)': {
     '.container': {

@@ -36,11 +36,11 @@ const NotFound = () => {
             alt="Page Not Found"
             sx={{ maxWidth: 400 }}
           />
-          
-          <Typography 
-            variant="h2" 
-            component="h1" 
-            fontWeight={700} 
+
+          <Typography
+            variant="h2"
+            component="h1"
+            fontWeight={700}
             gutterBottom
             sx={{
               background: 'linear-gradient(45deg, #3a36e0 0%, #6c63ff 100%)',
@@ -50,15 +50,15 @@ const NotFound = () => {
           >
             404
           </Typography>
-          
+
           <Typography variant="h4" fontWeight={600} gutterBottom>
             Page Not Found
           </Typography>
-          
+
           <Typography variant="body1" color="text.secondary" paragraph sx={{ maxWidth: 600, mx: 'auto' }}>
             The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
           </Typography>
-          
+
           <Button
             variant="contained"
             color="primary"

@@ -102,4 +102,3 @@ export function WalletInfo() {
     </motion.div>
   );
 }
-

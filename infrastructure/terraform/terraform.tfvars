@@ -107,23 +107,22 @@ additional_tags = {
   Criticality    = "High"
   DataRetention  = "7-years"
   BackupRequired = "true"
-  
+
   # Compliance tags
   "compliance:soc2"    = "required"
   "compliance:pci-dss" = "required"
   "compliance:gdpr"    = "required"
   "compliance:sox"     = "required"
-  
+
   # Security tags
   "security:level"           = "high"
   "security:encryption"      = "required"
   "security:monitoring"      = "required"
   "security:access-control"  = "strict"
-  
+
   # Operational tags
   "ops:monitoring"     = "24x7"
   "ops:backup"         = "daily"
   "ops:patching"       = "automated"
   "ops:log-retention"  = "7-years"
 }
-

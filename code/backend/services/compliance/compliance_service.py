@@ -9,8 +9,11 @@ from typing import Any, Dict, List, Optional
 from uuid import UUID
 
 from config.settings import settings
-from models.compliance import (ComplianceCheck, ComplianceStatus,
-                               SuspiciousActivityReport)
+from models.compliance import (
+    ComplianceCheck,
+    ComplianceStatus,
+    SuspiciousActivityReport,
+)
 from models.risk import RiskAssessment, RiskLevel
 from models.transaction import Transaction, TransactionStatus
 from models.user import KYCStatus, User, UserKYC

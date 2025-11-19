@@ -80,7 +80,7 @@ const Login = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const { login, error, loading, clearError } = useApp();
-  
+
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -97,19 +97,19 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Clear previous errors
     clearError();
     setFormError('');
-    
+
     if (!email || !password) {
       setFormError('Please enter both email and password');
       return;
     }
-    
+
     try {
       const success = await login({ email, password });
-      
+
       if (success) {
         // Redirect to dashboard on success
         navigate('/dashboard');

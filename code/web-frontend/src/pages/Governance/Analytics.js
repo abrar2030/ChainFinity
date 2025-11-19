@@ -11,7 +11,7 @@ import DelegationManager from '../components/governance/DelegationManager';
 
 const Analytics = () => {
   const navigate = useNavigate();
-  
+
   // Sample data - in production this would come from API/contracts
   const governanceData = {
     tokenSymbol: 'CFG',
@@ -80,7 +80,7 @@ const Analytics = () => {
           <GovernanceAnalytics governanceData={governanceData} />
         </div>
         <div>
-          <GovernanceStats 
+          <GovernanceStats
             totalSupply={governanceData.totalSupply}
             votingDelay={governanceData.votingDelay}
             votingPeriod={governanceData.votingPeriod}
@@ -96,7 +96,7 @@ const Analytics = () => {
               <CardTitle>Recent Proposals</CardTitle>
             </CardHeader>
             <CardContent>
-              <ProposalList 
+              <ProposalList
                 proposals={governanceData.activeProposals}
                 onVote={() => {}}
               />
@@ -109,15 +109,15 @@ const Analytics = () => {
               <TabsTrigger value="voting">Voting Power</TabsTrigger>
               <TabsTrigger value="delegation">Delegation</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="voting" className="mt-4">
-              <VotingPower 
+              <VotingPower
                 userVotingPower={governanceData.userVotingPower}
                 userTokenBalance={governanceData.userTokenBalance}
                 totalSupply={governanceData.totalSupply}
               />
             </TabsContent>
-            
+
             <TabsContent value="delegation" className="mt-4">
               <DelegationManager
                 delegatedTo={governanceData.delegatedTo}

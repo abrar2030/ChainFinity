@@ -1,6 +1,6 @@
 pipeline {
     agent any
-    
+
     environment {
         DOCKER_CREDENTIALS = credentials('docker-hub-credentials')
         AWS_CREDENTIALS = credentials('aws-credentials')
@@ -9,14 +9,14 @@ pipeline {
         DB_PASSWORD = credentials('db-password')
         NODE_ENV = 'production'
     }
-    
+
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
-        
+
         stage('Build') {
             parallel {
                 stage('Build Frontend') {
@@ -28,7 +28,7 @@ pipeline {
                         }
                     }
                 }
-                
+
                 stage('Build Backend') {
                     steps {
                         dir('code/backend') {
@@ -39,7 +39,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Test') {
             parallel {
                 stage('Test Frontend') {
@@ -50,7 +50,7 @@ pipeline {
                         }
                     }
                 }
-                
+
                 stage('Test Backend') {
                     steps {
                         dir('code/backend') {
@@ -61,14 +61,14 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Security Scan') {
             steps {
                 sh 'docker scan chainfinity/frontend:${BUILD_NUMBER}'
                 sh 'docker scan chainfinity/backend:${BUILD_NUMBER}'
             }
         }
-        
+
         stage('Push Docker Images') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
@@ -78,7 +78,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Deploy to Kubernetes') {
             steps {
                 withCredentials([file(credentialsId: 'kube-config', variable: 'KUBECONFIG')]) {
@@ -91,7 +91,7 @@ pipeline {
             }
         }
     }
-    
+
     post {
         always {
             cleanWs()
@@ -105,4 +105,4 @@ pipeline {
             slackSend channel: '#deployments', message: "Deployment failed: ${BUILD_URL}"
         }
     }
-} 
+}

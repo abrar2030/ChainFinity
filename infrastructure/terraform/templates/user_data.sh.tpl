@@ -425,7 +425,7 @@ echo "[$(date)] AIDE check completed with exit code: $AIDE_EXIT_CODE" >> "$AIDE_
 if [ $AIDE_EXIT_CODE -ne 0 ]; then
     echo "[$(date)] AIDE detected file system changes" >> "$AIDE_LOG"
     cat "$AIDE_REPORT" >> "$AIDE_LOG"
-    
+
     # Send to CloudWatch Logs
     aws logs put-log-events \
         --log-group-name "/aws/eks/chainfinity/security" \
@@ -496,4 +496,3 @@ log "Compliance report generated at: /var/log/chainfinity-compliance-report.json
 
 # Signal completion
 /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource AutoScalingGroup --region ${AWS::Region} || true
-

@@ -3,7 +3,7 @@ const { deploy } = require("../scripts/deploy");
 
 describe("CrossChainManager", () => {
   let manager;
-  
+
   before(async () => {
     const contracts = await deploy();
     manager = contracts.manager;

@@ -13,8 +13,7 @@ from uuid import UUID
 import numpy as np
 from config.settings import settings
 from models.portfolio import Portfolio, PortfolioAsset
-from models.risk import (RiskAssessment, RiskMetrics, StressTestResult,
-                         VaRCalculation)
+from models.risk import RiskAssessment, RiskMetrics, StressTestResult, VaRCalculation
 from models.transaction import Transaction, TransactionStatus
 from models.user import RiskLevel, User, UserRiskProfile
 from schemas.risk import RiskAssessmentResponse, RiskMetricsResponse

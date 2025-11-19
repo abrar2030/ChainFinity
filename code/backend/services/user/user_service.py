@@ -16,12 +16,25 @@ import qrcode
 from config.database import cache
 from config.settings import settings
 from models.audit import AuditLog
-from models.user import (KYCStatus, RiskLevel, User, UserKYC, UserProfile,
-                         UserRiskProfile, UserStatus)
+from models.user import (
+    KYCStatus,
+    RiskLevel,
+    User,
+    UserKYC,
+    UserProfile,
+    UserRiskProfile,
+    UserStatus,
+)
 from passlib.context import CryptContext
 from schemas.base import PaginatedResponse
-from schemas.user import (UserCreate, UserKYCUpdate, UserProfileUpdate,
-                          UserResponse, UserRiskProfileUpdate, UserUpdate)
+from schemas.user import (
+    UserCreate,
+    UserKYCUpdate,
+    UserProfileUpdate,
+    UserResponse,
+    UserRiskProfileUpdate,
+    UserUpdate,
+)
 from services.compliance.kyc_service import KYCService
 from services.email.email_service import EmailService
 from sqlalchemy import and_, delete, or_, select, update

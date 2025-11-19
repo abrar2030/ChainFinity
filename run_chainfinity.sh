@@ -60,4 +60,4 @@ trap cleanup SIGINT
 # Keep script running
 while true; do
     sleep 1
-done 
+done

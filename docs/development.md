@@ -83,4 +83,4 @@ npm run test:coverage
 
 - Check the [Architecture Guide](./architecture.md)
 - Review the [API Documentation](./api-spec.md)
-- Join our [Discord Community](https://discord.gg/chainfinity) 
+- Join our [Discord Community](https://discord.gg/chainfinity)

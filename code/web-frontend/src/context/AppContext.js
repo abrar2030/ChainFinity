@@ -17,12 +17,12 @@ export const AppProvider = ({ children }) => {
     const initAuth = async () => {
       const token = localStorage.getItem('token');
       const storedUser = localStorage.getItem('user');
-      
+
       if (token && storedUser) {
         try {
           setUser(JSON.parse(storedUser));
           setIsAuthenticated(true);
-          
+
           // Verify token is still valid by fetching current user
           const response = await authAPI.getCurrentUser();
           setUser(response.data);
@@ -32,10 +32,10 @@ export const AppProvider = ({ children }) => {
           setError(handleApiError(err));
         }
       }
-      
+
       setLoading(false);
     };
-    
+
     initAuth();
   }, []);
 
@@ -49,19 +49,19 @@ export const AppProvider = ({ children }) => {
   const login = async (credentials) => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await authAPI.login(credentials);
       const { access_token, token_type } = response.data;
-      
+
       // Store token
       localStorage.setItem('token', access_token);
-      
+
       // Get user data
       const userResponse = await authAPI.getCurrentUser();
       setUser(userResponse.data);
       localStorage.setItem('user', JSON.stringify(userResponse.data));
-      
+
       setIsAuthenticated(true);
       setLoading(false);
       return true;
@@ -76,7 +76,7 @@ export const AppProvider = ({ children }) => {
   const register = async (userData) => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await authAPI.register(userData);
       setLoading(false);

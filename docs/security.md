@@ -87,4 +87,4 @@ If you discover a security vulnerability, please:
 
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
 - [Smart Contract Security Best Practices](https://consensys.github.io/smart-contract-best-practices/)
-- [Security Tools](./tools.md) 
+- [Security Tools](./tools.md)

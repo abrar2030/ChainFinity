@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { 
-  AppBar, 
-  Toolbar, 
-  Typography, 
-  Button, 
-  IconButton, 
-  Box, 
-  Container, 
-  Menu, 
-  MenuItem, 
-  useMediaQuery, 
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  IconButton,
+  Box,
+  Container,
+  Menu,
+  MenuItem,
+  useMediaQuery,
   useTheme,
   Avatar,
   Drawer,
@@ -21,9 +21,9 @@ import {
   Switch,
   Tooltip
 } from '@mui/material';
-import { 
-  Menu as MenuIcon, 
-  Dashboard as DashboardIcon, 
+import {
+  Menu as MenuIcon,
+  Dashboard as DashboardIcon,
   AccountBalanceWallet as WalletIcon,
   SwapHoriz as SwapIcon,
   Settings as SettingsIcon,
@@ -116,30 +116,30 @@ const Navbar = ({ toggleTheme, themeMode }) => {
   const theme = useTheme();
   const router = useRouter();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  
+
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  
+
   const isMenuOpen = Boolean(anchorEl);
-  
+
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
-  
+
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
-  
+
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-  
+
   const handleLogout = () => {
     // Implement logout functionality
     handleMenuClose();
     router.push("/login");
   };
-  
+
   const menuId = 'primary-account-menu';
   const renderMenu = (
     <Menu
@@ -178,7 +178,7 @@ const Navbar = ({ toggleTheme, themeMode }) => {
       </MenuItem>
     </Menu>
   );
-  
+
   const drawer = (
     <Box sx={{ p: 2 }}>
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
@@ -246,7 +246,7 @@ const Navbar = ({ toggleTheme, themeMode }) => {
       </Box>
     </Box>
   );
-  
+
   return (
     <>
       <StyledAppBar position="sticky" component={motion.div} initial={{ y: -100 }} animate={{ y: 0 }} transition={{ duration: 0.5 }}>
@@ -328,14 +328,14 @@ const Navbar = ({ toggleTheme, themeMode }) => {
                 </Box>
               </>
             )}
-            
+
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Tooltip title={themeMode === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}>
                 <IconButton onClick={toggleTheme} color="inherit">
                   {themeMode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
                 </IconButton>
               </Tooltip>
-              
+
               <Tooltip title="Account">
                 <IconButton
                   edge="end"
@@ -354,7 +354,7 @@ const Navbar = ({ toggleTheme, themeMode }) => {
           </Toolbar>
         </Container>
       </StyledAppBar>
-      
+
       <Drawer
         variant="temporary"
         open={mobileOpen}
@@ -369,7 +369,7 @@ const Navbar = ({ toggleTheme, themeMode }) => {
       >
         {drawer}
       </Drawer>
-      
+
       {renderMenu}
     </>
   );

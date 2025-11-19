@@ -105,4 +105,3 @@ echo "- Coverage report: htmlcov/index.html"
 echo "- Security report: security_report.json"
 echo ""
 echo "🚀 Ready for deployment!"
-

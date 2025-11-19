@@ -28,7 +28,7 @@ data:
   prometheus.yml: |
     # ChainFinity Prometheus Configuration
     # Financial Grade Monitoring with Compliance Controls
-    
+
     global:
       scrape_interval: 15s
       evaluation_interval: 15s
@@ -38,11 +38,11 @@ data:
         environment: 'production'
         compliance: 'financial-grade'
         region: 'us-west-2'
-    
+
     # Rule files for alerting
     rule_files:
       - "/etc/prometheus/rules/*.yml"
-    
+
     # Alertmanager configuration
     alerting:
       alertmanagers:
@@ -51,7 +51,7 @@ data:
               - alertmanager.chainfinity-monitoring.svc.cluster.local:9093
           timeout: 10s
           api_version: v2
-    
+
     # Remote write for long-term storage and compliance
     remote_write:
       - url: "https://prometheus-remote-write.chainfinity.com/api/v1/write"
@@ -66,7 +66,7 @@ data:
           - source_labels: [__name__]
             regex: 'chainfinity_.*|kubernetes_.*|node_.*|container_.*|up|scrape_.*'
             action: keep
-    
+
     # Scrape configurations
     scrape_configs:
       # Kubernetes API Server monitoring
@@ -96,7 +96,7 @@ data:
             action: keep
         scrape_interval: 30s
         scrape_timeout: 10s
-    
+
       # Kubernetes nodes monitoring
       - job_name: 'kubernetes-nodes'
         scheme: https
@@ -123,7 +123,7 @@ data:
             action: keep
         scrape_interval: 30s
         scrape_timeout: 10s
-    
+
       # Kubernetes node exporters
       - job_name: 'kubernetes-node-exporter'
         kubernetes_sd_configs:
@@ -145,7 +145,7 @@ data:
             action: keep
         scrape_interval: 15s
         scrape_timeout: 10s
-    
+
       # Kubernetes pods monitoring
       - job_name: 'kubernetes-pods'
         kubernetes_sd_configs:
@@ -189,7 +189,7 @@ data:
             action: keep
         scrape_interval: 15s
         scrape_timeout: 10s
-    
+
       # ChainFinity application metrics
       - job_name: 'chainfinity-frontend'
         kubernetes_sd_configs:
@@ -216,7 +216,7 @@ data:
             action: keep
         scrape_interval: 15s
         scrape_timeout: 10s
-    
+
       - job_name: 'chainfinity-backend'
         kubernetes_sd_configs:
           - role: endpoints
@@ -242,7 +242,7 @@ data:
             action: keep
         scrape_interval: 15s
         scrape_timeout: 10s
-    
+
       # Database monitoring (PostgreSQL)
       - job_name: 'postgresql-exporter'
         static_configs:
@@ -256,7 +256,7 @@ data:
             action: keep
         scrape_interval: 30s
         scrape_timeout: 10s
-    
+
       # Redis monitoring
       - job_name: 'redis-exporter'
         static_configs:
@@ -270,7 +270,7 @@ data:
             action: keep
         scrape_interval: 30s
         scrape_timeout: 10s
-    
+
       # Nginx Ingress Controller monitoring
       - job_name: 'nginx-ingress-controller'
         kubernetes_sd_configs:
@@ -295,7 +295,7 @@ data:
             action: keep
         scrape_interval: 15s
         scrape_timeout: 10s
-    
+
       # AWS Load Balancer Controller monitoring
       - job_name: 'aws-load-balancer-controller'
         kubernetes_sd_configs:
@@ -312,7 +312,7 @@ data:
             regex: webhook-server
         scrape_interval: 30s
         scrape_timeout: 10s
-    
+
       # Vault monitoring
       - job_name: 'vault'
         static_configs:
@@ -330,7 +330,7 @@ data:
             action: keep
         scrape_interval: 30s
         scrape_timeout: 10s
-    
+
       # Cert-manager monitoring
       - job_name: 'cert-manager'
         kubernetes_sd_configs:
@@ -351,7 +351,7 @@ data:
             action: keep
         scrape_interval: 60s
         scrape_timeout: 10s
-    
+
       # Kubernetes state metrics
       - job_name: 'kube-state-metrics'
         static_configs:
@@ -362,7 +362,7 @@ data:
             action: keep
         scrape_interval: 30s
         scrape_timeout: 10s
-    
+
       # cAdvisor metrics
       - job_name: 'kubernetes-cadvisor'
         scheme: https
@@ -393,7 +393,7 @@ data:
             action: drop
         scrape_interval: 30s
         scrape_timeout: 10s
-    
+
       # Blackbox exporter for external monitoring
       - job_name: 'blackbox-http'
         metrics_path: /probe
@@ -413,7 +413,7 @@ data:
             replacement: blackbox-exporter.chainfinity-monitoring.svc.cluster.local:9115
         scrape_interval: 60s
         scrape_timeout: 30s
-    
+
       # Security monitoring
       - job_name: 'falco-exporter'
         static_configs:
@@ -424,7 +424,7 @@ data:
             action: keep
         scrape_interval: 15s
         scrape_timeout: 10s
-    
+
       # Custom business metrics
       - job_name: 'chainfinity-business-metrics'
         kubernetes_sd_configs:
@@ -480,7 +480,7 @@ data:
           summary: "ChainFinity application {{ $labels.job }} is down"
           description: "ChainFinity application {{ $labels.job }} has been down for more than 1 minute"
           runbook_url: "https://runbooks.chainfinity.com/application-down"
-      
+
       # High error rate alerts
       - alert: ChainFinityHighErrorRate
         expr: |
@@ -497,7 +497,7 @@ data:
           summary: "High error rate detected for {{ $labels.job }}"
           description: "Error rate is {{ $value }}% for {{ $labels.job }}"
           runbook_url: "https://runbooks.chainfinity.com/high-error-rate"
-      
+
       # Database connection alerts
       - alert: DatabaseConnectionFailure
         expr: pg_up == 0
@@ -510,7 +510,7 @@ data:
           summary: "Database connection failure"
           description: "PostgreSQL database is not reachable"
           runbook_url: "https://runbooks.chainfinity.com/database-down"
-      
+
       # High database connection usage
       - alert: DatabaseHighConnectionUsage
         expr: |
@@ -527,7 +527,7 @@ data:
           summary: "High database connection usage"
           description: "Database connection usage is {{ $value }}%"
           runbook_url: "https://runbooks.chainfinity.com/database-connections"
-    
+
     - name: chainfinity.performance
       interval: 30s
       rules:
@@ -546,7 +546,7 @@ data:
           summary: "High response time for {{ $labels.job }}"
           description: "95th percentile response time is {{ $value }}s"
           runbook_url: "https://runbooks.chainfinity.com/high-response-time"
-      
+
       # Memory usage alerts
       - alert: ChainFinityHighMemoryUsage
         expr: |
@@ -563,7 +563,7 @@ data:
           summary: "High memory usage for {{ $labels.pod }}"
           description: "Memory usage is {{ $value }}% for pod {{ $labels.pod }}"
           runbook_url: "https://runbooks.chainfinity.com/high-memory-usage"
-      
+
       # CPU usage alerts
       - alert: ChainFinityHighCPUUsage
         expr: |
@@ -580,7 +580,7 @@ data:
           summary: "High CPU usage for {{ $labels.pod }}"
           description: "CPU usage is {{ $value }}% for pod {{ $labels.pod }}"
           runbook_url: "https://runbooks.chainfinity.com/high-cpu-usage"
-    
+
     - name: chainfinity.security
       interval: 30s
       rules:
@@ -596,7 +596,7 @@ data:
           summary: "Critical security violation detected"
           description: "Falco detected {{ $value }} critical security events"
           runbook_url: "https://runbooks.chainfinity.com/security-violation"
-      
+
       # Certificate expiry alerts
       - alert: CertificateExpiringSoon
         expr: (cert_exporter_not_after - time()) / 86400 < 30
@@ -609,7 +609,7 @@ data:
           summary: "Certificate expiring soon"
           description: "Certificate {{ $labels.name }} expires in {{ $value }} days"
           runbook_url: "https://runbooks.chainfinity.com/certificate-renewal"
-      
+
       # Failed login attempts
       - alert: HighFailedLoginAttempts
         expr: increase(chainfinity_auth_failed_attempts_total[5m]) > 10
@@ -622,7 +622,7 @@ data:
           summary: "High number of failed login attempts"
           description: "{{ $value }} failed login attempts in the last 5 minutes"
           runbook_url: "https://runbooks.chainfinity.com/failed-logins"
-    
+
     - name: chainfinity.compliance
       interval: 60s
       rules:
@@ -638,7 +638,7 @@ data:
           summary: "Audit logging not functioning"
           description: "No audit events detected in the last 5 minutes"
           runbook_url: "https://runbooks.chainfinity.com/audit-logging"
-      
+
       # Data encryption monitoring
       - alert: UnencryptedDataDetected
         expr: chainfinity_unencrypted_data_total > 0
@@ -651,7 +651,7 @@ data:
           summary: "Unencrypted data detected"
           description: "{{ $value }} unencrypted data items detected"
           runbook_url: "https://runbooks.chainfinity.com/data-encryption"
-      
+
       # Backup monitoring
       - alert: BackupFailure
         expr: chainfinity_backup_success == 0
@@ -664,4 +664,3 @@ data:
           summary: "Backup failure detected"
           description: "Database backup has failed"
           runbook_url: "https://runbooks.chainfinity.com/backup-failure"
-

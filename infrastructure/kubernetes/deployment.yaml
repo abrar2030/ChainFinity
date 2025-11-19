@@ -61,23 +61,23 @@ data:
   LOG_LEVEL: "info"
   PORT: "8080"
   METRICS_PORT: "9090"
-  
+
   # Security configuration
   ENABLE_HTTPS: "true"
   ENABLE_CORS: "false"
   ENABLE_HELMET: "true"
   ENABLE_RATE_LIMITING: "true"
-  
+
   # Database configuration
   DB_SSL_MODE: "require"
   DB_CONNECTION_TIMEOUT: "30000"
   DB_POOL_SIZE: "10"
-  
+
   # Monitoring configuration
   ENABLE_METRICS: "true"
   ENABLE_TRACING: "true"
   ENABLE_HEALTH_CHECKS: "true"
-  
+
   # Compliance configuration
   ENABLE_AUDIT_LOGGING: "true"
   ENABLE_DATA_ENCRYPTION: "true"
@@ -140,7 +140,7 @@ spec:
     spec:
       serviceAccountName: chainfinity-app
       automountServiceAccountToken: true
-      
+
       # Security Context
       securityContext:
         runAsNonRoot: true
@@ -150,12 +150,12 @@ spec:
         seccompProfile:
           type: RuntimeDefault
         supplementalGroups: [1000]
-      
+
       # Node Selection and Affinity
       nodeSelector:
         chainfinity.com/workload: "application"
         kubernetes.io/arch: "amd64"
-      
+
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -176,13 +176,13 @@ spec:
                 operator: In
                 values:
                 - application
-      
+
       tolerations:
       - key: "chainfinity.com/dedicated"
         operator: "Equal"
         value: "application"
         effect: "NoSchedule"
-      
+
       # Init Containers for Security Checks
       initContainers:
       - name: security-init
@@ -216,12 +216,12 @@ spec:
           limits:
             cpu: "50m"
             memory: "64Mi"
-      
+
       containers:
       - name: frontend
         image: chainfinity/frontend:1.0.0
         imagePullPolicy: Always
-        
+
         # Security Context
         securityContext:
           runAsNonRoot: true
@@ -234,7 +234,7 @@ spec:
             - ALL
             add:
             - NET_BIND_SERVICE
-        
+
         # Ports
         ports:
         - name: http
@@ -243,7 +243,7 @@ spec:
         - name: metrics
           containerPort: 9090
           protocol: TCP
-        
+
         # Environment Variables
         env:
         - name: NODE_ENV
@@ -262,7 +262,7 @@ spec:
           value: "1.0.0"
         - name: REACT_APP_ENVIRONMENT
           value: "production"
-        
+
         # Resource Management
         resources:
           requests:
@@ -273,7 +273,7 @@ spec:
             cpu: "500m"
             memory: "512Mi"
             ephemeral-storage: "2Gi"
-        
+
         # Health Checks
         livenessProbe:
           httpGet:
@@ -285,7 +285,7 @@ spec:
           timeoutSeconds: 5
           successThreshold: 1
           failureThreshold: 3
-        
+
         readinessProbe:
           httpGet:
             path: /ready
@@ -296,7 +296,7 @@ spec:
           timeoutSeconds: 3
           successThreshold: 1
           failureThreshold: 3
-        
+
         startupProbe:
           httpGet:
             path: /health
@@ -307,7 +307,7 @@ spec:
           timeoutSeconds: 3
           successThreshold: 1
           failureThreshold: 30
-        
+
         # Volume Mounts
         volumeMounts:
         - name: app-volume
@@ -322,7 +322,7 @@ spec:
         - name: tls-certs
           mountPath: /etc/ssl/certs
           readOnly: true
-      
+
       # Sidecar Container for Log Shipping
       - name: log-shipper
         image: fluent/fluent-bit:2.1.10
@@ -349,7 +349,7 @@ spec:
         - name: fluent-bit-config
           mountPath: /fluent-bit/etc
           readOnly: true
-      
+
       # Volumes
       volumes:
       - name: app-volume
@@ -371,7 +371,7 @@ spec:
       - name: fluent-bit-config
         configMap:
           name: fluent-bit-config
-      
+
       # DNS Configuration
       dnsPolicy: ClusterFirst
       dnsConfig:
@@ -379,10 +379,10 @@ spec:
         - name: ndots
           value: "2"
         - name: edns0
-      
+
       # Termination Grace Period
       terminationGracePeriodSeconds: 30
-      
+
       # Image Pull Secrets
       imagePullSecrets:
       - name: chainfinity-registry-secret
@@ -436,7 +436,7 @@ spec:
     spec:
       serviceAccountName: chainfinity-app
       automountServiceAccountToken: true
-      
+
       # Security Context
       securityContext:
         runAsNonRoot: true
@@ -446,12 +446,12 @@ spec:
         seccompProfile:
           type: RuntimeDefault
         supplementalGroups: [1001]
-      
+
       # Node Selection and Affinity
       nodeSelector:
         chainfinity.com/workload: "application"
         kubernetes.io/arch: "amd64"
-      
+
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -472,13 +472,13 @@ spec:
                 operator: In
                 values:
                 - application
-      
+
       tolerations:
       - key: "chainfinity.com/dedicated"
         operator: "Equal"
         value: "application"
         effect: "NoSchedule"
-      
+
       # Init Containers
       initContainers:
       - name: database-migration
@@ -509,12 +509,12 @@ spec:
           limits:
             cpu: "500m"
             memory: "512Mi"
-      
+
       containers:
       - name: backend
         image: chainfinity/backend:1.0.0
         imagePullPolicy: Always
-        
+
         # Security Context
         securityContext:
           runAsNonRoot: true
@@ -527,7 +527,7 @@ spec:
             - ALL
             add:
             - NET_BIND_SERVICE
-        
+
         # Ports
         ports:
         - name: http
@@ -536,7 +536,7 @@ spec:
         - name: metrics
           containerPort: 9090
           protocol: TCP
-        
+
         # Environment Variables
         envFrom:
         - configMapRef:
@@ -562,7 +562,7 @@ spec:
             secretKeyRef:
               name: chainfinity-app-secret
               key: encryption-key
-        
+
         # Resource Management
         resources:
           requests:
@@ -573,7 +573,7 @@ spec:
             cpu: "1000m"
             memory: "2Gi"
             ephemeral-storage: "4Gi"
-        
+
         # Health Checks
         livenessProbe:
           httpGet:
@@ -585,7 +585,7 @@ spec:
           timeoutSeconds: 5
           successThreshold: 1
           failureThreshold: 3
-        
+
         readinessProbe:
           httpGet:
             path: /ready
@@ -596,7 +596,7 @@ spec:
           timeoutSeconds: 3
           successThreshold: 1
           failureThreshold: 3
-        
+
         startupProbe:
           httpGet:
             path: /health
@@ -607,7 +607,7 @@ spec:
           timeoutSeconds: 5
           successThreshold: 1
           failureThreshold: 30
-        
+
         # Volume Mounts
         volumeMounts:
         - name: app-volume
@@ -624,7 +624,7 @@ spec:
         - name: tls-certs
           mountPath: /etc/ssl/certs
           readOnly: true
-      
+
       # Sidecar Container for Log Shipping
       - name: log-shipper
         image: fluent/fluent-bit:2.1.10
@@ -651,7 +651,7 @@ spec:
         - name: fluent-bit-config
           mountPath: /fluent-bit/etc
           readOnly: true
-      
+
       # Volumes
       volumes:
       - name: app-volume
@@ -676,7 +676,7 @@ spec:
       - name: fluent-bit-config
         configMap:
           name: fluent-bit-config
-      
+
       # DNS Configuration
       dnsPolicy: ClusterFirst
       dnsConfig:
@@ -684,10 +684,10 @@ spec:
         - name: ndots
           value: "2"
         - name: edns0
-      
+
       # Termination Grace Period
       terminationGracePeriodSeconds: 60
-      
+
       # Image Pull Secrets
       imagePullSecrets:
       - name: chainfinity-registry-secret
@@ -817,7 +817,7 @@ metadata:
     # Ingress Controller Configuration
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/rewrite-target: /
-    
+
     # SSL/TLS Configuration
     cert-manager.io/cluster-issuer: "chainfinity-ca-issuer"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
@@ -825,7 +825,7 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-protocols: "TLSv1.2 TLSv1.3"
     nginx.ingress.kubernetes.io/ssl-ciphers: "ECDHE-RSA-AES256-GCM-SHA384,ECDHE-RSA-AES128-GCM-SHA256,ECDHE-RSA-AES256-SHA384"
     nginx.ingress.kubernetes.io/ssl-prefer-server-ciphers: "true"
-    
+
     # Security Headers
     nginx.ingress.kubernetes.io/configuration-snippet: |
       more_set_headers "X-Frame-Options: DENY";
@@ -835,30 +835,30 @@ metadata:
       more_set_headers "Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:; frame-ancestors 'none';";
       more_set_headers "Strict-Transport-Security: max-age=31536000; includeSubDomains; preload";
       more_set_headers "Permissions-Policy: geolocation=(), microphone=(), camera=()";
-    
+
     # Rate Limiting
     nginx.ingress.kubernetes.io/rate-limit: "100"
     nginx.ingress.kubernetes.io/rate-limit-window: "1m"
     nginx.ingress.kubernetes.io/rate-limit-connections: "10"
-    
+
     # Request Size Limits
     nginx.ingress.kubernetes.io/proxy-body-size: "10m"
     nginx.ingress.kubernetes.io/client-max-body-size: "10m"
-    
+
     # Timeout Configuration
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
-    
+
     # Backend Configuration
     nginx.ingress.kubernetes.io/upstream-keepalive-connections: "10"
     nginx.ingress.kubernetes.io/upstream-keepalive-requests: "100"
     nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "60"
-    
+
     # Logging
     nginx.ingress.kubernetes.io/enable-access-log: "true"
     nginx.ingress.kubernetes.io/access-log-path: "/var/log/nginx/chainfinity-access.log"
-    
+
     # WAF Integration
     nginx.ingress.kubernetes.io/modsecurity-transaction-id: "$request_id"
     nginx.ingress.kubernetes.io/modsecurity-snippet: |
@@ -867,7 +867,7 @@ metadata:
       SecResponseBodyAccess On
       SecAuditEngine RelevantOnly
       SecAuditLog /var/log/nginx/modsec_audit.log
-      
+
 spec:
   tls:
   - hosts:
@@ -1218,4 +1218,3 @@ spec:
       storage: "1Ti"
     min:
       storage: "1Gi"
-

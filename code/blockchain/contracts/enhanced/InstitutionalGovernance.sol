@@ -173,13 +173,13 @@ contract InstitutionalGovernance is ReentrancyGuard, Pausable, AccessControl {
     // State variables
     IERC20 public governanceToken;
     Counters.Counter private _proposalIds;
-    
+
     mapping(uint256 => Proposal) public proposals;
     mapping(address => mapping(address => Delegation)) public delegations;
     mapping(address => uint256) public votingPower;
     mapping(address => bool) public authorizedProposers;
     mapping(ProposalType => GovernanceParams) public typeParams;
-    
+
     GovernanceParams public defaultParams;
     address public treasury;
     address public complianceOracle;
@@ -265,17 +265,17 @@ contract InstitutionalGovernance is ReentrancyGuard, Pausable, AccessControl {
         uint256[] memory values,
         bytes[] memory calldatas,
         bool requiresCompliance
-    ) 
-        external 
-        onlyAuthorizedProposer 
-        whenNotPaused 
-        returns (uint256) 
+    )
+        external
+        onlyAuthorizedProposer
+        whenNotPaused
+        returns (uint256)
     {
         require(bytes(title).length > 0, "Title cannot be empty");
         require(bytes(description).length > 0, "Description cannot be empty");
         require(targets.length == values.length, "Targets and values length mismatch");
         require(targets.length == calldatas.length, "Targets and calldatas length mismatch");
-        
+
         GovernanceParams memory params = _getProposalParams(proposalType);
         require(targets.length <= params.maxProposalActions, "Too many actions");
 
@@ -329,11 +329,11 @@ contract InstitutionalGovernance is ReentrancyGuard, Pausable, AccessControl {
         uint256 proposalId,
         VoteChoice choice,
         string memory reason
-    ) 
-        external 
-        validProposal(proposalId) 
-        onlyActiveProposal(proposalId) 
-        whenNotPaused 
+    )
+        external
+        validProposal(proposalId)
+        onlyActiveProposal(proposalId)
+        whenNotPaused
     {
         Proposal storage proposal = proposals[proposalId];
         require(!proposal.votes[msg.sender].hasVoted, "Already voted");
@@ -381,11 +381,11 @@ contract InstitutionalGovernance is ReentrancyGuard, Pausable, AccessControl {
         string memory reason,
         address voter,
         bytes memory signature
-    ) 
-        external 
-        validProposal(proposalId) 
-        onlyActiveProposal(proposalId) 
-        whenNotPaused 
+    )
+        external
+        validProposal(proposalId)
+        onlyActiveProposal(proposalId)
+        whenNotPaused
     {
         // Verify signature
         bytes32 hash = keccak256(abi.encodePacked(proposalId, uint8(choice), reason, voter));
@@ -430,9 +430,9 @@ contract InstitutionalGovernance is ReentrancyGuard, Pausable, AccessControl {
      * @param delegate Address to delegate to
      * @param amount Amount of tokens to delegate
      */
-    function delegate(address delegate, uint256 amount) 
-        external 
-        whenNotPaused 
+    function delegate(address delegate, uint256 amount)
+        external
+        whenNotPaused
     {
         require(delegate != address(0), "Invalid delegate");
         require(delegate != msg.sender, "Cannot delegate to self");
@@ -462,9 +462,9 @@ contract InstitutionalGovernance is ReentrancyGuard, Pausable, AccessControl {
      * @dev Revoke delegation
      * @param delegate Address to revoke delegation from
      */
-    function revokeDelegation(address delegate) 
-        external 
-        whenNotPaused 
+    function revokeDelegation(address delegate)
+        external
+        whenNotPaused
     {
         require(delegations[msg.sender][delegate].isActive, "No active delegation");
         _revokeDelegation(msg.sender, delegate);
@@ -474,12 +474,12 @@ contract InstitutionalGovernance is ReentrancyGuard, Pausable, AccessControl {
      * @dev Execute a successful proposal
      * @param proposalId Proposal ID
      */
-    function execute(uint256 proposalId) 
-        external 
-        payable 
-        nonReentrant 
-        validProposal(proposalId) 
-        whenNotPaused 
+    function execute(uint256 proposalId)
+        external
+        payable
+        nonReentrant
+        validProposal(proposalId)
+        whenNotPaused
     {
         Proposal storage proposal = proposals[proposalId];
         require(proposal.status == ProposalStatus.Succeeded, "Proposal not succeeded");
@@ -512,9 +512,9 @@ contract InstitutionalGovernance is ReentrancyGuard, Pausable, AccessControl {
      * @dev Cancel a proposal (admin or proposer only)
      * @param proposalId Proposal ID
      */
-    function cancel(uint256 proposalId) 
-        external 
-        validProposal(proposalId) 
+    function cancel(uint256 proposalId)
+        external
+        validProposal(proposalId)
     {
         Proposal storage proposal = proposals[proposalId];
         require(
@@ -539,9 +539,9 @@ contract InstitutionalGovernance is ReentrancyGuard, Pausable, AccessControl {
     function updateGovernanceParams(
         ProposalType proposalType,
         GovernanceParams memory params
-    ) 
-        external 
-        onlyRole(ADMIN_ROLE) 
+    )
+        external
+        onlyRole(ADMIN_ROLE)
     {
         require(params.votingPeriod >= MIN_VOTING_PERIOD, "Voting period too short");
         require(params.votingPeriod <= MAX_VOTING_PERIOD, "Voting period too long");
@@ -562,9 +562,9 @@ contract InstitutionalGovernance is ReentrancyGuard, Pausable, AccessControl {
      * @param proposer Proposer address
      * @param authorized Authorization status
      */
-    function setAuthorizedProposer(address proposer, bool authorized) 
-        external 
-        onlyRole(ADMIN_ROLE) 
+    function setAuthorizedProposer(address proposer, bool authorized)
+        external
+        onlyRole(ADMIN_ROLE)
     {
         authorizedProposers[proposer] = authorized;
     }
@@ -590,10 +590,10 @@ contract InstitutionalGovernance is ReentrancyGuard, Pausable, AccessControl {
      * @param proposalId Proposal ID
      * @return Proposal details
      */
-    function getProposal(uint256 proposalId) 
-        external 
-        view 
-        validProposal(proposalId) 
+    function getProposal(uint256 proposalId)
+        external
+        view
+        validProposal(proposalId)
         returns (
             uint256 id,
             address proposer,
@@ -605,7 +605,7 @@ contract InstitutionalGovernance is ReentrancyGuard, Pausable, AccessControl {
             uint256 againstVotes,
             uint256 abstainVotes,
             ProposalStatus status
-        ) 
+        )
     {
         Proposal storage proposal = proposals[proposalId];
         return (
@@ -628,17 +628,17 @@ contract InstitutionalGovernance is ReentrancyGuard, Pausable, AccessControl {
      * @param voter Voter address
      * @return Vote details
      */
-    function getVote(uint256 proposalId, address voter) 
-        external 
-        view 
-        validProposal(proposalId) 
+    function getVote(uint256 proposalId, address voter)
+        external
+        view
+        validProposal(proposalId)
         returns (
             bool hasVoted,
             VoteChoice choice,
             uint256 weight,
             uint256 timestamp,
             string memory reason
-        ) 
+        )
     {
         Vote storage vote = proposals[proposalId].votes[voter];
         return (
@@ -664,10 +664,10 @@ contract InstitutionalGovernance is ReentrancyGuard, Pausable, AccessControl {
      * @param mechanism Voting mechanism
      * @return Voting power
      */
-    function getVotingPower(address account, VotingMechanism mechanism) 
-        external 
-        view 
-        returns (uint256) 
+    function getVotingPower(address account, VotingMechanism mechanism)
+        external
+        view
+        returns (uint256)
     {
         return _getVotingWeight(account, mechanism);
     }
@@ -680,10 +680,10 @@ contract InstitutionalGovernance is ReentrancyGuard, Pausable, AccessControl {
      * @param mechanism Voting mechanism
      * @return Voting weight
      */
-    function _getVotingWeight(address account, VotingMechanism mechanism) 
-        internal 
-        view 
-        returns (uint256) 
+    function _getVotingWeight(address account, VotingMechanism mechanism)
+        internal
+        view
+        returns (uint256)
     {
         uint256 balance = governanceToken.balanceOf(account);
         uint256 delegated = votingPower[account];
@@ -726,18 +726,18 @@ contract InstitutionalGovernance is ReentrancyGuard, Pausable, AccessControl {
      * @param proposalType Proposal type
      * @return Governance parameters
      */
-    function _getProposalParams(ProposalType proposalType) 
-        internal 
-        view 
-        returns (GovernanceParams memory) 
+    function _getProposalParams(ProposalType proposalType)
+        internal
+        view
+        returns (GovernanceParams memory)
     {
         GovernanceParams memory params = typeParams[proposalType];
-        
+
         // Use default if not set
         if (params.votingPeriod == 0) {
             return defaultParams;
         }
-        
+
         return params;
     }
 
@@ -746,14 +746,14 @@ contract InstitutionalGovernance is ReentrancyGuard, Pausable, AccessControl {
      * @param proposalType Proposal type
      * @return Required quorum
      */
-    function _calculateQuorum(ProposalType proposalType) 
-        internal 
-        view 
-        returns (uint256) 
+    function _calculateQuorum(ProposalType proposalType)
+        internal
+        view
+        returns (uint256)
     {
         GovernanceParams memory params = _getProposalParams(proposalType);
         uint256 totalSupply = governanceToken.totalSupply();
-        
+
         return totalSupply.mul(params.quorumNumerator).div(params.quorumDenominator);
     }
 
@@ -763,7 +763,7 @@ contract InstitutionalGovernance is ReentrancyGuard, Pausable, AccessControl {
      */
     function _updateProposalStatus(uint256 proposalId) internal {
         Proposal storage proposal = proposals[proposalId];
-        
+
         if (proposal.status != ProposalStatus.Active) {
             return;
         }
@@ -771,12 +771,12 @@ contract InstitutionalGovernance is ReentrancyGuard, Pausable, AccessControl {
         // Check if voting period ended
         if (block.timestamp > proposal.endTime) {
             uint256 totalVotes = proposal.forVotes.add(proposal.againstVotes);
-            
+
             // Check quorum
             if (totalVotes >= proposal.quorumRequired) {
                 // Check approval threshold
                 uint256 approvalRate = proposal.forVotes.mul(100).div(totalVotes);
-                
+
                 if (approvalRate >= proposal.approvalThreshold) {
                     proposal.status = ProposalStatus.Succeeded;
                 } else {
@@ -811,15 +811,15 @@ contract InstitutionalGovernance is ReentrancyGuard, Pausable, AccessControl {
      * @param proposalId Proposal ID
      * @return Whether compliance check passed
      */
-    function _performComplianceCheck(uint256 proposalId) 
-        internal 
-        returns (bool) 
+    function _performComplianceCheck(uint256 proposalId)
+        internal
+        returns (bool)
     {
         // This would integrate with external compliance systems
         // For now, return true if compliance role approves
-        
+
         emit ComplianceCheckRequired(proposalId, msg.sender);
-        
+
         // Basic compliance check - can be extended
         return hasRole(COMPLIANCE_ROLE, msg.sender) || hasRole(ADMIN_ROLE, msg.sender);
     }
@@ -831,4 +831,3 @@ contract InstitutionalGovernance is ReentrancyGuard, Pausable, AccessControl {
         // Allow contract to receive ETH for proposal execution
     }
 }
-

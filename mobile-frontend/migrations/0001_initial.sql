@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS access_logs (
 );
 
 -- 初始数据
-INSERT INTO counters (name, value) VALUES 
+INSERT INTO counters (name, value) VALUES
   ('page_views', 0),
   ('api_calls', 0);
 

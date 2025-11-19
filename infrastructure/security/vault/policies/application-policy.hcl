@@ -148,4 +148,3 @@ path "sys/wrapping/lookup" {
 path "sys/wrapping/unwrap" {
   capabilities = ["deny"]
 }
-

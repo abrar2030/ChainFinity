@@ -107,13 +107,13 @@ const CreateProposal = ({ onSubmit }) => {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-          
+
           {success && (
             <Alert>
               <AlertDescription>Proposal created successfully!</AlertDescription>
             </Alert>
           )}
-          
+
           <div className="space-y-2">
             <label htmlFor="title" className="text-sm font-medium">
               Title
@@ -127,7 +127,7 @@ const CreateProposal = ({ onSubmit }) => {
               required
             />
           </div>
-          
+
           <div className="space-y-2">
             <label htmlFor="description" className="text-sm font-medium">
               Description
@@ -145,7 +145,7 @@ const CreateProposal = ({ onSubmit }) => {
               Markdown formatting is supported
             </p>
           </div>
-          
+
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <h3 className="text-sm font-medium">Actions</h3>
@@ -153,23 +153,23 @@ const CreateProposal = ({ onSubmit }) => {
                 Add Action
               </Button>
             </div>
-            
+
             {formData.actions.map((action, index) => (
               <div key={index} className="p-4 border rounded-md space-y-4">
                 <div className="flex justify-between items-center">
                   <h4 className="text-sm font-medium">Action {index + 1}</h4>
                   {formData.actions.length > 1 && (
-                    <Button 
-                      type="button" 
-                      variant="ghost" 
-                      size="sm" 
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
                       onClick={() => removeAction(index)}
                     >
                       Remove
                     </Button>
                   )}
                 </div>
-                
+
                 <div className="space-y-2">
                   <label className="text-xs">Target Contract</label>
                   <Input
@@ -178,7 +178,7 @@ const CreateProposal = ({ onSubmit }) => {
                     placeholder="0x..."
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <label className="text-xs">Value (ETH)</label>
                   <Input
@@ -189,7 +189,7 @@ const CreateProposal = ({ onSubmit }) => {
                     onChange={(e) => handleActionChange(index, 'value', e.target.value)}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <label className="text-xs">Function Signature</label>
                   <Input
@@ -198,7 +198,7 @@ const CreateProposal = ({ onSubmit }) => {
                     placeholder="transfer(address,uint256)"
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <label className="text-xs">Calldata (hex)</label>
                   <Input
@@ -210,7 +210,7 @@ const CreateProposal = ({ onSubmit }) => {
               </div>
             ))}
           </div>
-          
+
           <div className="pt-4">
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Creating...' : 'Create Proposal'}

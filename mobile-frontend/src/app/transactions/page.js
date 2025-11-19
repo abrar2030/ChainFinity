@@ -54,8 +54,8 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:hover': {
-    backgroundColor: theme.palette.mode === 'light' 
-      ? 'rgba(0, 0, 0, 0.04)' 
+    backgroundColor: theme.palette.mode === 'light'
+      ? 'rgba(0, 0, 0, 0.04)'
       : 'rgba(255, 255, 255, 0.04)',
   },
 }));
@@ -82,13 +82,13 @@ const Transactions = () => {
 
   // Get wallet address from user context
   const walletAddress = user?.wallet_address;
-  
+
   // Fetch transaction history
-  const { 
-    transactions, 
-    loading, 
+  const {
+    transactions,
+    loading,
     error,
-    refreshTransactions 
+    refreshTransactions
   } = useTransactionHistory(walletAddress);
 
   // Redirect to login if not authenticated
@@ -148,31 +148,31 @@ const Transactions = () => {
   // Filter transactions based on search query and filters
   const filteredTransactions = transactions ? transactions.filter((transaction) => {
     // Search query filter
-    if (searchQuery && !Object.values(transaction).some(value => 
+    if (searchQuery && !Object.values(transaction).some(value =>
       String(value).toLowerCase().includes(searchQuery.toLowerCase())
     )) {
       return false;
     }
-    
+
     // Type filter
     if (typeFilter !== 'all' && transaction.type !== typeFilter) {
       return false;
     }
-    
+
     // Network filter
     if (networkFilter !== 'all' && transaction.network !== networkFilter) {
       return false;
     }
-    
+
     // Date range filter
     if (startDate && new Date(transaction.date) < startDate) {
       return false;
     }
-    
+
     if (endDate && new Date(transaction.date) > endDate) {
       return false;
     }
-    
+
     return true;
   }) : [];
 
@@ -225,8 +225,8 @@ const Transactions = () => {
           <Alert severity="error" sx={{ mb: 2 }}>
             {error.message || 'An error occurred while loading your transactions.'}
           </Alert>
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             onClick={refreshTransactions}
             startIcon={<Refresh />}
           >
@@ -256,10 +256,10 @@ const Transactions = () => {
                   View and manage your transaction history
                 </Typography>
               </Box>
-              <Button 
-                variant="contained" 
+              <Button
+                variant="contained"
                 startIcon={<GetApp />}
-                sx={{ 
+                sx={{
                   borderRadius: '12px',
                   boxShadow: 'none'
                 }}
@@ -495,7 +495,7 @@ const Transactions = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
-              
+
               {/* Pagination */}
               {filteredTransactions.length > 0 && (
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2 }}>
@@ -541,7 +541,7 @@ const Transactions = () => {
                     </CardContent>
                   </Card>
                 </Grid>
-                
+
                 <Grid item xs={12} md={4}>
                   <Card sx={{ height: '100%', border: `1px solid ${theme.palette.divider}`, boxShadow: 'none' }}>
                     <CardContent>
@@ -564,7 +564,7 @@ const Transactions = () => {
                     </CardContent>
                   </Card>
                 </Grid>
-                
+
                 <Grid item xs={12} md={4}>
                   <Card sx={{ height: '100%', border: `1px solid ${theme.palette.divider}`, boxShadow: 'none' }}>
                     <CardContent>

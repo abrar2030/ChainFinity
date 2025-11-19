@@ -7,13 +7,23 @@ import enum
 from datetime import datetime
 from typing import List, Optional
 
-from sqlalchemy import (JSON, Boolean, Column, DateTime, Enum, ForeignKey,
-                        Index, Integer, Numeric, String, Text)
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    Column,
+    DateTime,
+    Enum,
+    ForeignKey,
+    Index,
+    Integer,
+    Numeric,
+    String,
+    Text,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
-from .base import (AuditMixin, BaseModel, EncryptedMixin, SoftDeleteMixin,
-                   TimestampMixin)
+from .base import AuditMixin, BaseModel, EncryptedMixin, SoftDeleteMixin, TimestampMixin
 
 
 class UserStatus(enum.Enum):

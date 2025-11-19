@@ -81,7 +81,7 @@ log() {
   local level="$1"
   local message="$2"
   local timestamp=$(date +"%Y-%m-%d %H:%M:%S")
-  
+
   case $level in
     "INFO")
       echo -e "${BLUE}[${timestamp}] [${level}] ${message}${NC}"
@@ -96,7 +96,7 @@ log() {
       echo -e "${GREEN}[${timestamp}] [${level}] ${message}${NC}"
       ;;
   esac
-  
+
   echo "[${timestamp}] [${level}] ${message}" >> "$LOG_FILE"
 }
 
@@ -105,9 +105,9 @@ send_alert() {
   local subject="$1"
   local message="$2"
   local severity="$3" # critical, warning, info
-  
+
   log "WARNING" "Alert: $subject - $message"
-  
+
   # Send to Slack if configured
   if [ -n "$SLACK_WEBHOOK" ]; then
     local color
@@ -117,12 +117,12 @@ send_alert() {
       "info") color="#0000FF" ;; # Blue
       *) color="#808080" ;; # Gray
     esac
-    
+
     curl -s -X POST -H 'Content-type: application/json' \
       --data "{\"attachments\":[{\"color\":\"$color\",\"title\":\"$subject\",\"text\":\"$message\"}]}" \
       "$SLACK_WEBHOOK"
   fi
-  
+
   # Send email if configured
   if [ -n "$EMAIL_RECIPIENT" ]; then
     echo "$message" | mail -s "ChainFinity Monitor: $subject" "$EMAIL_RECIPIENT"
@@ -132,73 +132,73 @@ send_alert() {
 # Function to check system resources
 check_system_resources() {
   log "INFO" "Checking system resources..."
-  
+
   # Check CPU usage
   local cpu_usage=$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4}')
   if (( $(echo "$cpu_usage > $ALERT_THRESHOLD" | bc -l) )); then
     send_alert "High CPU Usage" "CPU usage is at ${cpu_usage}%" "warning"
   fi
-  
+
   # Check memory usage
   local mem_total=$(free -m | awk '/Mem:/ {print $2}')
   local mem_used=$(free -m | awk '/Mem:/ {print $3}')
   local mem_usage=$(echo "scale=2; $mem_used * 100 / $mem_total" | bc)
-  
+
   if (( $(echo "$mem_usage > $ALERT_THRESHOLD" | bc -l) )); then
     send_alert "High Memory Usage" "Memory usage is at ${mem_usage}%" "warning"
   fi
-  
+
   # Check disk usage
   local disk_usage=$(df -h / | awk 'NR==2 {print $5}' | tr -d '%')
   if [ "$disk_usage" -gt "$ALERT_THRESHOLD" ]; then
     send_alert "High Disk Usage" "Disk usage is at ${disk_usage}%" "warning"
   fi
-  
+
   log "SUCCESS" "System resource check completed"
 }
 
 # Function to check Docker containers
 check_docker_containers() {
   log "INFO" "Checking Docker containers..."
-  
+
   if ! command -v docker &> /dev/null; then
     log "WARNING" "Docker is not installed"
     return
   fi
-  
+
   # Get all containers
   local containers=$(docker ps -a --format "{{.Names}}")
-  
+
   for container in $containers; do
     local status=$(docker inspect --format='{{.State.Status}}' "$container")
     local health=$(docker inspect --format='{{if .State.Health}}{{.State.Health.Status}}{{else}}N/A{{end}}' "$container")
-    
+
     if [ "$status" != "running" ]; then
       send_alert "Container Not Running" "Container $container is $status" "critical"
     elif [ "$health" == "unhealthy" ]; then
       send_alert "Unhealthy Container" "Container $container is unhealthy" "critical"
     fi
-    
+
     # Check container resource usage
     local cpu_usage=$(docker stats --no-stream --format "{{.CPUPerc}}" "$container" | tr -d '%')
     local mem_usage=$(docker stats --no-stream --format "{{.MemPerc}}" "$container" | tr -d '%')
-    
+
     if (( $(echo "$cpu_usage > $ALERT_THRESHOLD" | bc -l) )); then
       send_alert "High Container CPU Usage" "Container $container CPU usage is at ${cpu_usage}%" "warning"
     fi
-    
+
     if (( $(echo "$mem_usage > $ALERT_THRESHOLD" | bc -l) )); then
       send_alert "High Container Memory Usage" "Container $container memory usage is at ${mem_usage}%" "warning"
     fi
   done
-  
+
   log "SUCCESS" "Docker container check completed"
 }
 
 # Function to check database health
 check_database_health() {
   log "INFO" "Checking database health..."
-  
+
   # Check PostgreSQL
   if command -v psql &> /dev/null; then
     if ! psql -h localhost -U postgres -c "SELECT 1" &> /dev/null; then
@@ -207,13 +207,13 @@ check_database_health() {
       # Check database size
       local db_size=$(psql -h localhost -U postgres -t -c "SELECT pg_size_pretty(pg_database_size('chainfinity'))" | tr -d ' ')
       log "INFO" "Database size: $db_size"
-      
+
       # Check connection count
       local connections=$(psql -h localhost -U postgres -t -c "SELECT count(*) FROM pg_stat_activity" | tr -d ' ')
       if [ "$connections" -gt 100 ]; then
         send_alert "High Database Connections" "PostgreSQL has $connections active connections" "warning"
       fi
-      
+
       # Check long-running queries
       local long_queries=$(psql -h localhost -U postgres -t -c "SELECT count(*) FROM pg_stat_activity WHERE state = 'active' AND now() - query_start > interval '5 minutes'" | tr -d ' ')
       if [ "$long_queries" -gt 0 ]; then
@@ -221,7 +221,7 @@ check_database_health() {
       fi
     fi
   fi
-  
+
   # Check Redis
   if command -v redis-cli &> /dev/null; then
     if ! redis-cli ping &> /dev/null; then
@@ -230,7 +230,7 @@ check_database_health() {
       # Check Redis memory usage
       local redis_memory=$(redis-cli info memory | grep "used_memory_human:" | cut -d: -f2 | tr -d '[:space:]')
       log "INFO" "Redis memory usage: $redis_memory"
-      
+
       # Check Redis clients
       local redis_clients=$(redis-cli info clients | grep "connected_clients:" | cut -d: -f2 | tr -d '[:space:]')
       if [ "$redis_clients" -gt 100 ]; then
@@ -238,21 +238,21 @@ check_database_health() {
       fi
     fi
   fi
-  
+
   log "SUCCESS" "Database health check completed"
 }
 
 # Function to check API endpoints
 check_api_endpoints() {
   log "INFO" "Checking API endpoints..."
-  
+
   # Load endpoints from config
   if [ -f "$CONFIG_FILE" ]; then
     local endpoints=$(jq -r '.api_endpoints[] | .url' "$CONFIG_FILE")
-    
+
     for endpoint in $endpoints; do
       local response=$(curl -s -o /dev/null -w "%{http_code}" "$endpoint")
-      
+
       if [ "$response" != "200" ]; then
         local endpoint_name=$(jq -r ".api_endpoints[] | select(.url == \"$endpoint\") | .name" "$CONFIG_FILE")
         send_alert "API Endpoint Down" "Endpoint $endpoint_name ($endpoint) returned status code $response" "critical"
@@ -261,22 +261,22 @@ check_api_endpoints() {
   else
     log "WARNING" "Config file not found: $CONFIG_FILE"
   fi
-  
+
   log "SUCCESS" "API endpoint check completed"
 }
 
 # Function to check blockchain nodes
 check_blockchain_nodes() {
   log "INFO" "Checking blockchain nodes..."
-  
+
   # Load blockchain nodes from config
   if [ -f "$CONFIG_FILE" ]; then
     local nodes=$(jq -r '.blockchain_nodes[] | .url' "$CONFIG_FILE")
-    
+
     for node in $nodes; do
       local node_name=$(jq -r ".blockchain_nodes[] | select(.url == \"$node\") | .name" "$CONFIG_FILE")
       local node_type=$(jq -r ".blockchain_nodes[] | select(.url == \"$node\") | .type" "$CONFIG_FILE")
-      
+
       case $node_type in
         "ethereum")
           # Check Ethereum node
@@ -289,7 +289,7 @@ check_blockchain_nodes() {
             log "INFO" "Ethereum node $node_name is at block $block_decimal"
           fi
           ;;
-        
+
         "binance")
           # Check Binance Smart Chain node
           local response=$(curl -s -X POST -H "Content-Type: application/json" --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' "$node")
@@ -297,7 +297,7 @@ check_blockchain_nodes() {
             send_alert "Blockchain Node Down" "BSC node $node_name ($node) is not responding correctly" "critical"
           fi
           ;;
-        
+
         *)
           log "WARNING" "Unknown blockchain node type: $node_type"
           ;;
@@ -306,16 +306,16 @@ check_blockchain_nodes() {
   else
     log "WARNING" "Config file not found: $CONFIG_FILE"
   fi
-  
+
   log "SUCCESS" "Blockchain node check completed"
 }
 
 # Function to generate daily report
 generate_report() {
   log "INFO" "Generating monitoring report..."
-  
+
   local report_file="$LOG_DIR/report_$(date +%Y%m%d).html"
-  
+
   # Create HTML report
   cat > "$report_file" << EOF
 <!DOCTYPE html>
@@ -338,7 +338,7 @@ generate_report() {
 <body>
   <h1>ChainFinity Monitoring Report</h1>
   <p>Generated on: $(date +%Y-%m-%d\ %H:%M:%S)</p>
-  
+
   <div class="section">
     <h2>System Resources</h2>
     <table>
@@ -370,7 +370,7 @@ generate_report() {
       </tr>
     </table>
   </div>
-  
+
   <div class="section">
     <h2>Docker Containers</h2>
     <table>
@@ -382,17 +382,17 @@ generate_report() {
         <th>Memory Usage</th>
       </tr>
 EOF
-  
+
   # Add Docker container data
   if command -v docker &> /dev/null; then
     local containers=$(docker ps -a --format "{{.Names}}")
-    
+
     for container in $containers; do
       local status=$(docker inspect --format='{{.State.Status}}' "$container")
       local health=$(docker inspect --format='{{if .State.Health}}{{.State.Health.Status}}{{else}}N/A{{end}}' "$container")
       local cpu_usage=$(docker stats --no-stream --format "{{.CPUPerc}}" "$container")
       local mem_usage=$(docker stats --no-stream --format "{{.MemPerc}}" "$container")
-      
+
       cat >> "$report_file" << EOF
       <tr>
         <td>$container</td>
@@ -410,12 +410,12 @@ EOF
       </tr>
 EOF
   fi
-  
+
   # Close the report
   cat >> "$report_file" << EOF
     </table>
   </div>
-  
+
   <div class="section">
     <h2>Log Summary</h2>
     <table>
@@ -441,7 +441,7 @@ EOF
       </tr>
     </table>
   </div>
-  
+
   <div class="section">
     <h2>Recent Errors</h2>
     <pre>$(grep "\[ERROR\]" "$LOG_FILE" | tail -n 10)</pre>
@@ -449,9 +449,9 @@ EOF
 </body>
 </html>
 EOF
-  
+
   log "SUCCESS" "Report generated: $report_file"
-  
+
   # Send report if configured
   if [ -n "$EMAIL_RECIPIENT" ]; then
     cat "$report_file" | mail -a "Content-Type: text/html" -s "ChainFinity Daily Monitoring Report - $(date +%Y-%m-%d)" "$EMAIL_RECIPIENT"
@@ -516,14 +516,14 @@ while true; do
   check_database_health
   check_api_endpoints
   check_blockchain_nodes
-  
+
   # Generate report if it's time
   current_time=$(date +%s)
   if [ $((current_time - last_report_time)) -ge "$REPORT_INTERVAL" ]; then
     generate_report
     last_report_time=$current_time
   fi
-  
+
   # Sleep until next check
   log "INFO" "Sleeping for $CHECK_INTERVAL seconds..."
   sleep "$CHECK_INTERVAL"

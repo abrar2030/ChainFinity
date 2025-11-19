@@ -6,7 +6,7 @@ variable "environment" {
   description = "Environment name (dev, staging, production)"
   type        = string
   default     = "production"
-  
+
   validation {
     condition     = contains(["dev", "staging", "production"], var.environment)
     error_message = "Environment must be one of: dev, staging, production."
@@ -24,7 +24,7 @@ variable "allowed_cidr_blocks" {
   description = "CIDR blocks allowed to access the infrastructure"
   type        = list(string)
   default     = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
-  
+
   validation {
     condition = length(var.allowed_cidr_blocks) > 0
     error_message = "At least one CIDR block must be specified."
@@ -49,7 +49,7 @@ variable "db_name" {
   description = "Name of the database"
   type        = string
   default     = "chainfinity"
-  
+
   validation {
     condition     = can(regex("^[a-zA-Z][a-zA-Z0-9_]*$", var.db_name))
     error_message = "Database name must start with a letter and contain only alphanumeric characters and underscores."
@@ -61,7 +61,7 @@ variable "db_username" {
   type        = string
   default     = "chainfinity_admin"
   sensitive   = true
-  
+
   validation {
     condition     = length(var.db_username) >= 8 && length(var.db_username) <= 63
     error_message = "Database username must be between 8 and 63 characters."
@@ -72,7 +72,7 @@ variable "db_password" {
   description = "Database master password"
   type        = string
   sensitive   = true
-  
+
   validation {
     condition     = length(var.db_password) >= 12
     error_message = "Database password must be at least 12 characters long."
@@ -83,7 +83,7 @@ variable "db_instance_class" {
   description = "RDS instance class"
   type        = string
   default     = "db.r6g.large"
-  
+
   validation {
     condition = contains([
       "db.t3.micro", "db.t3.small", "db.t3.medium", "db.t3.large",
@@ -97,7 +97,7 @@ variable "db_allocated_storage" {
   description = "Initial allocated storage for RDS instance (GB)"
   type        = number
   default     = 100
-  
+
   validation {
     condition     = var.db_allocated_storage >= 20 && var.db_allocated_storage <= 65536
     error_message = "Database allocated storage must be between 20 and 65536 GB."
@@ -108,7 +108,7 @@ variable "db_max_allocated_storage" {
   description = "Maximum allocated storage for RDS instance (GB)"
   type        = number
   default     = 1000
-  
+
   validation {
     condition     = var.db_max_allocated_storage >= 100
     error_message = "Database max allocated storage must be at least 100 GB."
@@ -120,7 +120,7 @@ variable "kubernetes_version" {
   description = "Kubernetes version for EKS cluster"
   type        = string
   default     = "1.28"
-  
+
   validation {
     condition = contains([
       "1.26", "1.27", "1.28", "1.29"
@@ -152,7 +152,7 @@ variable "node_capacity_type" {
   description = "Capacity type for EKS nodes (ON_DEMAND or SPOT)"
   type        = string
   default     = "ON_DEMAND"
-  
+
   validation {
     condition     = contains(["ON_DEMAND", "SPOT"], var.node_capacity_type)
     error_message = "Node capacity type must be either ON_DEMAND or SPOT."
@@ -163,7 +163,7 @@ variable "node_desired_size" {
   description = "Desired number of EKS nodes"
   type        = number
   default     = 3
-  
+
   validation {
     condition     = var.node_desired_size >= 1 && var.node_desired_size <= 100
     error_message = "Node desired size must be between 1 and 100."
@@ -174,7 +174,7 @@ variable "node_min_size" {
   description = "Minimum number of EKS nodes"
   type        = number
   default     = 1
-  
+
   validation {
     condition     = var.node_min_size >= 1
     error_message = "Node minimum size must be at least 1."
@@ -185,7 +185,7 @@ variable "node_max_size" {
   description = "Maximum number of EKS nodes"
   type        = number
   default     = 10
-  
+
   validation {
     condition     = var.node_max_size >= 1 && var.node_max_size <= 100
     error_message = "Node maximum size must be between 1 and 100."
@@ -196,7 +196,7 @@ variable "node_disk_size" {
   description = "Disk size for EKS nodes (GB)"
   type        = number
   default     = 50
-  
+
   validation {
     condition     = var.node_disk_size >= 20 && var.node_disk_size <= 1000
     error_message = "Node disk size must be between 20 and 1000 GB."
@@ -245,7 +245,7 @@ variable "alert_email_addresses" {
   description = "Email addresses for alerts and notifications"
   type        = list(string)
   default     = ["admin@chainfinity.com", "security@chainfinity.com"]
-  
+
   validation {
     condition = alltrue([
       for email in var.alert_email_addresses : can(regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", email))
@@ -264,7 +264,7 @@ variable "log_retention_days" {
   description = "CloudWatch log retention period in days"
   type        = number
   default     = 2555  # 7 years for financial compliance
-  
+
   validation {
     condition = contains([
       1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 2555, 3653
@@ -278,7 +278,7 @@ variable "backup_retention_days" {
   description = "Backup retention period in days"
   type        = number
   default     = 2555  # 7 years for financial compliance
-  
+
   validation {
     condition     = var.backup_retention_days >= 7 && var.backup_retention_days <= 3653
     error_message = "Backup retention must be between 7 and 3653 days."
@@ -295,7 +295,7 @@ variable "backup_window" {
   description = "Preferred backup window for RDS"
   type        = string
   default     = "03:00-04:00"
-  
+
   validation {
     condition     = can(regex("^([0-1][0-9]|2[0-3]):[0-5][0-9]-([0-1][0-9]|2[0-3]):[0-5][0-9]$", var.backup_window))
     error_message = "Backup window must be in format HH:MM-HH:MM."
@@ -306,7 +306,7 @@ variable "maintenance_window" {
   description = "Preferred maintenance window for RDS"
   type        = string
   default     = "sun:04:00-sun:05:00"
-  
+
   validation {
     condition = can(regex("^(mon|tue|wed|thu|fri|sat|sun):[0-2][0-9]:[0-5][0-9]-(mon|tue|wed|thu|fri|sat|sun):[0-2][0-9]:[0-5][0-9]$", var.maintenance_window))
     error_message = "Maintenance window must be in format ddd:HH:MM-ddd:HH:MM."
@@ -318,7 +318,7 @@ variable "compliance_frameworks" {
   description = "List of compliance frameworks to implement"
   type        = list(string)
   default     = ["SOC2", "PCI-DSS", "GDPR", "SOX", "ISO27001"]
-  
+
   validation {
     condition = alltrue([
       for framework in var.compliance_frameworks : contains(["SOC2", "PCI-DSS", "GDPR", "SOX", "ISO27001", "HIPAA", "FedRAMP"], framework)
@@ -331,7 +331,7 @@ variable "data_classification_level" {
   description = "Data classification level for the application"
   type        = string
   default     = "confidential"
-  
+
   validation {
     condition     = contains(["public", "internal", "confidential", "restricted"], var.data_classification_level)
     error_message = "Data classification level must be one of: public, internal, confidential, restricted."
@@ -361,7 +361,7 @@ variable "cost_budget_limit" {
   description = "Monthly cost budget limit in USD"
   type        = number
   default     = 5000
-  
+
   validation {
     condition     = var.cost_budget_limit > 0
     error_message = "Cost budget limit must be greater than 0."
@@ -385,7 +385,7 @@ variable "rto_hours" {
   description = "Recovery Time Objective in hours"
   type        = number
   default     = 4
-  
+
   validation {
     condition     = var.rto_hours >= 1 && var.rto_hours <= 72
     error_message = "RTO must be between 1 and 72 hours."
@@ -396,7 +396,7 @@ variable "rpo_hours" {
   description = "Recovery Point Objective in hours"
   type        = number
   default     = 1
-  
+
   validation {
     condition     = var.rpo_hours >= 0.25 && var.rpo_hours <= 24
     error_message = "RPO must be between 0.25 and 24 hours."
@@ -436,4 +436,3 @@ variable "additional_tags" {
   type        = map(string)
   default     = {}
 }
-
