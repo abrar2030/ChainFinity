@@ -3,11 +3,10 @@ Unit tests for authentication service
 """
 
 from datetime import datetime, timedelta
-from unittest.mock import Mock, patch
 
 import pytest
 from fastapi import HTTPException
-from models.user import User, UserStatus
+from models.user import UserStatus
 from services.auth.auth_service import AuthService
 from services.auth.password_service import PasswordService
 

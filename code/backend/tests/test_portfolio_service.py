@@ -4,23 +4,20 @@ Tests all portfolio management functionality with edge cases and error scenarios
 """
 
 import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime
 from decimal import Decimal
 from unittest.mock import AsyncMock, Mock, patch
 from uuid import UUID, uuid4
 
 import pytest
-from exceptions.portfolio_exceptions import (
-    InsufficientFundsError,
-    InvalidAllocationError,
-    PortfolioLimitExceededError,
-    PortfolioNotFoundError,
-)
+from exceptions.portfolio_exceptions import (InsufficientFundsError,
+                                             InvalidAllocationError,
+                                             PortfolioLimitExceededError,
+                                             PortfolioNotFoundError)
 from models.portfolio import Portfolio, PortfolioAsset
 from models.user import User
 from schemas.portfolio import AssetAllocation, PortfolioCreate, PortfolioUpdate
 from services.portfolio.portfolio_service import PortfolioService
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 

@@ -6,15 +6,8 @@ import asyncio
 from logging.config import fileConfig
 
 from alembic import context
-
 # Import all models to ensure they are registered with SQLAlchemy
 from models.base import Base
-from models.blockchain import *
-from models.compliance import *
-from models.portfolio import *
-from models.risk import *
-from models.transaction import *
-from models.user import *
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config

@@ -9,11 +9,10 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from decimal import Decimal
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 import aiohttp
 from config.database import cache
-from config.settings import settings
 from services.external.price_feeds import PriceFeedAggregator
 
 logger = logging.getLogger(__name__)

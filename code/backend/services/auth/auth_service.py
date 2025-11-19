@@ -3,8 +3,8 @@ Authentication service with enhanced security features
 """
 
 import logging
-from datetime import datetime, timedelta
-from typing import Any, Dict, Optional, Tuple
+from datetime import datetime
+from typing import Dict, Optional, Tuple
 from uuid import UUID
 
 from config.database import cache
@@ -12,7 +12,7 @@ from config.settings import settings
 from fastapi import HTTPException, status
 from models.compliance import AuditEventType, AuditLog
 from models.user import User, UserStatus
-from sqlalchemy import select, update
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .jwt_service import JWTService

@@ -4,20 +4,15 @@ Comprehensive compliance service for financial regulations
 
 import logging
 from datetime import datetime, timedelta
-from decimal import Decimal
-from typing import Any, Dict, List, Optional
-from uuid import UUID
+from typing import Any, Dict, List
 
 from config.settings import settings
-from models.compliance import (
-    ComplianceCheck,
-    ComplianceStatus,
-    SuspiciousActivityReport,
-)
-from models.risk import RiskAssessment, RiskLevel
+from models.compliance import (ComplianceCheck, ComplianceStatus,
+                               SuspiciousActivityReport)
+from models.risk import RiskLevel
 from models.transaction import Transaction, TransactionStatus
-from models.user import KYCStatus, User, UserKYC
-from sqlalchemy import and_, or_, select
+from models.user import User
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)

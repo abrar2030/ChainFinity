@@ -4,7 +4,6 @@ Aggregates price data from multiple sources with failover and validation
 """
 
 import asyncio
-import json
 import logging
 from datetime import datetime, timedelta
 from decimal import Decimal

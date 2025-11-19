@@ -4,28 +4,23 @@ Comprehensive portfolio management with advanced analytics, risk management, and
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 from decimal import Decimal
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 from uuid import UUID
 
 from config.settings import settings
 from models.portfolio import Portfolio, PortfolioAsset, PortfolioSnapshot
-from models.transaction import Transaction, TransactionStatus
 from models.user import User
 from schemas.base import PaginatedResponse
-from schemas.portfolio import (
-    PortfolioAssetUpdate,
-    PortfolioCreate,
-    PortfolioUpdate,
-    RebalanceRequest,
-    RebalanceResponse,
-)
+from schemas.portfolio import (PortfolioAssetUpdate, PortfolioCreate,
+                               PortfolioUpdate, RebalanceRequest,
+                               RebalanceResponse)
 from services.analytics.performance_service import PerformanceService
 from services.compliance.compliance_service import ComplianceService
 from services.market.market_data_service import MarketDataService
 from services.risk.risk_service import RiskService
-from sqlalchemy import and_, desc, func, or_, select
+from sqlalchemy import and_, desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -52,7 +47,7 @@ class PortfolioService:
         """
         try:
             # Validate user exists and is active
-            user = await self._get_active_user(user_id)
+            await self._get_active_user(user_id)
 
             # Check portfolio limits
             await self._validate_portfolio_limits(user_id)

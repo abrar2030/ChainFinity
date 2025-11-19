@@ -11,15 +11,12 @@ from typing import Any, Dict, List, Optional, Tuple
 from uuid import UUID
 
 import numpy as np
-from config.settings import settings
-from models.portfolio import Portfolio, PortfolioAsset
-from models.risk import RiskAssessment, RiskMetrics, StressTestResult, VaRCalculation
-from models.transaction import Transaction, TransactionStatus
-from models.user import RiskLevel, User, UserRiskProfile
-from schemas.risk import RiskAssessmentResponse, RiskMetricsResponse
+from models.portfolio import Portfolio
+from models.risk import RiskAssessment
+from models.user import RiskLevel, UserRiskProfile
 from scipy import stats
 from services.market.market_data_service import MarketDataService
-from sqlalchemy import and_, func, or_, select
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)

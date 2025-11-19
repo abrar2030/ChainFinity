@@ -3,14 +3,12 @@ Comprehensive test suite for compliance services
 Tests KYC, AML, transaction monitoring, and regulatory compliance
 """
 
-import asyncio
 from datetime import datetime, timedelta
 from decimal import Decimal
-from unittest.mock import AsyncMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import pytest
-from config.database import get_async_session
-from models.compliance import ComplianceCheck, RegulatoryReport, SuspiciousActivity
+from models.compliance import SuspiciousActivity
 from models.transaction import Transaction, TransactionStatus, TransactionType
 from models.user import KYCStatus, RiskLevel, User, UserKYC, UserRiskProfile
 from services.compliance.compliance_service import ComplianceService

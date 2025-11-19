@@ -3,9 +3,8 @@ ChainFinity Backend Configuration Settings
 Production-ready configuration with environment-specific settings
 """
 
-import os
 from functools import lru_cache
-from typing import Any, List, Optional
+from typing import List, Optional
 
 from pydantic import BaseSettings, Field, validator
 

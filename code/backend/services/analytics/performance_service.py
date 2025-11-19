@@ -11,16 +11,9 @@ from typing import Any, Dict, List, Optional, Tuple
 from uuid import UUID
 
 import numpy as np
-from config.settings import settings
-from models.portfolio import Portfolio, PortfolioAsset, PortfolioSnapshot
-from models.transaction import Transaction, TransactionStatus
-from schemas.analytics import (
-    AttributionAnalysis,
-    BenchmarkComparison,
-    PerformanceMetrics,
-)
+from models.portfolio import Portfolio
 from services.market.market_data_service import MarketDataService
-from sqlalchemy import and_, func, select
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)

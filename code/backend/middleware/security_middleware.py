@@ -3,7 +3,6 @@ Security middleware for comprehensive request/response security
 Implements security headers, request validation, and threat detection
 """
 
-import hashlib
 import ipaddress
 import json
 import logging
@@ -251,7 +250,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
         # Parse user agent
         try:
-            parsed_ua = parse(user_agent)
+            parse(user_agent)
 
             # Check for known bot patterns that might be malicious
             suspicious_bots = [
