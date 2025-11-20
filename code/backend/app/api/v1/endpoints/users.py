@@ -11,12 +11,17 @@ from fastapi.security import HTTPBearer
 from middleware.audit_middleware import audit_log
 from models.user import User
 from schemas.base import PaginatedResponse, SuccessResponse
-from schemas.user import (UserKYCResponse, UserKYCUpdate, UserProfileResponse,
-                          UserProfileUpdate, UserResponse,
-                          UserRiskProfileResponse, UserRiskProfileUpdate,
-                          UserUpdate)
-from services.auth.auth_service import (get_current_active_user,
-                                        get_current_user)
+from schemas.user import (
+    UserKYCResponse,
+    UserKYCUpdate,
+    UserProfileResponse,
+    UserProfileUpdate,
+    UserResponse,
+    UserRiskProfileResponse,
+    UserRiskProfileUpdate,
+    UserUpdate,
+)
+from services.auth.auth_service import get_current_active_user, get_current_user
 from services.compliance.kyc_service import KYCService
 from services.risk.risk_service import RiskService
 from services.user.user_service import UserService

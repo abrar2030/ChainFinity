@@ -11,11 +11,17 @@ from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
 from middleware.audit_middleware import audit_log
 from models.user import User
 from schemas.base import PaginatedResponse, SuccessResponse
-from schemas.portfolio import (PortfolioAnalytics, PortfolioAssetResponse,
-                               PortfolioAssetUpdate, PortfolioCreate,
-                               PortfolioPerformance, PortfolioResponse,
-                               PortfolioUpdate, RebalanceRequest,
-                               RebalanceResponse)
+from schemas.portfolio import (
+    PortfolioAnalytics,
+    PortfolioAssetResponse,
+    PortfolioAssetUpdate,
+    PortfolioCreate,
+    PortfolioPerformance,
+    PortfolioResponse,
+    PortfolioUpdate,
+    RebalanceRequest,
+    RebalanceResponse,
+)
 from services.analytics.analytics_service import AnalyticsService
 from services.auth.auth_service import get_current_active_user
 from services.portfolio.portfolio_service import PortfolioService

@@ -15,8 +15,15 @@ import qrcode
 from config.database import cache
 from config.settings import settings
 from models.audit import AuditLog
-from models.user import (KYCStatus, RiskLevel, User, UserKYC, UserProfile,
-                         UserRiskProfile, UserStatus)
+from models.user import (
+    KYCStatus,
+    RiskLevel,
+    User,
+    UserKYC,
+    UserProfile,
+    UserRiskProfile,
+    UserStatus,
+)
 from passlib.context import CryptContext
 from schemas.base import PaginatedResponse
 from schemas.user import UserCreate, UserProfileUpdate, UserUpdate
