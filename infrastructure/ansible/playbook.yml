@@ -55,7 +55,7 @@
       file:
         path: "{{ app_dir }}"
         state: directory
-        mode: '0755'
+        mode: "0755"
 
     - name: Copy application files
       copy:

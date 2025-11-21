@@ -112,29 +112,29 @@ metadata:
     app.kubernetes.io/name: chainfinity
     security.compliance/principle: "least-privilege"
 rules:
-# Read access to own namespace resources
-- apiGroups: [""]
-  resources: ["pods", "services", "endpoints", "configmaps"]
-  verbs: ["get", "list", "watch"]
-  resourceNames: []
-# Read access to secrets (limited)
-- apiGroups: [""]
-  resources: ["secrets"]
-  verbs: ["get"]
-  resourceNames: ["chainfinity-app-secrets", "chainfinity-tls-certs"]
-# Read access to own service account
-- apiGroups: [""]
-  resources: ["serviceaccounts"]
-  verbs: ["get"]
-  resourceNames: ["chainfinity-app"]
-# Read access to nodes for health checks
-- apiGroups: [""]
-  resources: ["nodes"]
-  verbs: ["get", "list"]
-# Metrics access
-- apiGroups: ["metrics.k8s.io"]
-  resources: ["pods", "nodes"]
-  verbs: ["get", "list"]
+  # Read access to own namespace resources
+  - apiGroups: [""]
+    resources: ["pods", "services", "endpoints", "configmaps"]
+    verbs: ["get", "list", "watch"]
+    resourceNames: []
+  # Read access to secrets (limited)
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get"]
+    resourceNames: ["chainfinity-app-secrets", "chainfinity-tls-certs"]
+  # Read access to own service account
+  - apiGroups: [""]
+    resources: ["serviceaccounts"]
+    verbs: ["get"]
+    resourceNames: ["chainfinity-app"]
+  # Read access to nodes for health checks
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list"]
+  # Metrics access
+  - apiGroups: ["metrics.k8s.io"]
+    resources: ["pods", "nodes"]
+    verbs: ["get", "list"]
 
 ---
 # ClusterRole for Database Operations
@@ -146,22 +146,22 @@ metadata:
     app.kubernetes.io/name: chainfinity
     app.kubernetes.io/component: database
 rules:
-# Database-specific permissions
-- apiGroups: [""]
-  resources: ["pods", "services", "persistentvolumeclaims"]
-  verbs: ["get", "list", "watch"]
-- apiGroups: [""]
-  resources: ["secrets"]
-  verbs: ["get"]
-  resourceNames: ["chainfinity-db-secrets"]
-# Backup operations
-- apiGroups: ["batch"]
-  resources: ["jobs", "cronjobs"]
-  verbs: ["get", "list", "watch", "create"]
-# Storage operations
-- apiGroups: ["storage.k8s.io"]
-  resources: ["storageclasses", "volumeattachments"]
-  verbs: ["get", "list"]
+  # Database-specific permissions
+  - apiGroups: [""]
+    resources: ["pods", "services", "persistentvolumeclaims"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get"]
+    resourceNames: ["chainfinity-db-secrets"]
+  # Backup operations
+  - apiGroups: ["batch"]
+    resources: ["jobs", "cronjobs"]
+    verbs: ["get", "list", "watch", "create"]
+  # Storage operations
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["storageclasses", "volumeattachments"]
+    verbs: ["get", "list"]
 
 ---
 # ClusterRole for Monitoring
@@ -172,27 +172,37 @@ metadata:
   labels:
     app.kubernetes.io/name: monitoring
 rules:
-# Comprehensive read access for monitoring
-- apiGroups: [""]
-  resources: ["nodes", "nodes/proxy", "nodes/metrics", "services", "endpoints", "pods", "ingresses", "configmaps"]
-  verbs: ["get", "list", "watch"]
-- apiGroups: ["extensions", "networking.k8s.io"]
-  resources: ["ingresses"]
-  verbs: ["get", "list", "watch"]
-- apiGroups: ["apps"]
-  resources: ["deployments", "daemonsets", "replicasets", "statefulsets"]
-  verbs: ["get", "list", "watch"]
-- apiGroups: ["batch"]
-  resources: ["jobs", "cronjobs"]
-  verbs: ["get", "list", "watch"]
-# Metrics access
-- apiGroups: ["metrics.k8s.io"]
-  resources: ["nodes", "pods"]
-  verbs: ["get", "list"]
-# Custom metrics
-- apiGroups: ["custom.metrics.k8s.io"]
-  resources: ["*"]
-  verbs: ["get", "list"]
+  # Comprehensive read access for monitoring
+  - apiGroups: [""]
+    resources:
+      [
+        "nodes",
+        "nodes/proxy",
+        "nodes/metrics",
+        "services",
+        "endpoints",
+        "pods",
+        "ingresses",
+        "configmaps",
+      ]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["extensions", "networking.k8s.io"]
+    resources: ["ingresses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "daemonsets", "replicasets", "statefulsets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["batch"]
+    resources: ["jobs", "cronjobs"]
+    verbs: ["get", "list", "watch"]
+  # Metrics access
+  - apiGroups: ["metrics.k8s.io"]
+    resources: ["nodes", "pods"]
+    verbs: ["get", "list"]
+  # Custom metrics
+  - apiGroups: ["custom.metrics.k8s.io"]
+    resources: ["*"]
+    verbs: ["get", "list"]
 
 ---
 # ClusterRole for Security Scanning
@@ -204,25 +214,25 @@ metadata:
     app.kubernetes.io/name: security
     app.kubernetes.io/component: scanner
 rules:
-# Security scanning permissions
-- apiGroups: [""]
-  resources: ["pods", "services", "configmaps", "secrets", "serviceaccounts"]
-  verbs: ["get", "list"]
-- apiGroups: ["apps"]
-  resources: ["deployments", "daemonsets", "replicasets", "statefulsets"]
-  verbs: ["get", "list"]
-- apiGroups: ["networking.k8s.io"]
-  resources: ["networkpolicies", "ingresses"]
-  verbs: ["get", "list"]
-- apiGroups: ["rbac.authorization.k8s.io"]
-  resources: ["roles", "rolebindings", "clusterroles", "clusterrolebindings"]
-  verbs: ["get", "list"]
-- apiGroups: ["security.istio.io"]
-  resources: ["*"]
-  verbs: ["get", "list"]
-- apiGroups: ["policy"]
-  resources: ["podsecuritypolicies"]
-  verbs: ["get", "list"]
+  # Security scanning permissions
+  - apiGroups: [""]
+    resources: ["pods", "services", "configmaps", "secrets", "serviceaccounts"]
+    verbs: ["get", "list"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "daemonsets", "replicasets", "statefulsets"]
+    verbs: ["get", "list"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["networkpolicies", "ingresses"]
+    verbs: ["get", "list"]
+  - apiGroups: ["rbac.authorization.k8s.io"]
+    resources: ["roles", "rolebindings", "clusterroles", "clusterrolebindings"]
+    verbs: ["get", "list"]
+  - apiGroups: ["security.istio.io"]
+    resources: ["*"]
+    verbs: ["get", "list"]
+  - apiGroups: ["policy"]
+    resources: ["podsecuritypolicies"]
+    verbs: ["get", "list"]
 
 ---
 # ClusterRole for Admin Operations (emergency access)
@@ -234,10 +244,10 @@ metadata:
     app.kubernetes.io/name: chainfinity
     security.compliance/access-level: "emergency-only"
 rules:
-# Full admin access (use with extreme caution)
-- apiGroups: ["*"]
-  resources: ["*"]
-  verbs: ["*"]
+  # Full admin access (use with extreme caution)
+  - apiGroups: ["*"]
+    resources: ["*"]
+    verbs: ["*"]
 
 ---
 # RoleBinding for ChainFinity Application
@@ -249,9 +259,9 @@ metadata:
   labels:
     app.kubernetes.io/name: chainfinity
 subjects:
-- kind: ServiceAccount
-  name: chainfinity-app
-  namespace: chainfinity
+  - kind: ServiceAccount
+    name: chainfinity-app
+    namespace: chainfinity
 roleRef:
   kind: ClusterRole
   name: chainfinity-app-role
@@ -268,9 +278,9 @@ metadata:
     app.kubernetes.io/name: chainfinity
     app.kubernetes.io/component: database
 subjects:
-- kind: ServiceAccount
-  name: chainfinity-db
-  namespace: chainfinity
+  - kind: ServiceAccount
+    name: chainfinity-db
+    namespace: chainfinity
 roleRef:
   kind: ClusterRole
   name: chainfinity-db-role
@@ -285,9 +295,9 @@ metadata:
   labels:
     app.kubernetes.io/name: monitoring
 subjects:
-- kind: ServiceAccount
-  name: chainfinity-monitoring
-  namespace: chainfinity-monitoring
+  - kind: ServiceAccount
+    name: chainfinity-monitoring
+    namespace: chainfinity-monitoring
 roleRef:
   kind: ClusterRole
   name: chainfinity-monitoring-role
@@ -302,9 +312,9 @@ metadata:
   labels:
     app.kubernetes.io/name: security
 subjects:
-- kind: ServiceAccount
-  name: chainfinity-security-scanner
-  namespace: chainfinity-security
+  - kind: ServiceAccount
+    name: chainfinity-security-scanner
+    namespace: chainfinity-security
 roleRef:
   kind: ClusterRole
   name: chainfinity-security-scanner-role
@@ -324,13 +334,13 @@ metadata:
     security.compliance/audit-trail: "mandatory"
     security.compliance/time-limited: "true"
 subjects:
-# Add specific users who can have emergency admin access
-- kind: User
-  name: admin@chainfinity.com
-  apiGroup: rbac.authorization.k8s.io
-- kind: User
-  name: security-admin@chainfinity.com
-  apiGroup: rbac.authorization.k8s.io
+  # Add specific users who can have emergency admin access
+  - kind: User
+    name: admin@chainfinity.com
+    apiGroup: rbac.authorization.k8s.io
+  - kind: User
+    name: security-admin@chainfinity.com
+    apiGroup: rbac.authorization.k8s.io
 roleRef:
   kind: ClusterRole
   name: chainfinity-admin-role
@@ -346,40 +356,40 @@ metadata:
     app.kubernetes.io/name: chainfinity
     security.compliance/level: "high"
   annotations:
-    seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'runtime/default'
-    seccomp.security.alpha.kubernetes.io/defaultProfileName: 'runtime/default'
-    apparmor.security.beta.kubernetes.io/allowedProfileNames: 'runtime/default'
-    apparmor.security.beta.kubernetes.io/defaultProfileName: 'runtime/default'
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: "runtime/default"
+    seccomp.security.alpha.kubernetes.io/defaultProfileName: "runtime/default"
+    apparmor.security.beta.kubernetes.io/allowedProfileNames: "runtime/default"
+    apparmor.security.beta.kubernetes.io/defaultProfileName: "runtime/default"
 spec:
   privileged: false
   allowPrivilegeEscalation: false
   requiredDropCapabilities:
     - ALL
   volumes:
-    - 'configMap'
-    - 'emptyDir'
-    - 'projected'
-    - 'secret'
-    - 'downwardAPI'
-    - 'persistentVolumeClaim'
+    - "configMap"
+    - "emptyDir"
+    - "projected"
+    - "secret"
+    - "downwardAPI"
+    - "persistentVolumeClaim"
   hostNetwork: false
   hostIPC: false
   hostPID: false
   runAsUser:
-    rule: 'MustRunAsNonRoot'
+    rule: "MustRunAsNonRoot"
   supplementalGroups:
-    rule: 'MustRunAs'
+    rule: "MustRunAs"
     ranges:
       - min: 1
         max: 65535
   fsGroup:
-    rule: 'MustRunAs'
+    rule: "MustRunAs"
     ranges:
       - min: 1
         max: 65535
   readOnlyRootFilesystem: true
   seLinux:
-    rule: 'RunAsAny'
+    rule: "RunAsAny"
 
 ---
 # ClusterRole for Pod Security Policy
@@ -390,10 +400,10 @@ metadata:
   labels:
     app.kubernetes.io/name: chainfinity
 rules:
-- apiGroups: ['policy']
-  resources: ['podsecuritypolicies']
-  verbs: ['use']
-  resourceNames: ['chainfinity-psp']
+  - apiGroups: ["policy"]
+    resources: ["podsecuritypolicies"]
+    verbs: ["use"]
+    resourceNames: ["chainfinity-psp"]
 
 ---
 # RoleBinding for Pod Security Policy
@@ -405,12 +415,12 @@ metadata:
   labels:
     app.kubernetes.io/name: chainfinity
 subjects:
-- kind: ServiceAccount
-  name: chainfinity-app
-  namespace: chainfinity
-- kind: ServiceAccount
-  name: chainfinity-db
-  namespace: chainfinity
+  - kind: ServiceAccount
+    name: chainfinity-app
+    namespace: chainfinity
+  - kind: ServiceAccount
+    name: chainfinity-db
+    namespace: chainfinity
 roleRef:
   kind: ClusterRole
   name: chainfinity-psp-role

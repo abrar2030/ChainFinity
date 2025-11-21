@@ -7,6 +7,7 @@ This guide helps you resolve common issues with ChainFinity.
 ### Installation Problems
 
 **Issue**: npm install fails
+
 - **Solution**:
   1. Clear npm cache: `npm cache clean --force`
   2. Delete node_modules: `rm -rf node_modules`
@@ -14,6 +15,7 @@ This guide helps you resolve common issues with ChainFinity.
   4. Reinstall: `npm install`
 
 **Issue**: Environment variables not loading
+
 - **Solution**:
   1. Check .env file exists
   2. Verify variable names match
@@ -22,6 +24,7 @@ This guide helps you resolve common issues with ChainFinity.
 ### Connection Issues
 
 **Issue**: Cannot connect to blockchain
+
 - **Solution**:
   1. Check network status
   2. Verify RPC endpoint
@@ -29,6 +32,7 @@ This guide helps you resolve common issues with ChainFinity.
   4. Check gas settings
 
 **Issue**: API requests failing
+
 - **Solution**:
   1. Check API endpoint
   2. Verify authentication
@@ -38,6 +42,7 @@ This guide helps you resolve common issues with ChainFinity.
 ### Performance Issues
 
 **Issue**: Slow response times
+
 - **Solution**:
   1. Check server resources
   2. Review database queries
@@ -45,6 +50,7 @@ This guide helps you resolve common issues with ChainFinity.
   4. Optimize code
 
 **Issue**: High gas fees
+
 - **Solution**:
   1. Use gas estimation
   2. Choose optimal time
@@ -54,6 +60,7 @@ This guide helps you resolve common issues with ChainFinity.
 ### Wallet Issues
 
 **Issue**: Transaction rejected
+
 - **Solution**:
   1. Check sufficient funds
   2. Verify network
@@ -61,6 +68,7 @@ This guide helps you resolve common issues with ChainFinity.
   4. Review transaction details
 
 **Issue**: Wallet not connecting
+
 - **Solution**:
   1. Check browser extension
   2. Clear cache
@@ -77,6 +85,7 @@ This guide helps you resolve common issues with ChainFinity.
 ## Log Files
 
 Location: `/var/log/chainfinity/`
+
 - `app.log` - Application logs
 - `error.log` - Error logs
 - `access.log` - Access logs
@@ -91,6 +100,7 @@ Location: `/var/log/chainfinity/`
 ## Reporting Bugs
 
 When reporting bugs, include:
+
 1. Steps to reproduce
 2. Expected behavior
 3. Actual behavior

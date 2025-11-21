@@ -1,58 +1,68 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import GovernanceAnalytics from '../components/governance/GovernanceAnalytics';
-import ProposalList from '../components/governance/ProposalList';
-import VotingPower from '../components/governance/VotingPower';
-import GovernanceStats from '../components/governance/GovernanceStats';
-import DelegationManager from '../components/governance/DelegationManager';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import GovernanceAnalytics from "../components/governance/GovernanceAnalytics";
+import ProposalList from "../components/governance/ProposalList";
+import VotingPower from "../components/governance/VotingPower";
+import GovernanceStats from "../components/governance/GovernanceStats";
+import DelegationManager from "../components/governance/DelegationManager";
 
 const Analytics = () => {
   const navigate = useNavigate();
 
   // Sample data - in production this would come from API/contracts
   const governanceData = {
-    tokenSymbol: 'CFG',
-    tokenName: 'ChainFinity Governance',
-    totalSupply: '100000000',
-    quorum: '4',
-    votingDelay: '1 day',
-    votingPeriod: '7 days',
-    proposalThreshold: '0',
-    userVotingPower: '1500000',
-    userTokenBalance: '1000000',
+    tokenSymbol: "CFG",
+    tokenName: "ChainFinity Governance",
+    totalSupply: "100000000",
+    quorum: "4",
+    votingDelay: "1 day",
+    votingPeriod: "7 days",
+    proposalThreshold: "0",
+    userVotingPower: "1500000",
+    userTokenBalance: "1000000",
     delegatedTo: null,
-    delegatedFrom: [
-      { address: '0x1234...5678', amount: '500000' },
-    ],
+    delegatedFrom: [{ address: "0x1234...5678", amount: "500000" }],
     activeProposals: [
       {
-        id: '1',
-        title: 'Update fee structure for AssetVault',
-        description: 'Proposal to update the fee structure for deposits and withdrawals in the AssetVault contract.',
-        proposer: '0xabcd...1234',
-        status: 'active',
-        forVotes: '2500000',
-        againstVotes: '1500000',
-        abstainVotes: '500000',
-        startBlock: '12345678',
-        endBlock: '12346678',
+        id: "1",
+        title: "Update fee structure for AssetVault",
+        description:
+          "Proposal to update the fee structure for deposits and withdrawals in the AssetVault contract.",
+        proposer: "0xabcd...1234",
+        status: "active",
+        forVotes: "2500000",
+        againstVotes: "1500000",
+        abstainVotes: "500000",
+        startBlock: "12345678",
+        endBlock: "12346678",
         eta: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days from now
         executed: false,
       },
       {
-        id: '2',
-        title: 'Add support for Optimism chain',
-        description: 'Proposal to add support for Optimism chain in the CrossChainManager contract.',
-        proposer: '0xefgh...5678',
-        status: 'pending',
-        forVotes: '0',
-        againstVotes: '0',
-        abstainVotes: '0',
-        startBlock: '12346700',
-        endBlock: '12347700',
+        id: "2",
+        title: "Add support for Optimism chain",
+        description:
+          "Proposal to add support for Optimism chain in the CrossChainManager contract.",
+        proposer: "0xefgh...5678",
+        status: "pending",
+        forVotes: "0",
+        againstVotes: "0",
+        abstainVotes: "0",
+        startBlock: "12346700",
+        endBlock: "12347700",
         eta: Date.now() + 9 * 24 * 60 * 60 * 1000, // 9 days from now
         executed: false,
       },
@@ -69,7 +79,7 @@ const Analytics = () => {
           </p>
         </div>
         <div className="mt-4 md:mt-0">
-          <Button onClick={() => navigate('/governance')}>
+          <Button onClick={() => navigate("/governance")}>
             Back to Governance
           </Button>
         </div>

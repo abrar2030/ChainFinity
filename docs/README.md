@@ -21,5 +21,6 @@ Welcome to the ChainFinity documentation! This directory contains comprehensive 
 ## Support
 
 For additional support, please refer to:
+
 - [FAQ](./faq.md)
 - [Contact Information](./contact.md)

@@ -32,20 +32,20 @@ spec:
     privateKeySecretRef:
       name: letsencrypt-prod
     solvers:
-    - http01:
-        ingress:
-          class: nginx
-          podTemplate:
-            spec:
-              nodeSelector:
-                "kubernetes.io/os": linux
-    - dns01:
-        route53:
-          region: us-west-2
-          accessKeyID: AKIAIOSFODNN7EXAMPLE
-          secretAccessKeySecretRef:
-            name: route53-credentials
-            key: secret-access-key
+      - http01:
+          ingress:
+            class: nginx
+            podTemplate:
+              spec:
+                nodeSelector:
+                  "kubernetes.io/os": linux
+      - dns01:
+          route53:
+            region: us-west-2
+            accessKeyID: AKIAIOSFODNN7EXAMPLE
+            secretAccessKeySecretRef:
+              name: route53-credentials
+              key: secret-access-key
 
 ---
 # Vault PKI ClusterIssuer
@@ -84,8 +84,8 @@ type: kubernetes.io/tls
 data:
   # These would be populated with actual CA certificate and key
   # Generated using: openssl req -x509 -newkey rsa:4096 -keyout ca-key.pem -out ca-cert.pem -days 3650 -nodes
-  tls.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0t...  # Base64 encoded CA certificate
-  tls.key: LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0t...  # Base64 encoded CA private key
+  tls.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0t... # Base64 encoded CA certificate
+  tls.key: LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0t... # Base64 encoded CA private key
 
 ---
 # Application TLS Certificate
@@ -106,20 +106,20 @@ spec:
     kind: ClusterIssuer
   commonName: app.chainfinity.com
   dnsNames:
-  - app.chainfinity.com
-  - api.chainfinity.com
-  - chainfinity-app.chainfinity.svc.cluster.local
-  - chainfinity-app.chainfinity.svc
-  duration: 720h  # 30 days
-  renewBefore: 240h  # 10 days
+    - app.chainfinity.com
+    - api.chainfinity.com
+    - chainfinity-app.chainfinity.svc.cluster.local
+    - chainfinity-app.chainfinity.svc
+  duration: 720h # 30 days
+  renewBefore: 240h # 10 days
   keySize: 4096
   keyAlgorithm: rsa
   keyEncoding: pkcs1
   usages:
-  - digital signature
-  - key encipherment
-  - server auth
-  - client auth
+    - digital signature
+    - key encipherment
+    - server auth
+    - client auth
 
 ---
 # Database TLS Certificate
@@ -138,18 +138,18 @@ spec:
     kind: ClusterIssuer
   commonName: db.chainfinity.internal
   dnsNames:
-  - db.chainfinity.internal
-  - chainfinity-db.chainfinity.svc.cluster.local
-  - chainfinity-db.chainfinity.svc
+    - db.chainfinity.internal
+    - chainfinity-db.chainfinity.svc.cluster.local
+    - chainfinity-db.chainfinity.svc
   duration: 720h
   renewBefore: 240h
   keySize: 4096
   keyAlgorithm: rsa
   usages:
-  - digital signature
-  - key encipherment
-  - server auth
-  - client auth
+    - digital signature
+    - key encipherment
+    - server auth
+    - client auth
 
 ---
 # Vault TLS Certificate
@@ -168,21 +168,21 @@ spec:
     kind: ClusterIssuer
   commonName: vault.chainfinity.internal
   dnsNames:
-  - vault.chainfinity.internal
-  - vault.chainfinity-security.svc.cluster.local
-  - vault.chainfinity-security.svc
-  - localhost
+    - vault.chainfinity.internal
+    - vault.chainfinity-security.svc.cluster.local
+    - vault.chainfinity-security.svc
+    - localhost
   ipAddresses:
-  - 127.0.0.1
-  duration: 8760h  # 1 year
-  renewBefore: 720h  # 30 days
+    - 127.0.0.1
+  duration: 8760h # 1 year
+  renewBefore: 720h # 30 days
   keySize: 4096
   keyAlgorithm: rsa
   usages:
-  - digital signature
-  - key encipherment
-  - server auth
-  - client auth
+    - digital signature
+    - key encipherment
+    - server auth
+    - client auth
 
 ---
 # Monitoring TLS Certificate
@@ -200,18 +200,18 @@ spec:
     kind: ClusterIssuer
   commonName: monitoring.chainfinity.com
   dnsNames:
-  - monitoring.chainfinity.com
-  - grafana.chainfinity.com
-  - prometheus.chainfinity.com
-  - kibana.chainfinity.com
-  duration: 2160h  # 90 days
-  renewBefore: 720h  # 30 days
+    - monitoring.chainfinity.com
+    - grafana.chainfinity.com
+    - prometheus.chainfinity.com
+    - kibana.chainfinity.com
+  duration: 2160h # 90 days
+  renewBefore: 720h # 30 days
   keySize: 2048
   keyAlgorithm: rsa
   usages:
-  - digital signature
-  - key encipherment
-  - server auth
+    - digital signature
+    - key encipherment
+    - server auth
 
 ---
 # Certificate Authority Bundle ConfigMap
@@ -301,9 +301,9 @@ spec:
     matchLabels:
       app.kubernetes.io/name: cert-manager
   endpoints:
-  - port: http-metrics
-    interval: 30s
-    path: /metrics
+    - port: http-metrics
+      interval: 30s
+      path: /metrics
 
 ---
 # Certificate Expiry Alert Rules
@@ -318,37 +318,37 @@ metadata:
     role: alert-rules
 spec:
   groups:
-  - name: certificate-expiry
-    rules:
-    - alert: CertificateExpiringSoon
-      expr: certmanager_certificate_expiration_timestamp_seconds - time() < 7 * 24 * 3600
-      for: 1h
-      labels:
-        severity: warning
-        compliance: "required"
-      annotations:
-        summary: "Certificate {{ $labels.name }} in namespace {{ $labels.namespace }} is expiring soon"
-        description: "Certificate {{ $labels.name }} in namespace {{ $labels.namespace }} will expire in less than 7 days"
+    - name: certificate-expiry
+      rules:
+        - alert: CertificateExpiringSoon
+          expr: certmanager_certificate_expiration_timestamp_seconds - time() < 7 * 24 * 3600
+          for: 1h
+          labels:
+            severity: warning
+            compliance: "required"
+          annotations:
+            summary: "Certificate {{ $labels.name }} in namespace {{ $labels.namespace }} is expiring soon"
+            description: "Certificate {{ $labels.name }} in namespace {{ $labels.namespace }} will expire in less than 7 days"
 
-    - alert: CertificateExpired
-      expr: certmanager_certificate_expiration_timestamp_seconds - time() <= 0
-      for: 0m
-      labels:
-        severity: critical
-        compliance: "violation"
-      annotations:
-        summary: "Certificate {{ $labels.name }} in namespace {{ $labels.namespace }} has expired"
-        description: "Certificate {{ $labels.name }} in namespace {{ $labels.namespace }} has expired and needs immediate attention"
+        - alert: CertificateExpired
+          expr: certmanager_certificate_expiration_timestamp_seconds - time() <= 0
+          for: 0m
+          labels:
+            severity: critical
+            compliance: "violation"
+          annotations:
+            summary: "Certificate {{ $labels.name }} in namespace {{ $labels.namespace }} has expired"
+            description: "Certificate {{ $labels.name }} in namespace {{ $labels.namespace }} has expired and needs immediate attention"
 
-    - alert: CertificateRenewalFailed
-      expr: certmanager_certificate_ready_status{condition="False"} == 1
-      for: 15m
-      labels:
-        severity: critical
-        compliance: "violation"
-      annotations:
-        summary: "Certificate renewal failed for {{ $labels.name }} in namespace {{ $labels.namespace }}"
-        description: "Certificate {{ $labels.name }} in namespace {{ $labels.namespace }} failed to renew"
+        - alert: CertificateRenewalFailed
+          expr: certmanager_certificate_ready_status{condition="False"} == 1
+          for: 15m
+          labels:
+            severity: critical
+            compliance: "violation"
+          annotations:
+            summary: "Certificate renewal failed for {{ $labels.name }} in namespace {{ $labels.namespace }}"
+            description: "Certificate {{ $labels.name }} in namespace {{ $labels.namespace }} failed to renew"
 
 ---
 # Certificate Backup CronJob
@@ -361,7 +361,7 @@ metadata:
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/component: backup
 spec:
-  schedule: "0 2 * * *"  # Daily at 2 AM
+  schedule: "0 2 * * *" # Daily at 2 AM
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 1
@@ -375,36 +375,36 @@ spec:
         spec:
           serviceAccountName: certificate-backup
           containers:
-          - name: backup
-            image: bitnami/kubectl:latest
-            command:
-            - /bin/bash
-            - -c
-            - |
-              # Backup all certificates and secrets
-              kubectl get certificates --all-namespaces -o yaml > /backup/certificates-$(date +%Y%m%d).yaml
-              kubectl get secrets --all-namespaces -l cert-manager.io/certificate-name -o yaml > /backup/certificate-secrets-$(date +%Y%m%d).yaml
+            - name: backup
+              image: bitnami/kubectl:latest
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  # Backup all certificates and secrets
+                  kubectl get certificates --all-namespaces -o yaml > /backup/certificates-$(date +%Y%m%d).yaml
+                  kubectl get secrets --all-namespaces -l cert-manager.io/certificate-name -o yaml > /backup/certificate-secrets-$(date +%Y%m%d).yaml
 
-              # Upload to secure storage
-              aws s3 cp /backup/ s3://chainfinity-certificate-backups/$(date +%Y/%m/%d)/ --recursive
+                  # Upload to secure storage
+                  aws s3 cp /backup/ s3://chainfinity-certificate-backups/$(date +%Y/%m/%d)/ --recursive
 
-              # Clean up old local backups
-              find /backup -name "*.yaml" -mtime +7 -delete
-            env:
-            - name: AWS_DEFAULT_REGION
-              value: "us-west-2"
-            volumeMounts:
-            - name: backup-storage
-              mountPath: /backup
-            - name: aws-credentials
-              mountPath: /root/.aws
-              readOnly: true
+                  # Clean up old local backups
+                  find /backup -name "*.yaml" -mtime +7 -delete
+              env:
+                - name: AWS_DEFAULT_REGION
+                  value: "us-west-2"
+              volumeMounts:
+                - name: backup-storage
+                  mountPath: /backup
+                - name: aws-credentials
+                  mountPath: /root/.aws
+                  readOnly: true
           volumes:
-          - name: backup-storage
-            emptyDir: {}
-          - name: aws-credentials
-            secret:
-              secretName: aws-credentials
+            - name: backup-storage
+              emptyDir: {}
+            - name: aws-credentials
+              secret:
+                secretName: aws-credentials
           restartPolicy: OnFailure
 
 ---
@@ -428,12 +428,13 @@ metadata:
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/component: backup
 rules:
-- apiGroups: ["cert-manager.io"]
-  resources: ["certificates", "certificaterequests", "issuers", "clusterissuers"]
-  verbs: ["get", "list"]
-- apiGroups: [""]
-  resources: ["secrets"]
-  verbs: ["get", "list"]
+  - apiGroups: ["cert-manager.io"]
+    resources:
+      ["certificates", "certificaterequests", "issuers", "clusterissuers"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list"]
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -444,9 +445,9 @@ metadata:
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/component: backup
 subjects:
-- kind: ServiceAccount
-  name: certificate-backup
-  namespace: cert-manager
+  - kind: ServiceAccount
+    name: certificate-backup
+    namespace: cert-manager
 roleRef:
   kind: ClusterRole
   name: certificate-backup

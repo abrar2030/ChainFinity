@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Container,
@@ -21,8 +21,8 @@ import {
   ListItemText,
   ListItemIcon,
   Switch,
-  FormControlLabel
-} from '@mui/material';
+  FormControlLabel,
+} from "@mui/material";
 import {
   AccountCircle,
   Edit,
@@ -35,19 +35,19 @@ import {
   Save,
   Delete,
   Visibility,
-  VisibilityOff
-} from '@mui/icons-material';
-import { styled } from '@mui/material/styles';
-import { motion } from 'framer-motion';
+  VisibilityOff,
+} from "@mui/icons-material";
+import { styled } from "@mui/material/styles";
+import { motion } from "framer-motion";
 
 const SettingsCard = styled(Card)(({ theme }) => ({
-  height: '100%',
+  height: "100%",
   borderRadius: theme.shape.borderRadius,
-  boxShadow: 'none',
+  boxShadow: "none",
   border: `1px solid ${theme.palette.divider}`,
-  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
-  '&:hover': {
-    transform: 'translateY(-5px)',
+  transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+  "&:hover": {
+    transform: "translateY(-5px)",
     boxShadow: theme.shadows[4],
   },
 }));
@@ -63,11 +63,7 @@ const TabPanel = (props) => {
       aria-labelledby={`settings-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box sx={{ pt: 3 }}>
-          {children}
-        </Box>
-      )}
+      {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
     </div>
   );
 };
@@ -76,25 +72,25 @@ const Settings = () => {
   const theme = useTheme();
   const [tabValue, setTabValue] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
-  const [darkMode, setDarkMode] = useState(theme.palette.mode === 'dark');
+  const [darkMode, setDarkMode] = useState(theme.palette.mode === "dark");
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [pushNotifications, setPushNotifications] = useState(true);
   const [twoFactorAuth, setTwoFactorAuth] = useState(false);
-  const [language, setLanguage] = useState('english');
+  const [language, setLanguage] = useState("english");
 
   // Profile form state
   const [profileForm, setProfileForm] = useState({
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    walletAddress: '0x1234...5678',
-    bio: 'Blockchain enthusiast and crypto investor since 2017.'
+    name: "John Doe",
+    email: "john.doe@example.com",
+    walletAddress: "0x1234...5678",
+    bio: "Blockchain enthusiast and crypto investor since 2017.",
   });
 
   // Security form state
   const [securityForm, setSecurityForm] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
 
   const handleTabChange = (event, newValue) => {
@@ -105,7 +101,7 @@ const Settings = () => {
     const { name, value } = e.target;
     setProfileForm({
       ...profileForm,
-      [name]: value
+      [name]: value,
     });
   };
 
@@ -113,7 +109,7 @@ const Settings = () => {
     const { name, value } = e.target;
     setSecurityForm({
       ...securityForm,
-      [name]: value
+      [name]: value,
     });
   };
 
@@ -123,13 +119,13 @@ const Settings = () => {
 
   const handleSaveProfile = (e) => {
     e.preventDefault();
-    console.log('Profile saved:', profileForm);
+    console.log("Profile saved:", profileForm);
     // Here you would make an API call to save the profile
   };
 
   const handleSaveSecurity = (e) => {
     e.preventDefault();
-    console.log('Security settings saved:', securityForm);
+    console.log("Security settings saved:", securityForm);
     // Here you would make an API call to update security settings
   };
 
@@ -138,9 +134,9 @@ const Settings = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const itemVariants = {
@@ -149,9 +145,9 @@ const Settings = () => {
       y: 0,
       opacity: 1,
       transition: {
-        duration: 0.5
-      }
-    }
+        duration: 0.5,
+      },
+    },
   };
 
   return (
@@ -175,17 +171,23 @@ const Settings = () => {
           </motion.div>
 
           <motion.div variants={itemVariants}>
-            <Paper sx={{ borderRadius: theme.shape.borderRadius, overflow: 'hidden', mb: 4 }}>
+            <Paper
+              sx={{
+                borderRadius: theme.shape.borderRadius,
+                overflow: "hidden",
+                mb: 4,
+              }}
+            >
               <Tabs
                 value={tabValue}
                 onChange={handleTabChange}
                 sx={{
                   borderBottom: 1,
-                  borderColor: 'divider',
+                  borderColor: "divider",
                   px: 2,
-                  '& .MuiTabs-indicator': {
+                  "& .MuiTabs-indicator": {
                     height: 3,
-                    borderRadius: '3px 3px 0 0',
+                    borderRadius: "3px 3px 0 0",
                   },
                 }}
               >
@@ -217,13 +219,19 @@ const Settings = () => {
                   <form onSubmit={handleSaveProfile}>
                     <Grid container spacing={4}>
                       <Grid item xs={12} md={4}>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                          }}
+                        >
                           <Avatar
                             sx={{
                               width: 120,
                               height: 120,
                               mb: 2,
-                              bgcolor: theme.palette.primary.main
+                              bgcolor: theme.palette.primary.main,
                             }}
                           >
                             <Typography variant="h3">
@@ -237,8 +245,13 @@ const Settings = () => {
                           >
                             Change Avatar
                           </Button>
-                          <Typography variant="body2" color="text.secondary" textAlign="center">
-                            Recommended image size: 200x200px. Max file size: 5MB.
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            textAlign="center"
+                          >
+                            Recommended image size: 200x200px. Max file size:
+                            5MB.
                           </Typography>
                         </Box>
                       </Grid>
@@ -293,7 +306,13 @@ const Settings = () => {
                             />
                           </Grid>
                           <Grid item xs={12}>
-                            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                justifyContent: "flex-end",
+                                gap: 2,
+                              }}
+                            >
                               <Button variant="outlined" color="inherit">
                                 Cancel
                               </Button>
@@ -327,7 +346,7 @@ const Settings = () => {
                               fullWidth
                               label="Current Password"
                               name="currentPassword"
-                              type={showPassword ? 'text' : 'password'}
+                              type={showPassword ? "text" : "password"}
                               value={securityForm.currentPassword}
                               onChange={handleSecurityChange}
                               InputProps={{
@@ -336,7 +355,11 @@ const Settings = () => {
                                     onClick={handleTogglePassword}
                                     edge="end"
                                   >
-                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    {showPassword ? (
+                                      <VisibilityOff />
+                                    ) : (
+                                      <Visibility />
+                                    )}
                                   </IconButton>
                                 ),
                               }}
@@ -347,7 +370,7 @@ const Settings = () => {
                               fullWidth
                               label="New Password"
                               name="newPassword"
-                              type={showPassword ? 'text' : 'password'}
+                              type={showPassword ? "text" : "password"}
                               value={securityForm.newPassword}
                               onChange={handleSecurityChange}
                               InputProps={{
@@ -356,7 +379,11 @@ const Settings = () => {
                                     onClick={handleTogglePassword}
                                     edge="end"
                                   >
-                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    {showPassword ? (
+                                      <VisibilityOff />
+                                    ) : (
+                                      <Visibility />
+                                    )}
                                   </IconButton>
                                 ),
                               }}
@@ -367,7 +394,7 @@ const Settings = () => {
                               fullWidth
                               label="Confirm New Password"
                               name="confirmPassword"
-                              type={showPassword ? 'text' : 'password'}
+                              type={showPassword ? "text" : "password"}
                               value={securityForm.confirmPassword}
                               onChange={handleSecurityChange}
                               InputProps={{
@@ -376,7 +403,11 @@ const Settings = () => {
                                     onClick={handleTogglePassword}
                                     edge="end"
                                   >
-                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    {showPassword ? (
+                                      <VisibilityOff />
+                                    ) : (
+                                      <Visibility />
+                                    )}
                                   </IconButton>
                                 ),
                               }}
@@ -389,20 +420,39 @@ const Settings = () => {
                         <Typography variant="h6" fontWeight={600} gutterBottom>
                           Two-Factor Authentication
                         </Typography>
-                        <Card sx={{ mb: 3, border: `1px solid ${theme.palette.divider}` }}>
+                        <Card
+                          sx={{
+                            mb: 3,
+                            border: `1px solid ${theme.palette.divider}`,
+                          }}
+                        >
                           <CardContent>
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                              }}
+                            >
                               <Box>
-                                <Typography variant="subtitle1" fontWeight={600}>
+                                <Typography
+                                  variant="subtitle1"
+                                  fontWeight={600}
+                                >
                                   Two-Factor Authentication
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary">
+                                <Typography
+                                  variant="body2"
+                                  color="text.secondary"
+                                >
                                   Add an extra layer of security to your account
                                 </Typography>
                               </Box>
                               <Switch
                                 checked={twoFactorAuth}
-                                onChange={(e) => setTwoFactorAuth(e.target.checked)}
+                                onChange={(e) =>
+                                  setTwoFactorAuth(e.target.checked)
+                                }
                                 color="primary"
                               />
                             </Box>
@@ -412,23 +462,48 @@ const Settings = () => {
                         <Typography variant="h6" fontWeight={600} gutterBottom>
                           Connected Wallets
                         </Typography>
-                        <Card sx={{ border: `1px solid ${theme.palette.divider}` }}>
+                        <Card
+                          sx={{ border: `1px solid ${theme.palette.divider}` }}
+                        >
                           <CardContent>
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                <Avatar sx={{ bgcolor: theme.palette.primary.main, mr: 2 }}>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                              }}
+                            >
+                              <Box
+                                sx={{ display: "flex", alignItems: "center" }}
+                              >
+                                <Avatar
+                                  sx={{
+                                    bgcolor: theme.palette.primary.main,
+                                    mr: 2,
+                                  }}
+                                >
                                   <Wallet />
                                 </Avatar>
                                 <Box>
-                                  <Typography variant="subtitle1" fontWeight={600}>
+                                  <Typography
+                                    variant="subtitle1"
+                                    fontWeight={600}
+                                  >
                                     Ethereum Wallet
                                   </Typography>
-                                  <Typography variant="body2" color="text.secondary">
+                                  <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                  >
                                     {profileForm.walletAddress}
                                   </Typography>
                                 </Box>
                               </Box>
-                              <Chip label="Primary" color="primary" size="small" />
+                              <Chip
+                                label="Primary"
+                                color="primary"
+                                size="small"
+                              />
                             </Box>
                           </CardContent>
                         </Card>
@@ -436,13 +511,24 @@ const Settings = () => {
 
                       <Grid item xs={12}>
                         <Divider sx={{ my: 2 }} />
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                          }}
+                        >
                           <Box>
-                            <Typography variant="h6" color="error.main" fontWeight={600}>
+                            <Typography
+                              variant="h6"
+                              color="error.main"
+                              fontWeight={600}
+                            >
                               Danger Zone
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
-                              Once you delete your account, there is no going back. Please be certain.
+                              Once you delete your account, there is no going
+                              back. Please be certain.
                             </Typography>
                           </Box>
                           <Button
@@ -456,7 +542,13 @@ const Settings = () => {
                       </Grid>
 
                       <Grid item xs={12}>
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            gap: 2,
+                          }}
+                        >
                           <Button variant="outlined" color="inherit">
                             Cancel
                           </Button>
@@ -481,7 +573,12 @@ const Settings = () => {
                       <Typography variant="h6" fontWeight={600} gutterBottom>
                         Email Notifications
                       </Typography>
-                      <Card sx={{ mb: 3, border: `1px solid ${theme.palette.divider}` }}>
+                      <Card
+                        sx={{
+                          mb: 3,
+                          border: `1px solid ${theme.palette.divider}`,
+                        }}
+                      >
                         <List disablePadding>
                           <ListItem divider>
                             <ListItemText
@@ -491,7 +588,9 @@ const Settings = () => {
                             <Switch
                               edge="end"
                               checked={emailNotifications}
-                              onChange={(e) => setEmailNotifications(e.target.checked)}
+                              onChange={(e) =>
+                                setEmailNotifications(e.target.checked)
+                              }
                             />
                           </ListItem>
                           <ListItem divider>
@@ -502,7 +601,9 @@ const Settings = () => {
                             <Switch
                               edge="end"
                               checked={emailNotifications}
-                              onChange={(e) => setEmailNotifications(e.target.checked)}
+                              onChange={(e) =>
+                                setEmailNotifications(e.target.checked)
+                              }
                             />
                           </ListItem>
                           <ListItem divider>
@@ -513,7 +614,9 @@ const Settings = () => {
                             <Switch
                               edge="end"
                               checked={emailNotifications}
-                              onChange={(e) => setEmailNotifications(e.target.checked)}
+                              onChange={(e) =>
+                                setEmailNotifications(e.target.checked)
+                              }
                             />
                           </ListItem>
                           <ListItem>
@@ -521,10 +624,7 @@ const Settings = () => {
                               primary="Marketing & Newsletter"
                               secondary="Stay updated with our latest features and announcements"
                             />
-                            <Switch
-                              edge="end"
-                              checked={false}
-                            />
+                            <Switch edge="end" checked={false} />
                           </ListItem>
                         </List>
                       </Card>
@@ -534,7 +634,12 @@ const Settings = () => {
                       <Typography variant="h6" fontWeight={600} gutterBottom>
                         Push Notifications
                       </Typography>
-                      <Card sx={{ mb: 3, border: `1px solid ${theme.palette.divider}` }}>
+                      <Card
+                        sx={{
+                          mb: 3,
+                          border: `1px solid ${theme.palette.divider}`,
+                        }}
+                      >
                         <List disablePadding>
                           <ListItem divider>
                             <ListItemText
@@ -544,7 +649,9 @@ const Settings = () => {
                             <Switch
                               edge="end"
                               checked={pushNotifications}
-                              onChange={(e) => setPushNotifications(e.target.checked)}
+                              onChange={(e) =>
+                                setPushNotifications(e.target.checked)
+                              }
                             />
                           </ListItem>
                           <ListItem divider>
@@ -555,7 +662,9 @@ const Settings = () => {
                             <Switch
                               edge="end"
                               checked={pushNotifications}
-                              onChange={(e) => setPushNotifications(e.target.checked)}
+                              onChange={(e) =>
+                                setPushNotifications(e.target.checked)
+                              }
                             />
                           </ListItem>
                           <ListItem divider>
@@ -566,7 +675,9 @@ const Settings = () => {
                             <Switch
                               edge="end"
                               checked={pushNotifications}
-                              onChange={(e) => setPushNotifications(e.target.checked)}
+                              onChange={(e) =>
+                                setPushNotifications(e.target.checked)
+                              }
                             />
                           </ListItem>
                           <ListItem>
@@ -574,17 +685,20 @@ const Settings = () => {
                               primary="Price Alerts"
                               secondary="Get notified when assets reach your target price"
                             />
-                            <Switch
-                              edge="end"
-                              checked={true}
-                            />
+                            <Switch edge="end" checked={true} />
                           </ListItem>
                         </List>
                       </Card>
                     </Grid>
 
                     <Grid item xs={12}>
-                      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "flex-end",
+                          gap: 2,
+                        }}
+                      >
                         <Button variant="outlined" color="inherit">
                           Cancel
                         </Button>
@@ -607,17 +721,40 @@ const Settings = () => {
                       <Typography variant="h6" fontWeight={600} gutterBottom>
                         Appearance
                       </Typography>
-                      <Card sx={{ mb: 3, border: `1px solid ${theme.palette.divider}` }}>
+                      <Card
+                        sx={{
+                          mb: 3,
+                          border: `1px solid ${theme.palette.divider}`,
+                        }}
+                      >
                         <CardContent>
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                              {darkMode ? <DarkMode sx={{ mr: 2 }} /> : <LightMode sx={{ mr: 2 }} />}
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                              {darkMode ? (
+                                <DarkMode sx={{ mr: 2 }} />
+                              ) : (
+                                <LightMode sx={{ mr: 2 }} />
+                              )}
                               <Box>
-                                <Typography variant="subtitle1" fontWeight={600}>
-                                  {darkMode ? 'Dark Mode' : 'Light Mode'}
+                                <Typography
+                                  variant="subtitle1"
+                                  fontWeight={600}
+                                >
+                                  {darkMode ? "Dark Mode" : "Light Mode"}
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                  {darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+                                <Typography
+                                  variant="body2"
+                                  color="text.secondary"
+                                >
+                                  {darkMode
+                                    ? "Switch to light mode"
+                                    : "Switch to dark mode"}
                                 </Typography>
                               </Box>
                             </Box>
@@ -633,7 +770,9 @@ const Settings = () => {
                       <Typography variant="h6" fontWeight={600} gutterBottom>
                         Language
                       </Typography>
-                      <Card sx={{ border: `1px solid ${theme.palette.divider}` }}>
+                      <Card
+                        sx={{ border: `1px solid ${theme.palette.divider}` }}
+                      >
                         <CardContent>
                           <TextField
                             select
@@ -660,7 +799,12 @@ const Settings = () => {
                       <Typography variant="h6" fontWeight={600} gutterBottom>
                         Currency
                       </Typography>
-                      <Card sx={{ mb: 3, border: `1px solid ${theme.palette.divider}` }}>
+                      <Card
+                        sx={{
+                          mb: 3,
+                          border: `1px solid ${theme.palette.divider}`,
+                        }}
+                      >
                         <CardContent>
                           <TextField
                             select
@@ -685,7 +829,9 @@ const Settings = () => {
                       <Typography variant="h6" fontWeight={600} gutterBottom>
                         Time Zone
                       </Typography>
-                      <Card sx={{ border: `1px solid ${theme.palette.divider}` }}>
+                      <Card
+                        sx={{ border: `1px solid ${theme.palette.divider}` }}
+                      >
                         <CardContent>
                           <TextField
                             select
@@ -696,20 +842,40 @@ const Settings = () => {
                               native: true,
                             }}
                           >
-                            <option value="utc">UTC (Coordinated Universal Time)</option>
-                            <option value="est">EST (Eastern Standard Time)</option>
-                            <option value="cst">CST (Central Standard Time)</option>
-                            <option value="mst">MST (Mountain Standard Time)</option>
-                            <option value="pst">PST (Pacific Standard Time)</option>
-                            <option value="gmt">GMT (Greenwich Mean Time)</option>
-                            <option value="cet">CET (Central European Time)</option>
+                            <option value="utc">
+                              UTC (Coordinated Universal Time)
+                            </option>
+                            <option value="est">
+                              EST (Eastern Standard Time)
+                            </option>
+                            <option value="cst">
+                              CST (Central Standard Time)
+                            </option>
+                            <option value="mst">
+                              MST (Mountain Standard Time)
+                            </option>
+                            <option value="pst">
+                              PST (Pacific Standard Time)
+                            </option>
+                            <option value="gmt">
+                              GMT (Greenwich Mean Time)
+                            </option>
+                            <option value="cet">
+                              CET (Central European Time)
+                            </option>
                           </TextField>
                         </CardContent>
                       </Card>
                     </Grid>
 
                     <Grid item xs={12}>
-                      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "flex-end",
+                          gap: 2,
+                        }}
+                      >
                         <Button variant="outlined" color="inherit">
                           Cancel
                         </Button>

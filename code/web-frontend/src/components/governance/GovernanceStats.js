@@ -1,9 +1,19 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { Badge } from '../../components/ui/badge';
-import { formatNumber } from '../../utils/formatters';
+import React from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
+import { Badge } from "../../components/ui/badge";
+import { formatNumber } from "../../utils/formatters";
 
-const GovernanceStats = ({ totalSupply, votingDelay, votingPeriod, proposalThreshold }) => {
+const GovernanceStats = ({
+  totalSupply,
+  votingDelay,
+  votingPeriod,
+  proposalThreshold,
+}) => {
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -13,30 +23,22 @@ const GovernanceStats = ({ totalSupply, votingDelay, votingPeriod, proposalThres
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <span className="text-sm">Total Supply</span>
-            <Badge variant="secondary">
-              {formatNumber(totalSupply)} CFG
-            </Badge>
+            <Badge variant="secondary">{formatNumber(totalSupply)} CFG</Badge>
           </div>
 
           <div className="flex justify-between items-center">
             <span className="text-sm">Voting Delay</span>
-            <Badge variant="outline">
-              {votingDelay}
-            </Badge>
+            <Badge variant="outline">{votingDelay}</Badge>
           </div>
 
           <div className="flex justify-between items-center">
             <span className="text-sm">Voting Period</span>
-            <Badge variant="outline">
-              {votingPeriod}
-            </Badge>
+            <Badge variant="outline">{votingPeriod}</Badge>
           </div>
 
           <div className="flex justify-between items-center">
             <span className="text-sm">Proposal Threshold</span>
-            <Badge variant="outline">
-              {proposalThreshold} CFG
-            </Badge>
+            <Badge variant="outline">{proposalThreshold} CFG</Badge>
           </div>
         </div>
       </CardContent>

@@ -3,6 +3,7 @@
 ## Overview
 
 This document outlines comprehensive enhancements for the ChainFinity blockchain governance platform, focusing on three key components:
+
 1. Smart Contracts
 2. Voting Frontend
 3. Off-Chain Services
@@ -16,6 +17,7 @@ The enhancements aim to improve governance mechanisms, security, scalability, an
 **Current State**: The platform lacks a dedicated governance contract for decentralized decision-making.
 
 **Enhancement**: Implement a comprehensive governance contract with the following features:
+
 - Token-weighted voting mechanism
 - Proposal creation and execution pipeline
 - Timelock functionality for security
@@ -27,6 +29,7 @@ The enhancements aim to improve governance mechanisms, security, scalability, an
 **Current State**: Basic asset deposit and withdrawal functionality without advanced features.
 
 **Enhancements**:
+
 - Add multi-signature requirements for large withdrawals
 - Implement asset freezing/thawing capabilities for emergency situations
 - Add fee mechanism with configurable parameters
@@ -39,6 +42,7 @@ The enhancements aim to improve governance mechanisms, security, scalability, an
 **Current State**: Basic cross-chain transfer initiation with manual completion by owner.
 
 **Enhancements**:
+
 - Replace manual completion with automated verification using Chainlink CCIP
 - Implement message passing for cross-chain governance actions
 - Add liquidity management features
@@ -61,6 +65,7 @@ The enhancements aim to improve governance mechanisms, security, scalability, an
 **Current State**: No dedicated governance interface exists.
 
 **Enhancement**: Create a comprehensive governance dashboard with:
+
 - Proposal creation interface with markdown support
 - Voting interface with delegation options
 - Historical voting analytics
@@ -91,6 +96,7 @@ The enhancements aim to improve governance mechanisms, security, scalability, an
 **Current State**: Basic risk engine implementation.
 
 **Enhancements**:
+
 - Implement advanced risk scoring algorithms
 - Add real-time market data integration
 - Implement stress testing scenarios
@@ -116,24 +122,28 @@ The enhancements aim to improve governance mechanisms, security, scalability, an
 ## 4. Implementation Roadmap
 
 ### Phase 1: Smart Contract Enhancements
+
 - Implement Governance contract
 - Enhance AssetVault contract
 - Upgrade CrossChainManager contract
 - Deploy and test on testnet
 
 ### Phase 2: Frontend Enhancements
+
 - Develop Governance Dashboard
 - Implement UX improvements
 - Add analytics and reporting features
 - Test with user feedback
 
 ### Phase 3: Off-Chain Services
+
 - Enhance Risk Engine
 - Upgrade Backend API
 - Implement integrations
 - Comprehensive testing
 
 ### Phase 4: Integration and Validation
+
 - End-to-end testing
 - Security audit preparation
 - Documentation updates

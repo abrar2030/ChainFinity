@@ -19,12 +19,14 @@ These scripts address various automation opportunities identified in the ChainFi
 A comprehensive GitHub Actions workflow that implements continuous integration and deployment for all components of the ChainFinity platform.
 
 **Features:**
+
 - Automated linting, testing, and security scanning
 - Multi-component build process
 - Environment-specific deployments
 - Slack notifications
 
 **Usage:**
+
 1. Place this file in the `.github/workflows/` directory of your repository
 2. Configure necessary secrets in your GitHub repository settings
 3. Push changes to trigger the workflow
@@ -34,12 +36,14 @@ A comprehensive GitHub Actions workflow that implements continuous integration a
 An improved setup script that automates the environment configuration process for ChainFinity development.
 
 **Features:**
+
 - Automated dependency installation
 - Environment-specific configuration
 - Database setup
 - Error handling and logging
 
 **Usage:**
+
 ```bash
 ./env_setup.sh [options]
 
@@ -58,6 +62,7 @@ Options:
 A comprehensive monitoring solution for the ChainFinity platform that tracks system health, services, and blockchain components.
 
 **Features:**
+
 - System resource monitoring
 - Docker container health checks
 - Database monitoring
@@ -66,6 +71,7 @@ A comprehensive monitoring solution for the ChainFinity platform that tracks sys
 - Automated reporting and alerting
 
 **Usage:**
+
 ```bash
 ./monitor_chainfinity.sh [options]
 
@@ -85,12 +91,14 @@ Options:
 A script that automates the testing process for all components of the ChainFinity platform.
 
 **Features:**
+
 - Component-specific testing
 - Coverage reporting
 - Parallel test execution
 - HTML report generation
 
 **Usage:**
+
 ```bash
 ./test_chainfinity.sh [options]
 
@@ -110,12 +118,14 @@ Options:
 A script that automates the deployment process for all components of the ChainFinity platform.
 
 **Features:**
+
 - Environment-specific deployments
 - Component backups before deployment
 - Infrastructure provisioning
 - Deployment reporting
 
 **Usage:**
+
 ```bash
 ./deploy_chainfinity.sh [options]
 

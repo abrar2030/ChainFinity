@@ -1,22 +1,25 @@
-
-import React from 'react';
-import Link from 'next/link';
-import { Separator } from '@/components/ui/separator';
-import { Github, Twitter, Mail } from 'lucide-react'; // Example icons
+import React from "react";
+import Link from "next/link";
+import { Separator } from "@/components/ui/separator";
+import { Github, Twitter, Mail } from "lucide-react"; // Example icons
 
 function Footer() {
   const currentYear = new Date().getFullYear();
 
   const quickLinks = [
-    { label: 'Home', path: '/' },
-    { label: 'Dashboard', path: '/dashboard' },
-    { label: 'Documentation', path: '/docs' }, // Assuming a docs page
+    { label: "Home", path: "/" },
+    { label: "Dashboard", path: "/dashboard" },
+    { label: "Documentation", path: "/docs" }, // Assuming a docs page
   ];
 
   const socialLinks = [
-    { label: 'GitHub', icon: Github, url: 'https://github.com/your-repo' }, // Replace with actual URL
-    { label: 'Twitter', icon: Twitter, url: 'https://twitter.com/your-profile' }, // Replace with actual URL
-    { label: 'Email', icon: Mail, url: 'mailto:support@chainfinity.com' },
+    { label: "GitHub", icon: Github, url: "https://github.com/your-repo" }, // Replace with actual URL
+    {
+      label: "Twitter",
+      icon: Twitter,
+      url: "https://twitter.com/your-profile",
+    }, // Replace with actual URL
+    { label: "Email", icon: Mail, url: "mailto:support@chainfinity.com" },
   ];
 
   return (
@@ -37,7 +40,9 @@ function Footer() {
 
           {/* Quick Links */}
           <div className="flex flex-col items-center md:items-start">
-            <h3 className="text-sm font-semibold text-foreground mb-3">Quick Links</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">
+              Quick Links
+            </h3>
             <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.path}>
@@ -54,7 +59,9 @@ function Footer() {
 
           {/* Social/Contact Links */}
           <div className="flex flex-col items-center md:items-start">
-            <h3 className="text-sm font-semibold text-foreground mb-3">Connect</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">
+              Connect
+            </h3>
             <div className="flex space-x-4">
               {socialLinks.map((link) => (
                 <a

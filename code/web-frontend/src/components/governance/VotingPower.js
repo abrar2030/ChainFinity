@@ -1,11 +1,17 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { Progress } from '../../components/ui/progress';
-import { formatNumber } from '../../utils/formatters';
+import React from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
+import { Progress } from "../../components/ui/progress";
+import { formatNumber } from "../../utils/formatters";
 
 const VotingPower = ({ userVotingPower, userTokenBalance, totalSupply }) => {
   // Calculate percentage of total supply
-  const votingPowerPercentage = (parseFloat(userVotingPower) / parseFloat(totalSupply)) * 100;
+  const votingPowerPercentage =
+    (parseFloat(userVotingPower) / parseFloat(totalSupply)) * 100;
 
   return (
     <Card>
@@ -17,7 +23,9 @@ const VotingPower = ({ userVotingPower, userTokenBalance, totalSupply }) => {
           <div>
             <div className="flex justify-between mb-1">
               <span className="text-sm font-medium">Voting Power</span>
-              <span className="text-sm font-medium">{formatNumber(userVotingPower)} CFG</span>
+              <span className="text-sm font-medium">
+                {formatNumber(userVotingPower)} CFG
+              </span>
             </div>
             <Progress value={votingPowerPercentage} className="h-2" />
             <p className="text-xs text-gray-500 mt-1">
@@ -28,13 +36,18 @@ const VotingPower = ({ userVotingPower, userTokenBalance, totalSupply }) => {
           <div className="pt-2">
             <div className="flex justify-between text-sm">
               <span>Token Balance:</span>
-              <span className="font-medium">{formatNumber(userTokenBalance)} CFG</span>
+              <span className="font-medium">
+                {formatNumber(userTokenBalance)} CFG
+              </span>
             </div>
 
             <div className="flex justify-between text-sm mt-2">
               <span>Delegated Power:</span>
               <span className="font-medium">
-                {formatNumber(parseFloat(userVotingPower) - parseFloat(userTokenBalance))} CFG
+                {formatNumber(
+                  parseFloat(userVotingPower) - parseFloat(userTokenBalance),
+                )}{" "}
+                CFG
               </span>
             </div>
           </div>

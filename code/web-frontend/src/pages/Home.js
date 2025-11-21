@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Container,
@@ -16,8 +16,8 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-  Chip
-} from '@mui/material';
+  Chip,
+} from "@mui/material";
 import {
   Home as HomeIcon,
   AccountBalanceWallet as WalletIcon,
@@ -26,52 +26,54 @@ import {
   ArrowForward as ArrowForwardIcon,
   Speed as SpeedIcon,
   Security as SecurityIcon,
-  Layers as LayersIcon
-} from '@mui/icons-material';
-import { styled } from '@mui/material/styles';
-import { motion } from 'framer-motion';
-import { Link as RouterLink } from 'react-router-dom';
+  Layers as LayersIcon,
+} from "@mui/icons-material";
+import { styled } from "@mui/material/styles";
+import { motion } from "framer-motion";
+import { Link as RouterLink } from "react-router-dom";
 
 const HeroSection = styled(Box)(({ theme }) => ({
-  position: 'relative',
+  position: "relative",
   padding: theme.spacing(12, 0, 8),
-  [theme.breakpoints.down('md')]: {
+  [theme.breakpoints.down("md")]: {
     padding: theme.spacing(8, 0, 6),
   },
-  overflow: 'hidden',
-  background: theme.palette.mode === 'light'
-    ? 'linear-gradient(135deg, #f8f9fc 0%, #eef1f8 100%)'
-    : 'linear-gradient(135deg, #121212 0%, #1e1e2d 100%)',
+  overflow: "hidden",
+  background:
+    theme.palette.mode === "light"
+      ? "linear-gradient(135deg, #f8f9fc 0%, #eef1f8 100%)"
+      : "linear-gradient(135deg, #121212 0%, #1e1e2d 100%)",
 }));
 
 const FeatureCard = styled(Card)(({ theme }) => ({
-  height: '100%',
+  height: "100%",
   borderRadius: theme.shape.borderRadius,
   boxShadow: theme.shadows[2],
-  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
-  '&:hover': {
-    transform: 'translateY(-8px)',
+  transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+  "&:hover": {
+    transform: "translateY(-8px)",
     boxShadow: theme.shadows[8],
   },
 }));
 
 const GradientButton = styled(Button)(({ theme }) => ({
-  background: 'linear-gradient(45deg, #3a36e0 0%, #6c63ff 100%)',
-  color: '#ffffff',
+  background: "linear-gradient(45deg, #3a36e0 0%, #6c63ff 100%)",
+  color: "#ffffff",
   padding: theme.spacing(1.5, 3),
-  '&:hover': {
-    background: 'linear-gradient(45deg, #2a26a0 0%, #4b44b3 100%)',
+  "&:hover": {
+    background: "linear-gradient(45deg, #2a26a0 0%, #4b44b3 100%)",
   },
 }));
 
 const OutlinedButton = styled(Button)(({ theme }) => ({
-  borderColor: theme.palette.mode === 'light' ? '#3a36e0' : '#6c63ff',
-  color: theme.palette.mode === 'light' ? '#3a36e0' : '#6c63ff',
+  borderColor: theme.palette.mode === "light" ? "#3a36e0" : "#6c63ff",
+  color: theme.palette.mode === "light" ? "#3a36e0" : "#6c63ff",
   padding: theme.spacing(1.5, 3),
-  '&:hover': {
-    backgroundColor: theme.palette.mode === 'light'
-      ? 'rgba(58, 54, 224, 0.08)'
-      : 'rgba(108, 99, 255, 0.08)',
+  "&:hover": {
+    backgroundColor:
+      theme.palette.mode === "light"
+        ? "rgba(58, 54, 224, 0.08)"
+        : "rgba(108, 99, 255, 0.08)",
   },
 }));
 
@@ -85,19 +87,19 @@ const FeatureIcon = styled(Avatar)(({ theme }) => ({
 const StatsCard = styled(Card)(({ theme }) => ({
   padding: theme.spacing(3),
   borderRadius: theme.shape.borderRadius,
-  boxShadow: 'none',
+  boxShadow: "none",
   border: `1px solid ${theme.palette.divider}`,
-  height: '100%',
+  height: "100%",
 }));
 
 const Home = () => {
   const theme = useTheme();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
 
   const handleSubscribe = (e) => {
     e.preventDefault();
-    console.log('Subscribed with email:', email);
-    setEmail('');
+    console.log("Subscribed with email:", email);
+    setEmail("");
     // Here you would typically make an API call to subscribe the user
   };
 
@@ -106,9 +108,9 @@ const Home = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const itemVariants = {
@@ -117,9 +119,9 @@ const Home = () => {
       y: 0,
       opacity: 1,
       transition: {
-        duration: 0.5
-      }
-    }
+        duration: 0.5,
+      },
+    },
   };
 
   return (
@@ -141,17 +143,27 @@ const Home = () => {
                     fontWeight={700}
                     gutterBottom
                     sx={{
-                      background: 'linear-gradient(45deg, #3a36e0 0%, #6c63ff 100%)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
+                      background:
+                        "linear-gradient(45deg, #3a36e0 0%, #6c63ff 100%)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
                     }}
                   >
                     Track Your Crypto Portfolio with Ease
                   </Typography>
                   <Typography variant="h6" color="text.secondary" paragraph>
-                    ChainFinity is a powerful blockchain portfolio tracker and DeFi analytics platform that helps you monitor your assets across multiple chains in one place.
+                    ChainFinity is a powerful blockchain portfolio tracker and
+                    DeFi analytics platform that helps you monitor your assets
+                    across multiple chains in one place.
                   </Typography>
-                  <Box sx={{ mt: 4, display: 'flex', gap: 2, flexWrap: { xs: 'wrap', sm: 'nowrap' } }}>
+                  <Box
+                    sx={{
+                      mt: 4,
+                      display: "flex",
+                      gap: 2,
+                      flexWrap: { xs: "wrap", sm: "nowrap" },
+                    }}
+                  >
                     <GradientButton
                       variant="contained"
                       size="large"
@@ -175,10 +187,10 @@ const Home = () => {
                 <motion.div
                   variants={itemVariants}
                   style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    position: 'relative'
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    position: "relative",
                   }}
                 >
                   <Box
@@ -186,11 +198,11 @@ const Home = () => {
                     src="/dashboard-preview.png"
                     alt="Dashboard Preview"
                     sx={{
-                      width: '100%',
+                      width: "100%",
                       maxWidth: 500,
-                      height: 'auto',
+                      height: "auto",
                       borderRadius: 3,
-                      boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
+                      boxShadow: "0 20px 40px rgba(0, 0, 0, 0.1)",
                     }}
                   />
                 </motion.div>
@@ -273,7 +285,7 @@ const Home = () => {
             viewport={{ once: true, amount: 0.2 }}
           >
             <motion.div variants={itemVariants}>
-              <Box sx={{ textAlign: 'center', mb: 6 }}>
+              <Box sx={{ textAlign: "center", mb: 6 }}>
                 <Typography
                   variant="h3"
                   component="h2"
@@ -285,9 +297,10 @@ const Home = () => {
                 <Typography
                   variant="h6"
                   color="text.secondary"
-                  sx={{ maxWidth: 700, mx: 'auto' }}
+                  sx={{ maxWidth: 700, mx: "auto" }}
                 >
-                  Everything you need to track and manage your crypto portfolio in one place
+                  Everything you need to track and manage your crypto portfolio
+                  in one place
                 </Typography>
               </Box>
             </motion.div>
@@ -296,15 +309,21 @@ const Home = () => {
               <Grid item xs={12} sm={6} md={4}>
                 <motion.div variants={itemVariants}>
                   <FeatureCard>
-                    <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                    <CardContent sx={{ p: 3, textAlign: "center" }}>
                       <FeatureIcon>
                         <WalletIcon />
                       </FeatureIcon>
-                      <Typography variant="h5" component="h3" fontWeight={600} gutterBottom>
+                      <Typography
+                        variant="h5"
+                        component="h3"
+                        fontWeight={600}
+                        gutterBottom
+                      >
                         Multi-Chain Support
                       </Typography>
                       <Typography variant="body1" color="text.secondary">
-                        Track your assets across multiple blockchains including Ethereum, Polygon, Binance Smart Chain, and more.
+                        Track your assets across multiple blockchains including
+                        Ethereum, Polygon, Binance Smart Chain, and more.
                       </Typography>
                     </CardContent>
                   </FeatureCard>
@@ -314,15 +333,21 @@ const Home = () => {
               <Grid item xs={12} sm={6} md={4}>
                 <motion.div variants={itemVariants}>
                   <FeatureCard>
-                    <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                    <CardContent sx={{ p: 3, textAlign: "center" }}>
                       <FeatureIcon>
                         <TrendingUpIcon />
                       </FeatureIcon>
-                      <Typography variant="h5" component="h3" fontWeight={600} gutterBottom>
+                      <Typography
+                        variant="h5"
+                        component="h3"
+                        fontWeight={600}
+                        gutterBottom
+                      >
                         Portfolio Analytics
                       </Typography>
                       <Typography variant="body1" color="text.secondary">
-                        Get detailed insights into your portfolio performance with advanced analytics and visualization tools.
+                        Get detailed insights into your portfolio performance
+                        with advanced analytics and visualization tools.
                       </Typography>
                     </CardContent>
                   </FeatureCard>
@@ -332,15 +357,21 @@ const Home = () => {
               <Grid item xs={12} sm={6} md={4}>
                 <motion.div variants={itemVariants}>
                   <FeatureCard>
-                    <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                    <CardContent sx={{ p: 3, textAlign: "center" }}>
                       <FeatureIcon>
                         <SwapIcon />
                       </FeatureIcon>
-                      <Typography variant="h5" component="h3" fontWeight={600} gutterBottom>
+                      <Typography
+                        variant="h5"
+                        component="h3"
+                        fontWeight={600}
+                        gutterBottom
+                      >
                         Transaction History
                       </Typography>
                       <Typography variant="body1" color="text.secondary">
-                        View and filter your complete transaction history across all connected wallets and exchanges.
+                        View and filter your complete transaction history across
+                        all connected wallets and exchanges.
                       </Typography>
                     </CardContent>
                   </FeatureCard>
@@ -350,15 +381,21 @@ const Home = () => {
               <Grid item xs={12} sm={6} md={4}>
                 <motion.div variants={itemVariants}>
                   <FeatureCard>
-                    <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                    <CardContent sx={{ p: 3, textAlign: "center" }}>
                       <FeatureIcon>
                         <SecurityIcon />
                       </FeatureIcon>
-                      <Typography variant="h5" component="h3" fontWeight={600} gutterBottom>
+                      <Typography
+                        variant="h5"
+                        component="h3"
+                        fontWeight={600}
+                        gutterBottom
+                      >
                         Security First
                       </Typography>
                       <Typography variant="body1" color="text.secondary">
-                        Your security is our priority. We use read-only API keys and never store your private keys.
+                        Your security is our priority. We use read-only API keys
+                        and never store your private keys.
                       </Typography>
                     </CardContent>
                   </FeatureCard>
@@ -368,15 +405,21 @@ const Home = () => {
               <Grid item xs={12} sm={6} md={4}>
                 <motion.div variants={itemVariants}>
                   <FeatureCard>
-                    <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                    <CardContent sx={{ p: 3, textAlign: "center" }}>
                       <FeatureIcon>
                         <SpeedIcon />
                       </FeatureIcon>
-                      <Typography variant="h5" component="h3" fontWeight={600} gutterBottom>
+                      <Typography
+                        variant="h5"
+                        component="h3"
+                        fontWeight={600}
+                        gutterBottom
+                      >
                         Real-Time Data
                       </Typography>
                       <Typography variant="body1" color="text.secondary">
-                        Get real-time price updates and portfolio valuation with our high-performance data feeds.
+                        Get real-time price updates and portfolio valuation with
+                        our high-performance data feeds.
                       </Typography>
                     </CardContent>
                   </FeatureCard>
@@ -386,15 +429,21 @@ const Home = () => {
               <Grid item xs={12} sm={6} md={4}>
                 <motion.div variants={itemVariants}>
                   <FeatureCard>
-                    <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                    <CardContent sx={{ p: 3, textAlign: "center" }}>
                       <FeatureIcon>
                         <LayersIcon />
                       </FeatureIcon>
-                      <Typography variant="h5" component="h3" fontWeight={600} gutterBottom>
+                      <Typography
+                        variant="h5"
+                        component="h3"
+                        fontWeight={600}
+                        gutterBottom
+                      >
                         DeFi Integration
                       </Typography>
                       <Typography variant="body1" color="text.secondary">
-                        Track your DeFi positions, liquidity pools, and staking rewards all in one dashboard.
+                        Track your DeFi positions, liquidity pools, and staking
+                        rewards all in one dashboard.
                       </Typography>
                     </CardContent>
                   </FeatureCard>
@@ -415,7 +464,7 @@ const Home = () => {
             viewport={{ once: true, amount: 0.2 }}
           >
             <motion.div variants={itemVariants}>
-              <Box sx={{ textAlign: 'center', mb: 6 }}>
+              <Box sx={{ textAlign: "center", mb: 6 }}>
                 <Typography
                   variant="h3"
                   component="h2"
@@ -427,7 +476,7 @@ const Home = () => {
                 <Typography
                   variant="h6"
                   color="text.secondary"
-                  sx={{ maxWidth: 700, mx: 'auto' }}
+                  sx={{ maxWidth: 700, mx: "auto" }}
                 >
                   Get started with ChainFinity in just a few simple steps
                 </Typography>
@@ -440,7 +489,9 @@ const Home = () => {
                   <List>
                     <ListItem sx={{ pb: 3 }}>
                       <ListItemIcon>
-                        <Avatar sx={{ bgcolor: theme.palette.primary.main }}>1</Avatar>
+                        <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
+                          1
+                        </Avatar>
                       </ListItemIcon>
                       <ListItemText
                         primary={
@@ -453,7 +504,9 @@ const Home = () => {
                     </ListItem>
                     <ListItem sx={{ pb: 3 }}>
                       <ListItemIcon>
-                        <Avatar sx={{ bgcolor: theme.palette.primary.main }}>2</Avatar>
+                        <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
+                          2
+                        </Avatar>
                       </ListItemIcon>
                       <ListItemText
                         primary={
@@ -466,7 +519,9 @@ const Home = () => {
                     </ListItem>
                     <ListItem sx={{ pb: 3 }}>
                       <ListItemIcon>
-                        <Avatar sx={{ bgcolor: theme.palette.primary.main }}>3</Avatar>
+                        <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
+                          3
+                        </Avatar>
                       </ListItemIcon>
                       <ListItemText
                         primary={
@@ -479,7 +534,9 @@ const Home = () => {
                     </ListItem>
                     <ListItem>
                       <ListItemIcon>
-                        <Avatar sx={{ bgcolor: theme.palette.primary.main }}>4</Avatar>
+                        <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
+                          4
+                        </Avatar>
                       </ListItemIcon>
                       <ListItemText
                         primary={
@@ -511,13 +568,13 @@ const Home = () => {
                     src="/how-it-works.png"
                     alt="How ChainFinity Works"
                     sx={{
-                      width: '100%',
+                      width: "100%",
                       maxWidth: 500,
-                      height: 'auto',
+                      height: "auto",
                       borderRadius: 3,
-                      boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
-                      mx: 'auto',
-                      display: 'block',
+                      boxShadow: "0 20px 40px rgba(0, 0, 0, 0.1)",
+                      mx: "auto",
+                      display: "block",
                     }}
                   />
                 </motion.div>
@@ -537,7 +594,7 @@ const Home = () => {
             viewport={{ once: true, amount: 0.2 }}
           >
             <motion.div variants={itemVariants}>
-              <Box sx={{ textAlign: 'center', mb: 6 }}>
+              <Box sx={{ textAlign: "center", mb: 6 }}>
                 <Typography
                   variant="h3"
                   component="h2"
@@ -549,9 +606,10 @@ const Home = () => {
                 <Typography
                   variant="h6"
                   color="text.secondary"
-                  sx={{ maxWidth: 700, mx: 'auto' }}
+                  sx={{ maxWidth: 700, mx: "auto" }}
                 >
-                  Join thousands of satisfied users who trust ChainFinity for their crypto portfolio tracking
+                  Join thousands of satisfied users who trust ChainFinity for
+                  their crypto portfolio tracking
                 </Typography>
               </Box>
             </motion.div>
@@ -563,16 +621,26 @@ const Home = () => {
                     elevation={2}
                     sx={{
                       p: 3,
-                      height: '100%',
+                      height: "100%",
                       borderRadius: theme.shape.borderRadius,
-                      display: 'flex',
-                      flexDirection: 'column',
+                      display: "flex",
+                      flexDirection: "column",
                     }}
                   >
                     <Typography variant="body1" paragraph>
-                      "ChainFinity has completely transformed how I track my crypto investments. The multi-chain support and real-time data are game-changers for anyone serious about their portfolio."
+                      "ChainFinity has completely transformed how I track my
+                      crypto investments. The multi-chain support and real-time
+                      data are game-changers for anyone serious about their
+                      portfolio."
                     </Typography>
-                    <Box sx={{ mt: 'auto', pt: 2, display: 'flex', alignItems: 'center' }}>
+                    <Box
+                      sx={{
+                        mt: "auto",
+                        pt: 2,
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
                       <Avatar sx={{ mr: 2 }}>JD</Avatar>
                       <Box>
                         <Typography variant="subtitle1" fontWeight={600}>
@@ -593,16 +661,26 @@ const Home = () => {
                     elevation={2}
                     sx={{
                       p: 3,
-                      height: '100%',
+                      height: "100%",
                       borderRadius: theme.shape.borderRadius,
-                      display: 'flex',
-                      flexDirection: 'column',
+                      display: "flex",
+                      flexDirection: "column",
                     }}
                   >
                     <Typography variant="body1" paragraph>
-                      "As a DeFi enthusiast, I needed a tool that could track all my positions across different protocols. ChainFinity does this perfectly, saving me hours of manual tracking every week."
+                      "As a DeFi enthusiast, I needed a tool that could track
+                      all my positions across different protocols. ChainFinity
+                      does this perfectly, saving me hours of manual tracking
+                      every week."
                     </Typography>
-                    <Box sx={{ mt: 'auto', pt: 2, display: 'flex', alignItems: 'center' }}>
+                    <Box
+                      sx={{
+                        mt: "auto",
+                        pt: 2,
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
                       <Avatar sx={{ mr: 2 }}>JS</Avatar>
                       <Box>
                         <Typography variant="subtitle1" fontWeight={600}>
@@ -623,16 +701,26 @@ const Home = () => {
                     elevation={2}
                     sx={{
                       p: 3,
-                      height: '100%',
+                      height: "100%",
                       borderRadius: theme.shape.borderRadius,
-                      display: 'flex',
-                      flexDirection: 'column',
+                      display: "flex",
+                      flexDirection: "column",
                     }}
                   >
                     <Typography variant="body1" paragraph>
-                      "The analytics and visualization tools in ChainFinity are unmatched. I can finally understand my portfolio performance at a glance and make informed investment decisions."
+                      "The analytics and visualization tools in ChainFinity are
+                      unmatched. I can finally understand my portfolio
+                      performance at a glance and make informed investment
+                      decisions."
                     </Typography>
-                    <Box sx={{ mt: 'auto', pt: 2, display: 'flex', alignItems: 'center' }}>
+                    <Box
+                      sx={{
+                        mt: "auto",
+                        pt: 2,
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
                       <Avatar sx={{ mr: 2 }}>RJ</Avatar>
                       <Box>
                         <Typography variant="subtitle1" fontWeight={600}>
@@ -655,8 +743,8 @@ const Home = () => {
       <Box
         sx={{
           py: 8,
-          background: 'linear-gradient(45deg, #3a36e0 0%, #6c63ff 100%)',
-          color: 'white',
+          background: "linear-gradient(45deg, #3a36e0 0%, #6c63ff 100%)",
+          color: "white",
         }}
       >
         <Container maxWidth="md">
@@ -667,7 +755,7 @@ const Home = () => {
             viewport={{ once: true, amount: 0.2 }}
           >
             <motion.div variants={itemVariants}>
-              <Box sx={{ textAlign: 'center', mb: 4 }}>
+              <Box sx={{ textAlign: "center", mb: 4 }}>
                 <Typography
                   variant="h3"
                   component="h2"
@@ -678,9 +766,10 @@ const Home = () => {
                 </Typography>
                 <Typography
                   variant="h6"
-                  sx={{ maxWidth: 700, mx: 'auto', mb: 4, opacity: 0.9 }}
+                  sx={{ maxWidth: 700, mx: "auto", mb: 4, opacity: 0.9 }}
                 >
-                  Join thousands of users who trust ChainFinity for their portfolio tracking needs.
+                  Join thousands of users who trust ChainFinity for their
+                  portfolio tracking needs.
                 </Typography>
                 <Button
                   variant="contained"
@@ -688,14 +777,14 @@ const Home = () => {
                   component={RouterLink}
                   to="/register"
                   sx={{
-                    bgcolor: 'white',
-                    color: '#3a36e0',
-                    '&:hover': {
-                      bgcolor: 'rgba(255, 255, 255, 0.9)',
+                    bgcolor: "white",
+                    color: "#3a36e0",
+                    "&:hover": {
+                      bgcolor: "rgba(255, 255, 255, 0.9)",
                     },
                     px: 4,
                     py: 1.5,
-                    fontSize: '1.1rem',
+                    fontSize: "1.1rem",
                     fontWeight: 600,
                   }}
                 >
@@ -705,24 +794,25 @@ const Home = () => {
             </motion.div>
 
             <motion.div variants={itemVariants}>
-              <Divider sx={{ my: 6, bgcolor: 'rgba(255, 255, 255, 0.2)' }} />
+              <Divider sx={{ my: 6, bgcolor: "rgba(255, 255, 255, 0.2)" }} />
 
-              <Box sx={{ textAlign: 'center' }}>
+              <Box sx={{ textAlign: "center" }}>
                 <Typography variant="h5" fontWeight={600} gutterBottom>
                   Subscribe to Our Newsletter
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 3, opacity: 0.9 }}>
-                  Get the latest updates, news, and special offers delivered directly to your inbox.
+                  Get the latest updates, news, and special offers delivered
+                  directly to your inbox.
                 </Typography>
                 <Box
                   component="form"
                   onSubmit={handleSubscribe}
                   sx={{
-                    display: 'flex',
+                    display: "flex",
                     maxWidth: 500,
-                    mx: 'auto',
-                    flexDirection: { xs: 'column', sm: 'row' },
-                    gap: { xs: 2, sm: 0 }
+                    mx: "auto",
+                    flexDirection: { xs: "column", sm: "row" },
+                    gap: { xs: 2, sm: 0 },
                   }}
                 >
                   <TextField
@@ -732,25 +822,25 @@ const Home = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     variant="outlined"
                     sx={{
-                      bgcolor: 'rgba(255, 255, 255, 0.1)',
-                      borderRadius: '8px 0 0 8px',
-                      '& .MuiOutlinedInput-root': {
-                        '& fieldset': {
-                          borderColor: 'rgba(255, 255, 255, 0.3)',
+                      bgcolor: "rgba(255, 255, 255, 0.1)",
+                      borderRadius: "8px 0 0 8px",
+                      "& .MuiOutlinedInput-root": {
+                        "& fieldset": {
+                          borderColor: "rgba(255, 255, 255, 0.3)",
                           borderRight: { sm: 0 },
                         },
-                        '&:hover fieldset': {
-                          borderColor: 'rgba(255, 255, 255, 0.5)',
+                        "&:hover fieldset": {
+                          borderColor: "rgba(255, 255, 255, 0.5)",
                         },
-                        '&.Mui-focused fieldset': {
-                          borderColor: 'white',
+                        "&.Mui-focused fieldset": {
+                          borderColor: "white",
                         },
                       },
-                      '& .MuiInputBase-input': {
-                        color: 'white',
+                      "& .MuiInputBase-input": {
+                        color: "white",
                       },
-                      '& .MuiInputBase-input::placeholder': {
-                        color: 'rgba(255, 255, 255, 0.7)',
+                      "& .MuiInputBase-input::placeholder": {
+                        color: "rgba(255, 255, 255, 0.7)",
                         opacity: 1,
                       },
                     }}
@@ -759,12 +849,12 @@ const Home = () => {
                     type="submit"
                     variant="contained"
                     sx={{
-                      bgcolor: 'white',
-                      color: '#3a36e0',
-                      '&:hover': {
-                        bgcolor: 'rgba(255, 255, 255, 0.9)',
+                      bgcolor: "white",
+                      color: "#3a36e0",
+                      "&:hover": {
+                        bgcolor: "rgba(255, 255, 255, 0.9)",
                       },
-                      borderRadius: { xs: '8px', sm: '0 8px 8px 0' },
+                      borderRadius: { xs: "8px", sm: "0 8px 8px 0" },
                       px: 3,
                     }}
                   >

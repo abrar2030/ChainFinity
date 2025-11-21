@@ -1,5 +1,5 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { authAPI, handleApiError } from '../services/api';
+import React, { createContext, useState, useEffect, useContext } from "react";
+import { authAPI, handleApiError } from "../services/api";
 
 // Create context
 const AppContext = createContext();
@@ -10,13 +10,15 @@ export const AppProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [darkMode, setDarkMode] = useState(localStorage.getItem('darkMode') === 'true');
+  const [darkMode, setDarkMode] = useState(
+    localStorage.getItem("darkMode") === "true",
+  );
 
   // Initialize auth state from localStorage on app load
   useEffect(() => {
     const initAuth = async () => {
-      const token = localStorage.getItem('token');
-      const storedUser = localStorage.getItem('user');
+      const token = localStorage.getItem("token");
+      const storedUser = localStorage.getItem("user");
 
       if (token && storedUser) {
         try {
@@ -42,7 +44,7 @@ export const AppProvider = ({ children }) => {
   // Toggle dark mode
   const toggleTheme = () => {
     setDarkMode(!darkMode);
-    localStorage.setItem('darkMode', !darkMode);
+    localStorage.setItem("darkMode", !darkMode);
   };
 
   // Login function
@@ -55,12 +57,12 @@ export const AppProvider = ({ children }) => {
       const { access_token, token_type } = response.data;
 
       // Store token
-      localStorage.setItem('token', access_token);
+      localStorage.setItem("token", access_token);
 
       // Get user data
       const userResponse = await authAPI.getCurrentUser();
       setUser(userResponse.data);
-      localStorage.setItem('user', JSON.stringify(userResponse.data));
+      localStorage.setItem("user", JSON.stringify(userResponse.data));
 
       setIsAuthenticated(true);
       setLoading(false);
@@ -91,8 +93,8 @@ export const AppProvider = ({ children }) => {
 
   // Logout function
   const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setUser(null);
     setIsAuthenticated(false);
   };
@@ -113,7 +115,7 @@ export const AppProvider = ({ children }) => {
     register,
     logout,
     clearError,
-    toggleTheme
+    toggleTheme,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
@@ -123,7 +125,7 @@ export const AppProvider = ({ children }) => {
 export const useApp = () => {
   const context = useContext(AppContext);
   if (!context) {
-    throw new Error('useApp must be used within an AppProvider');
+    throw new Error("useApp must be used within an AppProvider");
   }
   return context;
 };

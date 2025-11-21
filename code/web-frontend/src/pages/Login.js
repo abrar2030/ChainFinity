@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useApp } from '../context/AppContext';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useApp } from "../context/AppContext";
 import {
   Box,
   Container,
@@ -17,48 +17,48 @@ import {
   Checkbox,
   FormControlLabel,
   Link,
-  CircularProgress
-} from '@mui/material';
+  CircularProgress,
+} from "@mui/material";
 import {
   Visibility,
   VisibilityOff,
   Email,
   Lock,
-  AccountBalanceWallet
-} from '@mui/icons-material';
-import { styled } from '@mui/material/styles';
-import { motion } from 'framer-motion';
-import { Link as RouterLink } from 'react-router-dom';
+  AccountBalanceWallet,
+} from "@mui/icons-material";
+import { styled } from "@mui/material/styles";
+import { motion } from "framer-motion";
+import { Link as RouterLink } from "react-router-dom";
 
 const AuthPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
   borderRadius: theme.shape.borderRadius * 2,
   boxShadow: theme.shadows[4],
-  [theme.breakpoints.up('md')]: {
+  [theme.breakpoints.up("md")]: {
     padding: theme.spacing(6),
   },
 }));
 
 const AuthContainer = styled(Container)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  minHeight: 'calc(100vh - 140px)', // Account for header and footer
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  minHeight: "calc(100vh - 140px)", // Account for header and footer
   padding: theme.spacing(3),
 }));
 
 const AuthDivider = styled(Divider)(({ theme }) => ({
   margin: theme.spacing(3, 0),
-  width: '100%',
-  position: 'relative',
-  '&::before': {
+  width: "100%",
+  position: "relative",
+  "&::before": {
     content: '""',
-    position: 'absolute',
-    top: '-8px',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    padding: '0 16px',
+    position: "absolute",
+    top: "-8px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    padding: "0 16px",
     backgroundColor: theme.palette.background.paper,
     color: theme.palette.text.secondary,
   },
@@ -68,9 +68,9 @@ const SocialButton = styled(Button)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
   padding: theme.spacing(1.5),
   marginBottom: theme.spacing(2),
-  boxShadow: 'none',
+  boxShadow: "none",
   border: `1px solid ${theme.palette.divider}`,
-  '&:hover': {
+  "&:hover": {
     boxShadow: theme.shadows[2],
     backgroundColor: theme.palette.background.paper,
   },
@@ -82,10 +82,10 @@ const Login = () => {
   const { login, error, loading, clearError } = useApp();
 
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const [formError, setFormError] = useState('');
+  const [formError, setFormError] = useState("");
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -100,10 +100,10 @@ const Login = () => {
 
     // Clear previous errors
     clearError();
-    setFormError('');
+    setFormError("");
 
     if (!email || !password) {
-      setFormError('Please enter both email and password');
+      setFormError("Please enter both email and password");
       return;
     }
 
@@ -112,10 +112,10 @@ const Login = () => {
 
       if (success) {
         // Redirect to dashboard on success
-        navigate('/dashboard');
+        navigate("/dashboard");
       }
     } catch (err) {
-      setFormError('An unexpected error occurred. Please try again.');
+      setFormError("An unexpected error occurred. Please try again.");
     }
   };
 
@@ -125,18 +125,18 @@ const Login = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        style={{ width: '100%' }}
+        style={{ width: "100%" }}
       >
-        <Box sx={{ textAlign: 'center', mb: 4 }}>
+        <Box sx={{ textAlign: "center", mb: 4 }}>
           <Typography
             variant="h4"
             component="h1"
             fontWeight={700}
             sx={{
               mb: 1,
-              background: 'linear-gradient(45deg, #3a36e0 0%, #6c63ff 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
+              background: "linear-gradient(45deg, #3a36e0 0%, #6c63ff 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
             }}
           >
             Welcome Back
@@ -149,7 +149,9 @@ const Login = () => {
         <AuthPaper elevation={3}>
           {(error || formError) && (
             <Alert severity="error" sx={{ mb: 3 }}>
-              {formError || error?.message || 'Authentication failed. Please try again.'}
+              {formError ||
+                error?.message ||
+                "Authentication failed. Please try again."}
             </Alert>
           )}
 
@@ -178,7 +180,7 @@ const Login = () => {
               variant="outlined"
               margin="normal"
               required
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               InputProps={{
@@ -204,7 +206,15 @@ const Login = () => {
               disabled={loading}
             />
 
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1, mb: 2 }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                mt: 1,
+                mb: 2,
+              }}
+            >
               <FormControlLabel
                 control={
                   <Checkbox
@@ -216,7 +226,12 @@ const Login = () => {
                 }
                 label="Remember me"
               />
-              <Link component={RouterLink} to="/forgot-password" variant="body2" color="primary">
+              <Link
+                component={RouterLink}
+                to="/forgot-password"
+                variant="body2"
+                color="primary"
+              >
                 Forgot password?
               </Link>
             </Box>
@@ -233,14 +248,19 @@ const Login = () => {
               {loading ? (
                 <CircularProgress size={24} color="inherit" />
               ) : (
-                'Sign In'
+                "Sign In"
               )}
             </Button>
 
-            <Box sx={{ textAlign: 'center', mt: 1 }}>
+            <Box sx={{ textAlign: "center", mt: 1 }}>
               <Typography variant="body2" color="text.secondary">
-                Don't have an account?{' '}
-                <Link component={RouterLink} to="/register" fontWeight={600} color="primary">
+                Don't have an account?{" "}
+                <Link
+                  component={RouterLink}
+                  to="/register"
+                  fontWeight={600}
+                  color="primary"
+                >
                   Sign Up
                 </Link>
               </Typography>
@@ -252,12 +272,12 @@ const Login = () => {
               variant="body2"
               color="text.secondary"
               sx={{
-                position: 'absolute',
-                top: '-10px',
-                left: '50%',
-                transform: 'translateX(-50%)',
+                position: "absolute",
+                top: "-10px",
+                left: "50%",
+                transform: "translateX(-50%)",
                 backgroundColor: theme.palette.background.paper,
-                padding: '0 8px',
+                padding: "0 8px",
               }}
             >
               OR CONTINUE WITH
@@ -270,7 +290,7 @@ const Login = () => {
                 fullWidth
                 variant="outlined"
                 startIcon={<AccountBalanceWallet />}
-                onClick={() => console.log('Connect wallet')}
+                onClick={() => console.log("Connect wallet")}
                 disabled={loading}
               >
                 Connect Wallet
@@ -280,7 +300,7 @@ const Login = () => {
               <SocialButton
                 fullWidth
                 variant="outlined"
-                onClick={() => console.log('Guest login')}
+                onClick={() => console.log("Guest login")}
                 disabled={loading}
               >
                 Guest Access

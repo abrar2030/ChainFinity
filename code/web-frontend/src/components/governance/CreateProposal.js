@@ -1,28 +1,33 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Textarea } from '../../components/ui/textarea';
-import { Alert, AlertDescription } from '../../components/ui/alert';
-import { formatAddress } from '../../utils/formatters';
-import { useWeb3Context } from '../../context/Web3Context';
+import React, { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Textarea } from "../../components/ui/textarea";
+import { Alert, AlertDescription } from "../../components/ui/alert";
+import { formatAddress } from "../../utils/formatters";
+import { useWeb3Context } from "../../context/Web3Context";
 
 const CreateProposal = ({ onSubmit }) => {
   const { account } = useWeb3Context();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    actions: [{ target: '', value: '0', signature: '', calldata: '' }]
+    title: "",
+    description: "",
+    actions: [{ target: "", value: "0", signature: "", calldata: "" }],
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -30,43 +35,46 @@ const CreateProposal = ({ onSubmit }) => {
     const newActions = [...formData.actions];
     newActions[index] = {
       ...newActions[index],
-      [field]: value
+      [field]: value,
     };
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      actions: newActions
+      actions: newActions,
     }));
   };
 
   const addAction = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      actions: [...prev.actions, { target: '', value: '0', signature: '', calldata: '' }]
+      actions: [
+        ...prev.actions,
+        { target: "", value: "0", signature: "", calldata: "" },
+      ],
     }));
   };
 
   const removeAction = (index) => {
     const newActions = [...formData.actions];
     newActions.splice(index, 1);
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      actions: newActions
+      actions: newActions,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
     setSuccess(false);
 
     try {
       // Validate form
       if (!formData.title.trim()) {
-        throw new Error('Title is required');
+        throw new Error("Title is required");
       }
       if (!formData.description.trim()) {
-        throw new Error('Description is required');
+        throw new Error("Description is required");
       }
 
       // Validate actions
@@ -74,8 +82,10 @@ const CreateProposal = ({ onSubmit }) => {
         if (!action.target || !ethers.utils.isAddress(action.target)) {
           throw new Error(`Invalid target address in action ${index + 1}`);
         }
-        if (action.signature.trim() === '') {
-          throw new Error(`Function signature is required in action ${index + 1}`);
+        if (action.signature.trim() === "") {
+          throw new Error(
+            `Function signature is required in action ${index + 1}`,
+          );
         }
       }
 
@@ -83,13 +93,13 @@ const CreateProposal = ({ onSubmit }) => {
       if (result) {
         setSuccess(true);
         setFormData({
-          title: '',
-          description: '',
-          actions: [{ target: '', value: '0', signature: '', calldata: '' }]
+          title: "",
+          description: "",
+          actions: [{ target: "", value: "0", signature: "", calldata: "" }],
         });
       }
     } catch (err) {
-      setError(err.message || 'Failed to create proposal');
+      setError(err.message || "Failed to create proposal");
     } finally {
       setLoading(false);
     }
@@ -110,7 +120,9 @@ const CreateProposal = ({ onSubmit }) => {
 
           {success && (
             <Alert>
-              <AlertDescription>Proposal created successfully!</AlertDescription>
+              <AlertDescription>
+                Proposal created successfully!
+              </AlertDescription>
             </Alert>
           )}
 
@@ -149,7 +161,12 @@ const CreateProposal = ({ onSubmit }) => {
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <h3 className="text-sm font-medium">Actions</h3>
-              <Button type="button" variant="outline" size="sm" onClick={addAction}>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={addAction}
+              >
                 Add Action
               </Button>
             </div>
@@ -174,7 +191,9 @@ const CreateProposal = ({ onSubmit }) => {
                   <label className="text-xs">Target Contract</label>
                   <Input
                     value={action.target}
-                    onChange={(e) => handleActionChange(index, 'target', e.target.value)}
+                    onChange={(e) =>
+                      handleActionChange(index, "target", e.target.value)
+                    }
                     placeholder="0x..."
                   />
                 </div>
@@ -186,7 +205,9 @@ const CreateProposal = ({ onSubmit }) => {
                     min="0"
                     step="0.0001"
                     value={action.value}
-                    onChange={(e) => handleActionChange(index, 'value', e.target.value)}
+                    onChange={(e) =>
+                      handleActionChange(index, "value", e.target.value)
+                    }
                   />
                 </div>
 
@@ -194,7 +215,9 @@ const CreateProposal = ({ onSubmit }) => {
                   <label className="text-xs">Function Signature</label>
                   <Input
                     value={action.signature}
-                    onChange={(e) => handleActionChange(index, 'signature', e.target.value)}
+                    onChange={(e) =>
+                      handleActionChange(index, "signature", e.target.value)
+                    }
                     placeholder="transfer(address,uint256)"
                   />
                 </div>
@@ -203,7 +226,9 @@ const CreateProposal = ({ onSubmit }) => {
                   <label className="text-xs">Calldata (hex)</label>
                   <Input
                     value={action.calldata}
-                    onChange={(e) => handleActionChange(index, 'calldata', e.target.value)}
+                    onChange={(e) =>
+                      handleActionChange(index, "calldata", e.target.value)
+                    }
                     placeholder="0x..."
                   />
                 </div>
@@ -213,7 +238,7 @@ const CreateProposal = ({ onSubmit }) => {
 
           <div className="pt-4">
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Creating...' : 'Create Proposal'}
+              {loading ? "Creating..." : "Create Proposal"}
             </Button>
           </div>
         </form>

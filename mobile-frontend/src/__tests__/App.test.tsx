@@ -1,8 +1,8 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import React from 'react';
-import App from '../App';
-import '@testing-library/jest-dom';
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import React from "react";
+import App from "../App";
+import "@testing-library/jest-dom";
 
 // Create a new QueryClient for testing
 const queryClient = new QueryClient({
@@ -15,16 +15,14 @@ const queryClient = new QueryClient({
 
 // Wrapper component to provide necessary context
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    {children}
-  </QueryClientProvider>
+  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 );
 
 // Mock the next/router
-jest.mock('next/router', () => ({
+jest.mock("next/router", () => ({
   useRouter: () => ({
     push: jest.fn(),
-    pathname: '/',
+    pathname: "/",
   }),
 }));
 
@@ -32,17 +30,17 @@ jest.mock('next/router', () => ({
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
 
-describe('Mobile App Component', () => {
+describe("Mobile App Component", () => {
   beforeEach(() => {
     // Clear all mocks before each test
     jest.clearAllMocks();
   });
 
-  test('renders login screen by default', () => {
+  test("renders login screen by default", () => {
     render(
       <TestWrapper>
         <App />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     expect(screen.getByText(/welcome/i)).toBeInTheDocument();
@@ -50,19 +48,19 @@ describe('Mobile App Component', () => {
     expect(screen.getByPlaceholderText(/password/i)).toBeInTheDocument();
   });
 
-  test('handles login form submission', async () => {
+  test("handles login form submission", async () => {
     render(
       <TestWrapper>
         <App />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     const emailInput = screen.getByPlaceholderText(/email/i);
     const passwordInput = screen.getByPlaceholderText(/password/i);
-    const submitButton = screen.getByRole('button', { name: /sign in/i });
+    const submitButton = screen.getByRole("button", { name: /sign in/i });
 
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "password123" } });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
@@ -71,20 +69,20 @@ describe('Mobile App Component', () => {
     });
   });
 
-  test('validates login form inputs', async () => {
+  test("validates login form inputs", async () => {
     render(
       <TestWrapper>
         <App />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     const emailInput = screen.getByPlaceholderText(/email/i);
     const passwordInput = screen.getByPlaceholderText(/password/i);
-    const submitButton = screen.getByRole('button', { name: /sign in/i });
+    const submitButton = screen.getByRole("button", { name: /sign in/i });
 
     // Test invalid email
-    fireEvent.change(emailInput, { target: { value: 'invalid-email' } });
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+    fireEvent.change(emailInput, { target: { value: "invalid-email" } });
+    fireEvent.change(passwordInput, { target: { value: "password123" } });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
@@ -92,23 +90,27 @@ describe('Mobile App Component', () => {
     });
 
     // Test short password
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'short' } });
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "short" } });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/password must be at least 8 characters/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/password must be at least 8 characters/i),
+      ).toBeInTheDocument();
     });
   });
 
-  test('handles wallet connection', async () => {
+  test("handles wallet connection", async () => {
     render(
       <TestWrapper>
         <App />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
-    const connectWalletButton = screen.getByRole('button', { name: /connect wallet/i });
+    const connectWalletButton = screen.getByRole("button", {
+      name: /connect wallet/i,
+    });
     fireEvent.click(connectWalletButton);
 
     await waitFor(() => {
@@ -117,61 +119,61 @@ describe('Mobile App Component', () => {
     });
   });
 
-  test('displays portfolio data after successful login', async () => {
+  test("displays portfolio data after successful login", async () => {
     // Mock successful login
     const mockPortfolioData = {
       tokens: [
-        { symbol: 'ETH', balance: '1.5', value: '3000' },
-        { symbol: 'USDT', balance: '1000', value: '1000' }
-      ]
+        { symbol: "ETH", balance: "1.5", value: "3000" },
+        { symbol: "USDT", balance: "1000", value: "1000" },
+      ],
     };
 
     // Mock the API response
     mockFetch.mockResolvedValueOnce({
       json: () => Promise.resolve(mockPortfolioData),
-      ok: true
+      ok: true,
     });
 
     render(
       <TestWrapper>
         <App />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     // Perform login
     const emailInput = screen.getByPlaceholderText(/email/i);
     const passwordInput = screen.getByPlaceholderText(/password/i);
-    const submitButton = screen.getByRole('button', { name: /sign in/i });
+    const submitButton = screen.getByRole("button", { name: /sign in/i });
 
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "password123" } });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText('ETH')).toBeInTheDocument();
-      expect(screen.getByText('USDT')).toBeInTheDocument();
-      expect(screen.getByText('1.5')).toBeInTheDocument();
-      expect(screen.getByText('1000')).toBeInTheDocument();
+      expect(screen.getByText("ETH")).toBeInTheDocument();
+      expect(screen.getByText("USDT")).toBeInTheDocument();
+      expect(screen.getByText("1.5")).toBeInTheDocument();
+      expect(screen.getByText("1000")).toBeInTheDocument();
     });
   });
 
-  test('handles API errors gracefully', async () => {
+  test("handles API errors gracefully", async () => {
     // Mock API error
-    mockFetch.mockRejectedValueOnce(new Error('API Error'));
+    mockFetch.mockRejectedValueOnce(new Error("API Error"));
 
     render(
       <TestWrapper>
         <App />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     // Perform login
     const emailInput = screen.getByPlaceholderText(/email/i);
     const passwordInput = screen.getByPlaceholderText(/password/i);
-    const submitButton = screen.getByRole('button', { name: /sign in/i });
+    const submitButton = screen.getByRole("button", { name: /sign in/i });
 
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "password123" } });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
@@ -179,23 +181,23 @@ describe('Mobile App Component', () => {
     });
   });
 
-  test('handles network errors gracefully', async () => {
+  test("handles network errors gracefully", async () => {
     // Mock network error
-    mockFetch.mockRejectedValueOnce(new Error('Network Error'));
+    mockFetch.mockRejectedValueOnce(new Error("Network Error"));
 
     render(
       <TestWrapper>
         <App />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     // Perform login
     const emailInput = screen.getByPlaceholderText(/email/i);
     const passwordInput = screen.getByPlaceholderText(/password/i);
-    const submitButton = screen.getByRole('button', { name: /sign in/i });
+    const submitButton = screen.getByRole("button", { name: /sign in/i });
 
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "password123" } });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
@@ -203,23 +205,25 @@ describe('Mobile App Component', () => {
     });
   });
 
-  test('handles biometric authentication', async () => {
+  test("handles biometric authentication", async () => {
     // Mock biometric authentication
     const mockBiometricAuth = jest.fn().mockResolvedValue(true);
-    Object.defineProperty(window.navigator, 'credentials', {
+    Object.defineProperty(window.navigator, "credentials", {
       value: {
-        get: mockBiometricAuth
+        get: mockBiometricAuth,
       },
-      writable: true
+      writable: true,
     });
 
     render(
       <TestWrapper>
         <App />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
-    const biometricButton = screen.getByRole('button', { name: /use biometrics/i });
+    const biometricButton = screen.getByRole("button", {
+      name: /use biometrics/i,
+    });
     fireEvent.click(biometricButton);
 
     await waitFor(() => {
@@ -228,25 +232,25 @@ describe('Mobile App Component', () => {
     });
   });
 
-  test('handles offline mode', async () => {
+  test("handles offline mode", async () => {
     // Mock offline status
-    Object.defineProperty(window.navigator, 'onLine', {
+    Object.defineProperty(window.navigator, "onLine", {
       value: false,
-      writable: true
+      writable: true,
     });
 
     render(
       <TestWrapper>
         <App />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
     const emailInput = screen.getByPlaceholderText(/email/i);
     const passwordInput = screen.getByPlaceholderText(/password/i);
-    const submitButton = screen.getByRole('button', { name: /sign in/i });
+    const submitButton = screen.getByRole("button", { name: /sign in/i });
 
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "password123" } });
     fireEvent.click(submitButton);
 
     await waitFor(() => {

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useTransactionHistory } from '../hooks/useProtocolData';
-import { useApp } from '../context/AppContext';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useTransactionHistory } from "../hooks/useProtocolData";
+import { useApp } from "../context/AppContext";
 import {
   Box,
   Container,
@@ -29,8 +29,8 @@ import {
   FormControl,
   InputLabel,
   CircularProgress,
-  Alert
-} from '@mui/material';
+  Alert,
+} from "@mui/material";
 import {
   ArrowUpward,
   ArrowDownward,
@@ -39,13 +39,13 @@ import {
   FilterList,
   GetApp,
   MoreVert,
-  Refresh
-} from '@mui/icons-material';
-import { styled } from '@mui/material/styles';
-import { motion } from 'framer-motion';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+  Refresh,
+} from "@mui/icons-material";
+import { styled } from "@mui/material/styles";
+import { motion } from "framer-motion";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.divider}`,
@@ -53,17 +53,18 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 }));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:hover': {
-    backgroundColor: theme.palette.mode === 'light'
-      ? 'rgba(0, 0, 0, 0.04)'
-      : 'rgba(255, 255, 255, 0.04)',
+  "&:hover": {
+    backgroundColor:
+      theme.palette.mode === "light"
+        ? "rgba(0, 0, 0, 0.04)"
+        : "rgba(255, 255, 255, 0.04)",
   },
 }));
 
 const FilterCard = styled(Card)(({ theme }) => ({
   marginBottom: theme.spacing(3),
   borderRadius: theme.shape.borderRadius,
-  boxShadow: 'none',
+  boxShadow: "none",
   border: `1px solid ${theme.palette.divider}`,
 }));
 
@@ -73,9 +74,9 @@ const Transactions = () => {
   const { user, isAuthenticated } = useApp();
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [typeFilter, setTypeFilter] = useState('all');
-  const [networkFilter, setNetworkFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [networkFilter, setNetworkFilter] = useState("all");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
@@ -84,17 +85,13 @@ const Transactions = () => {
   const walletAddress = user?.wallet_address;
 
   // Fetch transaction history
-  const {
-    transactions,
-    loading,
-    error,
-    refreshTransactions
-  } = useTransactionHistory(walletAddress);
+  const { transactions, loading, error, refreshTransactions } =
+    useTransactionHistory(walletAddress);
 
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate('/login');
+      navigate("/login");
     }
   }, [isAuthenticated, navigate]);
 
@@ -137,49 +134,54 @@ const Transactions = () => {
   };
 
   const resetFilters = () => {
-    setSearchQuery('');
-    setTypeFilter('all');
-    setNetworkFilter('all');
+    setSearchQuery("");
+    setTypeFilter("all");
+    setNetworkFilter("all");
     setStartDate(null);
     setEndDate(null);
     setPage(1);
   };
 
   // Filter transactions based on search query and filters
-  const filteredTransactions = transactions ? transactions.filter((transaction) => {
-    // Search query filter
-    if (searchQuery && !Object.values(transaction).some(value =>
-      String(value).toLowerCase().includes(searchQuery.toLowerCase())
-    )) {
-      return false;
-    }
+  const filteredTransactions = transactions
+    ? transactions.filter((transaction) => {
+        // Search query filter
+        if (
+          searchQuery &&
+          !Object.values(transaction).some((value) =>
+            String(value).toLowerCase().includes(searchQuery.toLowerCase()),
+          )
+        ) {
+          return false;
+        }
 
-    // Type filter
-    if (typeFilter !== 'all' && transaction.type !== typeFilter) {
-      return false;
-    }
+        // Type filter
+        if (typeFilter !== "all" && transaction.type !== typeFilter) {
+          return false;
+        }
 
-    // Network filter
-    if (networkFilter !== 'all' && transaction.network !== networkFilter) {
-      return false;
-    }
+        // Network filter
+        if (networkFilter !== "all" && transaction.network !== networkFilter) {
+          return false;
+        }
 
-    // Date range filter
-    if (startDate && new Date(transaction.date) < startDate) {
-      return false;
-    }
+        // Date range filter
+        if (startDate && new Date(transaction.date) < startDate) {
+          return false;
+        }
 
-    if (endDate && new Date(transaction.date) > endDate) {
-      return false;
-    }
+        if (endDate && new Date(transaction.date) > endDate) {
+          return false;
+        }
 
-    return true;
-  }) : [];
+        return true;
+      })
+    : [];
 
   // Pagination
   const paginatedTransactions = filteredTransactions.slice(
     (page - 1) * rowsPerPage,
-    (page - 1) * rowsPerPage + rowsPerPage
+    (page - 1) * rowsPerPage + rowsPerPage,
   );
 
   const containerVariants = {
@@ -187,9 +189,9 @@ const Transactions = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const itemVariants = {
@@ -198,16 +200,24 @@ const Transactions = () => {
       y: 0,
       opacity: 1,
       transition: {
-        duration: 0.5
-      }
-    }
+        duration: 0.5,
+      },
+    },
   };
 
   if (loading) {
     return (
-      <Box sx={{ width: '100%', mt: 4 }}>
+      <Box sx={{ width: "100%", mt: 4 }}>
         <Container maxWidth="lg">
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', py: 8 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+              py: 8,
+            }}
+          >
             <CircularProgress size={60} />
             <Typography variant="h6" sx={{ mt: 2 }}>
               Loading transactions...
@@ -220,10 +230,11 @@ const Transactions = () => {
 
   if (error) {
     return (
-      <Box sx={{ width: '100%', mt: 4 }}>
+      <Box sx={{ width: "100%", mt: 4 }}>
         <Container maxWidth="lg">
           <Alert severity="error" sx={{ mb: 2 }}>
-            {error.message || 'An error occurred while loading your transactions.'}
+            {error.message ||
+              "An error occurred while loading your transactions."}
           </Alert>
           <Button
             variant="contained"
@@ -247,7 +258,14 @@ const Transactions = () => {
         >
           {/* Header */}
           <motion.div variants={itemVariants}>
-            <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Box
+              sx={{
+                mb: 4,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
               <Box>
                 <Typography variant="h4" component="h1" fontWeight={700}>
                   Transactions
@@ -260,8 +278,8 @@ const Transactions = () => {
                 variant="contained"
                 startIcon={<GetApp />}
                 sx={{
-                  borderRadius: '12px',
-                  boxShadow: 'none'
+                  borderRadius: "12px",
+                  boxShadow: "none",
                 }}
               >
                 Export CSV
@@ -288,7 +306,15 @@ const Transactions = () => {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', md: 'flex-end' } }}>
+                <Grid
+                  item
+                  xs={12}
+                  md={6}
+                  sx={{
+                    display: "flex",
+                    justifyContent: { xs: "flex-start", md: "flex-end" },
+                  }}
+                >
                   <Button
                     variant="outlined"
                     startIcon={<FilterList />}
@@ -319,7 +345,7 @@ const Transactions = () => {
           {showFilters && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
+              animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
             >
@@ -344,7 +370,9 @@ const Transactions = () => {
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
                       <FormControl fullWidth>
-                        <InputLabel id="network-filter-label">Network</InputLabel>
+                        <InputLabel id="network-filter-label">
+                          Network
+                        </InputLabel>
                         <Select
                           labelId="network-filter-label"
                           value={networkFilter}
@@ -364,7 +392,9 @@ const Transactions = () => {
                           label="Start Date"
                           value={startDate}
                           onChange={handleStartDateChange}
-                          renderInput={(params) => <TextField {...params} fullWidth />}
+                          renderInput={(params) => (
+                            <TextField {...params} fullWidth />
+                          )}
                         />
                       </LocalizationProvider>
                     </Grid>
@@ -374,12 +404,16 @@ const Transactions = () => {
                           label="End Date"
                           value={endDate}
                           onChange={handleEndDateChange}
-                          renderInput={(params) => <TextField {...params} fullWidth />}
+                          renderInput={(params) => (
+                            <TextField {...params} fullWidth />
+                          )}
                         />
                       </LocalizationProvider>
                     </Grid>
                   </Grid>
-                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                  <Box
+                    sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}
+                  >
                     <Button
                       variant="text"
                       color="inherit"
@@ -388,10 +422,7 @@ const Transactions = () => {
                     >
                       Reset Filters
                     </Button>
-                    <Button
-                      variant="contained"
-                      onClick={toggleFilters}
-                    >
+                    <Button variant="contained" onClick={toggleFilters}>
                       Apply Filters
                     </Button>
                   </Box>
@@ -402,7 +433,13 @@ const Transactions = () => {
 
           {/* Transactions Table */}
           <motion.div variants={itemVariants}>
-            <Paper sx={{ borderRadius: theme.shape.borderRadius, overflow: 'hidden', mb: 3 }}>
+            <Paper
+              sx={{
+                borderRadius: theme.shape.borderRadius,
+                overflow: "hidden",
+                mb: 3,
+              }}
+            >
               <TableContainer>
                 <Table>
                   <TableHead>
@@ -422,43 +459,54 @@ const Transactions = () => {
                       paginatedTransactions.map((transaction) => (
                         <StyledTableRow key={transaction.id}>
                           <StyledTableCell>
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                              {transaction.type === 'receive' && (
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                              {transaction.type === "receive" && (
                                 <Chip
                                   icon={<ArrowDownward />}
                                   label="Receive"
                                   color="success"
                                   size="small"
-                                  sx={{ minWidth: '90px' }}
+                                  sx={{ minWidth: "90px" }}
                                 />
                               )}
-                              {transaction.type === 'send' && (
+                              {transaction.type === "send" && (
                                 <Chip
                                   icon={<ArrowUpward />}
                                   label="Send"
                                   color="error"
                                   size="small"
-                                  sx={{ minWidth: '90px' }}
+                                  sx={{ minWidth: "90px" }}
                                 />
                               )}
-                              {transaction.type === 'swap' && (
+                              {transaction.type === "swap" && (
                                 <Chip
                                   icon={<SwapHoriz />}
                                   label="Swap"
                                   color="info"
                                   size="small"
-                                  sx={{ minWidth: '90px' }}
+                                  sx={{ minWidth: "90px" }}
                                 />
                               )}
                             </Box>
                           </StyledTableCell>
                           <StyledTableCell>{transaction.asset}</StyledTableCell>
-                          <StyledTableCell>{transaction.amount}</StyledTableCell>
+                          <StyledTableCell>
+                            {transaction.amount}
+                          </StyledTableCell>
                           <StyledTableCell>{transaction.value}</StyledTableCell>
                           <StyledTableCell>
-                            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                              <Typography variant="body2">{transaction.date}</Typography>
-                              <Typography variant="caption" color="text.secondary">{transaction.time}</Typography>
+                            <Box
+                              sx={{ display: "flex", flexDirection: "column" }}
+                            >
+                              <Typography variant="body2">
+                                {transaction.date}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                              >
+                                {transaction.time}
+                              </Typography>
                             </Box>
                           </StyledTableCell>
                           <StyledTableCell>
@@ -498,7 +546,7 @@ const Transactions = () => {
 
               {/* Pagination */}
               {filteredTransactions.length > 0 && (
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2 }}>
+                <Box sx={{ display: "flex", justifyContent: "flex-end", p: 2 }}>
                   <Pagination
                     count={Math.ceil(filteredTransactions.length / rowsPerPage)}
                     page={page}
@@ -516,84 +564,254 @@ const Transactions = () => {
             <motion.div variants={itemVariants}>
               <Grid container spacing={3}>
                 <Grid item xs={12} md={4}>
-                  <Card sx={{ height: '100%', border: `1px solid ${theme.palette.divider}`, boxShadow: 'none' }}>
+                  <Card
+                    sx={{
+                      height: "100%",
+                      border: `1px solid ${theme.palette.divider}`,
+                      boxShadow: "none",
+                    }}
+                  >
                     <CardContent>
                       <Typography variant="h6" fontWeight={600} gutterBottom>
                         Transaction Summary
                       </Typography>
                       <Divider sx={{ my: 2 }} />
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography variant="body2" color="text.secondary">Total Transactions</Typography>
-                        <Typography variant="body2" fontWeight={500}>{transactions.length}</Typography>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          mb: 1,
+                        }}
+                      >
+                        <Typography variant="body2" color="text.secondary">
+                          Total Transactions
+                        </Typography>
+                        <Typography variant="body2" fontWeight={500}>
+                          {transactions.length}
+                        </Typography>
                       </Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography variant="body2" color="text.secondary">Send Transactions</Typography>
-                        <Typography variant="body2" fontWeight={500}>{transactions.filter(tx => tx.type === 'send').length}</Typography>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          mb: 1,
+                        }}
+                      >
+                        <Typography variant="body2" color="text.secondary">
+                          Send Transactions
+                        </Typography>
+                        <Typography variant="body2" fontWeight={500}>
+                          {
+                            transactions.filter((tx) => tx.type === "send")
+                              .length
+                          }
+                        </Typography>
                       </Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography variant="body2" color="text.secondary">Receive Transactions</Typography>
-                        <Typography variant="body2" fontWeight={500}>{transactions.filter(tx => tx.type === 'receive').length}</Typography>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          mb: 1,
+                        }}
+                      >
+                        <Typography variant="body2" color="text.secondary">
+                          Receive Transactions
+                        </Typography>
+                        <Typography variant="body2" fontWeight={500}>
+                          {
+                            transactions.filter((tx) => tx.type === "receive")
+                              .length
+                          }
+                        </Typography>
                       </Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography variant="body2" color="text.secondary">Swap Transactions</Typography>
-                        <Typography variant="body2" fontWeight={500}>{transactions.filter(tx => tx.type === 'swap').length}</Typography>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          mb: 1,
+                        }}
+                      >
+                        <Typography variant="body2" color="text.secondary">
+                          Swap Transactions
+                        </Typography>
+                        <Typography variant="body2" fontWeight={500}>
+                          {
+                            transactions.filter((tx) => tx.type === "swap")
+                              .length
+                          }
+                        </Typography>
                       </Box>
                     </CardContent>
                   </Card>
                 </Grid>
 
                 <Grid item xs={12} md={4}>
-                  <Card sx={{ height: '100%', border: `1px solid ${theme.palette.divider}`, boxShadow: 'none' }}>
+                  <Card
+                    sx={{
+                      height: "100%",
+                      border: `1px solid ${theme.palette.divider}`,
+                      boxShadow: "none",
+                    }}
+                  >
                     <CardContent>
                       <Typography variant="h6" fontWeight={600} gutterBottom>
                         Network Distribution
                       </Typography>
                       <Divider sx={{ my: 2 }} />
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography variant="body2" color="text.secondary">Ethereum</Typography>
-                        <Typography variant="body2" fontWeight={500}>{transactions.filter(tx => tx.network === 'Ethereum').length}</Typography>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          mb: 1,
+                        }}
+                      >
+                        <Typography variant="body2" color="text.secondary">
+                          Ethereum
+                        </Typography>
+                        <Typography variant="body2" fontWeight={500}>
+                          {
+                            transactions.filter(
+                              (tx) => tx.network === "Ethereum",
+                            ).length
+                          }
+                        </Typography>
                       </Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography variant="body2" color="text.secondary">Polygon</Typography>
-                        <Typography variant="body2" fontWeight={500}>{transactions.filter(tx => tx.network === 'Polygon').length}</Typography>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          mb: 1,
+                        }}
+                      >
+                        <Typography variant="body2" color="text.secondary">
+                          Polygon
+                        </Typography>
+                        <Typography variant="body2" fontWeight={500}>
+                          {
+                            transactions.filter(
+                              (tx) => tx.network === "Polygon",
+                            ).length
+                          }
+                        </Typography>
                       </Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography variant="body2" color="text.secondary">Bitcoin</Typography>
-                        <Typography variant="body2" fontWeight={500}>{transactions.filter(tx => tx.network === 'Bitcoin').length}</Typography>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          mb: 1,
+                        }}
+                      >
+                        <Typography variant="body2" color="text.secondary">
+                          Bitcoin
+                        </Typography>
+                        <Typography variant="body2" fontWeight={500}>
+                          {
+                            transactions.filter(
+                              (tx) => tx.network === "Bitcoin",
+                            ).length
+                          }
+                        </Typography>
                       </Box>
                     </CardContent>
                   </Card>
                 </Grid>
 
                 <Grid item xs={12} md={4}>
-                  <Card sx={{ height: '100%', border: `1px solid ${theme.palette.divider}`, boxShadow: 'none' }}>
+                  <Card
+                    sx={{
+                      height: "100%",
+                      border: `1px solid ${theme.palette.divider}`,
+                      boxShadow: "none",
+                    }}
+                  >
                     <CardContent>
                       <Typography variant="h6" fontWeight={600} gutterBottom>
                         Fee Summary
                       </Typography>
                       <Divider sx={{ my: 2 }} />
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography variant="body2" color="text.secondary">Total Fees Paid</Typography>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          mb: 1,
+                        }}
+                      >
+                        <Typography variant="body2" color="text.secondary">
+                          Total Fees Paid
+                        </Typography>
                         <Typography variant="body2" fontWeight={500}>
-                          ${transactions.reduce((sum, tx) => sum + parseFloat(tx.fee?.replace('$', '') || 0), 0).toFixed(2)}
+                          $
+                          {transactions
+                            .reduce(
+                              (sum, tx) =>
+                                sum + parseFloat(tx.fee?.replace("$", "") || 0),
+                              0,
+                            )
+                            .toFixed(2)}
                         </Typography>
                       </Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography variant="body2" color="text.secondary">Average Fee</Typography>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          mb: 1,
+                        }}
+                      >
+                        <Typography variant="body2" color="text.secondary">
+                          Average Fee
+                        </Typography>
                         <Typography variant="body2" fontWeight={500}>
-                          ${(transactions.reduce((sum, tx) => sum + parseFloat(tx.fee?.replace('$', '') || 0), 0) / transactions.length).toFixed(2)}
+                          $
+                          {(
+                            transactions.reduce(
+                              (sum, tx) =>
+                                sum + parseFloat(tx.fee?.replace("$", "") || 0),
+                              0,
+                            ) / transactions.length
+                          ).toFixed(2)}
                         </Typography>
                       </Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography variant="body2" color="text.secondary">Highest Fee</Typography>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          mb: 1,
+                        }}
+                      >
+                        <Typography variant="body2" color="text.secondary">
+                          Highest Fee
+                        </Typography>
                         <Typography variant="body2" fontWeight={500}>
-                          ${Math.max(...transactions.map(tx => parseFloat(tx.fee?.replace('$', '') || 0))).toFixed(2)}
+                          $
+                          {Math.max(
+                            ...transactions.map((tx) =>
+                              parseFloat(tx.fee?.replace("$", "") || 0),
+                            ),
+                          ).toFixed(2)}
                         </Typography>
                       </Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography variant="body2" color="text.secondary">Lowest Fee</Typography>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          mb: 1,
+                        }}
+                      >
+                        <Typography variant="body2" color="text.secondary">
+                          Lowest Fee
+                        </Typography>
                         <Typography variant="body2" fontWeight={500}>
-                          ${Math.min(...transactions.filter(tx => parseFloat(tx.fee?.replace('$', '') || 0) > 0).map(tx => parseFloat(tx.fee?.replace('$', '') || 0))).toFixed(2)}
+                          $
+                          {Math.min(
+                            ...transactions
+                              .filter(
+                                (tx) =>
+                                  parseFloat(tx.fee?.replace("$", "") || 0) > 0,
+                              )
+                              .map((tx) =>
+                                parseFloat(tx.fee?.replace("$", "") || 0),
+                              ),
+                          ).toFixed(2)}
                         </Typography>
                       </Box>
                     </CardContent>

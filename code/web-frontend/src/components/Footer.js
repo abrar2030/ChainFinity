@@ -1,5 +1,5 @@
-import React from 'react';
-import { Box, Container, Typography, Link, Grid } from '@mui/material';
+import React from "react";
+import { Box, Container, Typography, Link, Grid } from "@mui/material";
 
 function Footer() {
   const currentYear = new Date().getFullYear();
@@ -10,9 +10,9 @@ function Footer() {
       sx={{
         py: 3,
         px: 2,
-        mt: 'auto',
+        mt: "auto",
         backgroundColor: (theme) =>
-          theme.palette.mode === 'light'
+          theme.palette.mode === "light"
             ? theme.palette.grey[200]
             : theme.palette.grey[800],
       }}
@@ -31,10 +31,7 @@ function Footer() {
             <Typography variant="h6" color="text.primary" gutterBottom>
               Quick Links
             </Typography>
-            <Box
-              component="ul"
-              sx={{ listStyle: 'none', p: 0, m: 0 }}
-            >
+            <Box component="ul" sx={{ listStyle: "none", p: 0, m: 0 }}>
               <li>
                 <Link href="/" color="inherit" underline="hover">
                   Home

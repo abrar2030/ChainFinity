@@ -19,7 +19,9 @@ const queryClient = new QueryClient({
 
 // Wrapper component to provide necessary context
 const TestWrapper = ({ children }) => (
-  <ThemeProvider theme={theme}> { /* Add MUI ThemeProvider */}
+  <ThemeProvider theme={theme}>
+    {" "}
+    {/* Add MUI ThemeProvider */}
     <QueryClientProvider client={queryClient}>
       <AppProvider>
         <BrowserRouter>{children}</BrowserRouter>
@@ -31,7 +33,7 @@ const TestWrapper = ({ children }) => (
 describe("App Component", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    Storage.prototype.getItem = jest.fn(key => {
+    Storage.prototype.getItem = jest.fn((key) => {
       if (key === "darkMode") return "false";
       if (key === "token") return null;
       if (key === "user") return null;
@@ -58,7 +60,7 @@ describe("App Component", () => {
     render(
       <TestWrapper>
         <App />
-      </TestWrapper>
+      </TestWrapper>,
     );
     expect(screen.getByText(/login/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
@@ -68,20 +70,29 @@ describe("App Component", () => {
   test("handles login form submission and navigates", async () => {
     const { authAPI } = require("../services/api");
     authAPI.login.mockResolvedValue({ data: { access_token: "fake_token" } });
-    authAPI.getCurrentUser.mockResolvedValue({ data: { id: "1", name: "Test User", email: "test@example.com" } });
+    authAPI.getCurrentUser.mockResolvedValue({
+      data: { id: "1", name: "Test User", email: "test@example.com" },
+    });
 
     render(
       <TestWrapper>
         <App />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
-    fireEvent.change(screen.getByPlaceholderText(/email/i), { target: { value: "test@example.com" } });
-    fireEvent.change(screen.getByPlaceholderText(/password/i), { target: { value: "password123" } });
+    fireEvent.change(screen.getByPlaceholderText(/email/i), {
+      target: { value: "test@example.com" },
+    });
+    fireEvent.change(screen.getByPlaceholderText(/password/i), {
+      target: { value: "password123" },
+    });
     fireEvent.click(screen.getByRole("button", { name: /login/i }));
 
     await waitFor(() => {
-      expect(authAPI.login).toHaveBeenCalledWith({ email: "test@example.com", password: "password123" });
+      expect(authAPI.login).toHaveBeenCalledWith({
+        email: "test@example.com",
+        password: "password123",
+      });
     });
     await waitFor(() => {
       expect(authAPI.getCurrentUser).toHaveBeenCalled();
@@ -89,10 +100,10 @@ describe("App Component", () => {
     // Check for an element that appears after login (e.g., part of Navbar or Dashboard)
     // This depends on what App.js renders. Let's assume a "Logout" button appears in the Navbar.
     await waitFor(() => {
-        // Check if login screen elements are gone
-        expect(screen.queryByText(/login/i)).not.toBeInTheDocument();
-        // Check for an element that appears after login
-        // expect(screen.getByRole("button", { name: /logout/i })).toBeInTheDocument();
+      // Check if login screen elements are gone
+      expect(screen.queryByText(/login/i)).not.toBeInTheDocument();
+      // Check for an element that appears after login
+      // expect(screen.getByRole("button", { name: /logout/i })).toBeInTheDocument();
     });
   });
 
@@ -100,12 +111,14 @@ describe("App Component", () => {
     render(
       <TestWrapper>
         <App />
-      </TestWrapper>
+      </TestWrapper>,
     );
     // This test assumes client-side validation in the Login component itself.
     // The App component or AppContext might not show these specific errors.
     // For now, we just check that the login form is still present.
-    fireEvent.change(screen.getByPlaceholderText(/email/i), { target: { value: "invalid-email" } });
+    fireEvent.change(screen.getByPlaceholderText(/email/i), {
+      target: { value: "invalid-email" },
+    });
     fireEvent.click(screen.getByRole("button", { name: /login/i }));
     // Add assertion for client-side validation message if Login component shows it
     // await waitFor(() => expect(screen.getByText(/invalid email format/i)).toBeInTheDocument());
@@ -120,15 +133,22 @@ describe("App Component", () => {
     render(
       <TestWrapper>
         <App />
-      </TestWrapper>
+      </TestWrapper>,
     );
 
-    fireEvent.change(screen.getByPlaceholderText(/email/i), { target: { value: "test@example.com" } });
-    fireEvent.change(screen.getByPlaceholderText(/password/i), { target: { value: "wrongpassword" } });
+    fireEvent.change(screen.getByPlaceholderText(/email/i), {
+      target: { value: "test@example.com" },
+    });
+    fireEvent.change(screen.getByPlaceholderText(/password/i), {
+      target: { value: "wrongpassword" },
+    });
     fireEvent.click(screen.getByRole("button", { name: /login/i }));
 
     await waitFor(() => {
-      expect(authAPI.login).toHaveBeenCalledWith({ email: "test@example.com", password: "wrongpassword" });
+      expect(authAPI.login).toHaveBeenCalledWith({
+        email: "test@example.com",
+        password: "wrongpassword",
+      });
     });
     // AppContext's `handleApiError` should process this and set an error state.
     // The UI should display this error. The exact message depends on `handleApiError`.

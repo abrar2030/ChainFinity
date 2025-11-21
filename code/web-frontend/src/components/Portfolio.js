@@ -1,20 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 const Portfolio = ({ fetchData }) => {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const loadData = async () => {
       try {
         setLoading(true);
         // Simulate API call if fetchData is not provided for tests
-        const result = fetchData ? await fetchData() : [{ id: '1', name: 'Bitcoin', value: 50000, symbol: 'BTC' }, { id: '2', name: 'Ethereum', value: 3000, symbol: 'ETH' }];
+        const result = fetchData
+          ? await fetchData()
+          : [
+              { id: "1", name: "Bitcoin", value: 50000, symbol: "BTC" },
+              { id: "2", name: "Ethereum", value: 3000, symbol: "ETH" },
+            ];
         setData(result);
       } catch (err) {
-        setError('Failed to fetch portfolio data');
+        setError("Failed to fetch portfolio data");
       } finally {
         setLoading(false);
       }
@@ -37,8 +42,8 @@ const Portfolio = ({ fetchData }) => {
   };
 
   const filteredData = data
-    ? data.filter(token =>
-        token.name.toLowerCase().includes(searchTerm.toLowerCase())
+    ? data.filter((token) =>
+        token.name.toLowerCase().includes(searchTerm.toLowerCase()),
       )
     : [];
 
@@ -63,8 +68,10 @@ const Portfolio = ({ fetchData }) => {
       <button onClick={handleSortByValue}>Sort by value</button>
       {filteredData.length > 0 ? (
         <ul>
-          {filteredData.map(token => (
-            <li key={token.id}>{token.name} ({token.symbol}): ${token.value}</li>
+          {filteredData.map((token) => (
+            <li key={token.id}>
+              {token.name} ({token.symbol}): ${token.value}
+            </li>
           ))}
         </ul>
       ) : (

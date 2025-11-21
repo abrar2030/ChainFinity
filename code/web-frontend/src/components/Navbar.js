@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link as RouterLink, useLocation } from 'react-router-dom';
+import React from "react";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
@@ -8,9 +8,9 @@ import {
   Box,
   Link,
   useTheme,
-} from '@mui/material';
-import { useApp } from '../context/AppContext';
-import { formatAddress } from '../utils/helpers';
+} from "@mui/material";
+import { useApp } from "../context/AppContext";
+import { formatAddress } from "../utils/helpers";
 
 function Navbar() {
   const theme = useTheme();
@@ -19,8 +19,8 @@ function Navbar() {
   const { wallet, user } = state;
 
   const navItems = [
-    { label: 'Home', path: '/' },
-    { label: 'Dashboard', path: '/dashboard' },
+    { label: "Home", path: "/" },
+    { label: "Dashboard", path: "/dashboard" },
   ];
 
   return (
@@ -32,25 +32,26 @@ function Navbar() {
           to="/"
           sx={{
             flexGrow: 1,
-            textDecoration: 'none',
-            color: 'inherit',
-            fontWeight: 'bold',
+            textDecoration: "none",
+            color: "inherit",
+            fontWeight: "bold",
           }}
         >
           ChainFinity
         </Typography>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           {navItems.map((item) => (
             <Link
               key={item.path}
               component={RouterLink}
               to={item.path}
               sx={{
-                color: location.pathname === item.path ? 'primary.main' : 'inherit',
-                textDecoration: 'none',
-                '&:hover': {
-                  color: 'primary.main',
+                color:
+                  location.pathname === item.path ? "primary.main" : "inherit",
+                textDecoration: "none",
+                "&:hover": {
+                  color: "primary.main",
                 },
               }}
             >
@@ -77,11 +78,7 @@ function Navbar() {
           )}
 
           {user ? (
-            <Button
-              variant="outlined"
-              color="inherit"
-              onClick={actions.logout}
-            >
+            <Button variant="outlined" color="inherit" onClick={actions.logout}>
               Logout
             </Button>
           ) : (

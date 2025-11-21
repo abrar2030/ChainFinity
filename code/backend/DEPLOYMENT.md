@@ -147,6 +147,7 @@ docker-compose down
 ```
 
 **Services included in Docker Compose:**
+
 - **API**: ChainFinity backend application
 - **PostgreSQL**: Primary database with persistent storage
 - **Redis**: Cache and session store
@@ -489,21 +490,21 @@ rule_files:
   - "alert_rules.yml"
 
 scrape_configs:
-  - job_name: 'chainfinity-api'
+  - job_name: "chainfinity-api"
     static_configs:
-      - targets: ['localhost:8000']
-    metrics_path: '/metrics'
+      - targets: ["localhost:8000"]
+    metrics_path: "/metrics"
     scrape_interval: 30s
 
-  - job_name: 'node-exporter'
+  - job_name: "node-exporter"
     static_configs:
-      - targets: ['localhost:9100']
+      - targets: ["localhost:9100"]
 
 alerting:
   alertmanagers:
     - static_configs:
         - targets:
-          - alertmanager:9093
+            - alertmanager:9093
 ```
 
 ## 🔧 Configuration Management
@@ -511,6 +512,7 @@ alerting:
 ### Environment-Specific Configurations
 
 #### Development
+
 ```bash
 ENVIRONMENT=development
 DEBUG=true
@@ -519,6 +521,7 @@ DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/chainfinity_d
 ```
 
 #### Staging
+
 ```bash
 ENVIRONMENT=staging
 DEBUG=false
@@ -527,6 +530,7 @@ DATABASE_URL=postgresql+asyncpg://user:pass@staging-db:5432/chainfinity_staging
 ```
 
 #### Production
+
 ```bash
 ENVIRONMENT=production
 DEBUG=false
@@ -537,6 +541,7 @@ DATABASE_URL=postgresql+asyncpg://user:pass@prod-db:5432/chainfinity_prod
 ### Security Configuration
 
 #### JWT Settings
+
 ```bash
 # Use strong, unique secret keys
 SECRET_KEY=your-256-bit-secret-key
@@ -545,6 +550,7 @@ REFRESH_TOKEN_EXPIRE_DAYS=7     # Reasonable refresh period
 ```
 
 #### Database Security
+
 ```bash
 # Use connection pooling
 DB_POOL_SIZE=20
@@ -556,6 +562,7 @@ DATABASE_URL=postgresql+asyncpg://user:pass@host:5432/db?sslmode=require
 ```
 
 #### Rate Limiting
+
 ```bash
 RATE_LIMIT_PER_MINUTE=60    # Requests per minute per IP
 RATE_LIMIT_BURST=100        # Burst allowance
@@ -616,18 +623,21 @@ Set up alerts for critical metrics:
 ### Blue-Green Deployment
 
 1. **Prepare Green Environment**
+
    ```bash
    # Deploy to green environment
    docker-compose -f docker-compose.green.yml up -d
    ```
 
 2. **Health Check**
+
    ```bash
    # Verify green environment health
    curl http://green.internal:8000/health
    ```
 
 3. **Switch Traffic**
+
    ```bash
    # Update load balancer configuration
    # Switch from blue to green
@@ -663,6 +673,7 @@ done
 ### Common Issues
 
 #### Database Connection Issues
+
 ```bash
 # Check database connectivity
 pg_isready -h localhost -p 5432 -U chainfinity_user
@@ -672,6 +683,7 @@ curl http://localhost:8000/health | jq '.services.database'
 ```
 
 #### Redis Connection Issues
+
 ```bash
 # Check Redis connectivity
 redis-cli ping
@@ -681,6 +693,7 @@ redis-cli info memory
 ```
 
 #### High Memory Usage
+
 ```bash
 # Check application memory usage
 ps aux | grep gunicorn
@@ -690,6 +703,7 @@ sudo -u postgres psql -c "SELECT count(*) FROM pg_stat_activity;"
 ```
 
 #### SSL Certificate Issues
+
 ```bash
 # Check certificate expiry
 openssl x509 -in /etc/letsencrypt/live/api.yourdomain.com/cert.pem -text -noout | grep "Not After"
@@ -714,6 +728,7 @@ sudo tail -f /var/log/postgresql/postgresql-15-main.log
 ### Performance Tuning
 
 #### Database Optimization
+
 ```sql
 -- Analyze query performance
 EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'user@example.com';
@@ -724,6 +739,7 @@ FROM pg_stat_user_indexes;
 ```
 
 #### Application Optimization
+
 ```bash
 # Profile application performance
 pip install py-spy

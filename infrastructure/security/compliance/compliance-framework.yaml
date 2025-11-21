@@ -25,7 +25,7 @@ compliance_frameworks:
 
   pci_dss:
     enabled: true
-    level: "Level 1"  # >6M transactions annually
+    level: "Level 1" # >6M transactions annually
     version: "4.0"
     qsa: "TBD - Qualified Security Assessor"
 
@@ -77,7 +77,7 @@ security_controls:
       lockout_threshold: 5
 
     session_management:
-      timeout: 30  # minutes
+      timeout: 30 # minutes
       concurrent_sessions: 1
       secure_cookies: true
 
@@ -186,8 +186,8 @@ incident_response:
 business_continuity:
   # CC9.1 - Business Continuity Planning
   disaster_recovery:
-    rto: "4 hours"  # Recovery Time Objective
-    rpo: "1 hour"   # Recovery Point Objective
+    rto: "4 hours" # Recovery Time Objective
+    rpo: "1 hour" # Recovery Point Objective
     backup_frequency: "continuous"
     backup_testing: "monthly"
 
@@ -238,36 +238,36 @@ privacy_controls:
 
 pci_dss:
   requirements:
-    req_1:  # Install and maintain firewall configuration
+    req_1: # Install and maintain firewall configuration
       firewall_rules: "documented"
       network_segmentation: true
 
-    req_2:  # Do not use vendor-supplied defaults
+    req_2: # Do not use vendor-supplied defaults
       default_passwords: "changed"
       unnecessary_services: "disabled"
 
-    req_3:  # Protect stored cardholder data
+    req_3: # Protect stored cardholder data
       data_encryption: "AES-256"
       key_management: "HSM"
 
-    req_4:  # Encrypt transmission of cardholder data
+    req_4: # Encrypt transmission of cardholder data
       encryption_in_transit: "TLS 1.3"
 
-    req_5:  # Protect all systems against malware
+    req_5: # Protect all systems against malware
       antivirus: "enterprise_grade"
 
-    req_6:  # Develop and maintain secure systems
+    req_6: # Develop and maintain secure systems
       secure_coding: true
       vulnerability_management: true
 
-    req_7:  # Restrict access by business need-to-know
+    req_7: # Restrict access by business need-to-know
       access_control: "role_based"
 
-    req_8:  # Identify and authenticate access
+    req_8: # Identify and authenticate access
       unique_ids: true
       strong_authentication: true
 
-    req_9:  # Restrict physical access
+    req_9: # Restrict physical access
       physical_security: "data_center"
 
     req_10: # Track and monitor all access

@@ -90,6 +90,7 @@ cp terraform.tfvars.example terraform.tfvars
 ```
 
 **Important Security Configuration:**
+
 - Update `allowed_cidr_blocks` with your organization's IP ranges
 - Configure `alert_email_addresses` for security notifications
 - Set strong passwords and use AWS Secrets Manager for sensitive data
@@ -301,6 +302,7 @@ ansible-playbook -i inventory.ini playbook.yml
 ### Common Issues
 
 #### 1. Terraform Apply Fails
+
 ```bash
 # Check AWS credentials
 aws sts get-caller-identity
@@ -313,6 +315,7 @@ terraform state list
 ```
 
 #### 2. Kubernetes Pods Not Starting
+
 ```bash
 # Check pod status
 kubectl describe pod <pod-name> -n chainfinity
@@ -325,6 +328,7 @@ kubectl top pods -n chainfinity
 ```
 
 #### 3. Vault Initialization Issues
+
 ```bash
 # Check Vault status
 vault status
@@ -337,6 +341,7 @@ kubectl exec -it <vault-pod> -n chainfinity-security -- vault status
 ```
 
 #### 4. Certificate Issues
+
 ```bash
 # Check certificate status
 kubectl get certificates -n chainfinity
@@ -351,6 +356,7 @@ nslookup chainfinity.com
 ### Emergency Procedures
 
 #### Security Incident Response
+
 1. **Immediate Actions**:
    - Isolate affected systems
    - Preserve evidence
@@ -367,7 +373,9 @@ nslookup chainfinity.com
    - Apply emergency patches
 
 #### Disaster Recovery
+
 1. **Database Recovery**:
+
    ```bash
    # Restore from backup
    aws rds restore-db-instance-from-db-snapshot \
@@ -376,6 +384,7 @@ nslookup chainfinity.com
    ```
 
 2. **Application Recovery**:
+
    ```bash
    # Deploy to DR region
    terraform apply -var="region=us-east-1"

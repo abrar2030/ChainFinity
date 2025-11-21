@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { blockchainAPI, handleApiError } from '../services/api';
-import { useApp } from '../context/AppContext';
+import { useState, useEffect } from "react";
+import { blockchainAPI, handleApiError } from "../services/api";
+import { useApp } from "../context/AppContext";
 
 export const usePortfolioData = (walletAddress) => {
   const { user } = useApp();
@@ -39,7 +39,7 @@ export const usePortfolioData = (walletAddress) => {
     try {
       const address = walletAddress || (user ? user.wallet_address : null);
       if (!address) {
-        throw new Error('No wallet address available');
+        throw new Error("No wallet address available");
       }
 
       const response = await blockchainAPI.getPortfolio(address);
@@ -94,7 +94,7 @@ export const useTransactionHistory = (walletAddress) => {
     try {
       const address = walletAddress || (user ? user.wallet_address : null);
       if (!address) {
-        throw new Error('No wallet address available');
+        throw new Error("No wallet address available");
       }
 
       const response = await blockchainAPI.getTransactions(address);
@@ -112,7 +112,7 @@ export const useTransactionHistory = (walletAddress) => {
   return { transactions, loading, error, refreshTransactions };
 };
 
-export const useTokenBalance = (tokenAddress, network = 'ethereum') => {
+export const useTokenBalance = (tokenAddress, network = "ethereum") => {
   const [balance, setBalance] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -126,7 +126,10 @@ export const useTokenBalance = (tokenAddress, network = 'ethereum') => {
 
       try {
         setLoading(true);
-        const response = await blockchainAPI.getTokenBalance(tokenAddress, network);
+        const response = await blockchainAPI.getTokenBalance(
+          tokenAddress,
+          network,
+        );
         setBalance(response.data);
         setError(null);
       } catch (err) {
@@ -146,7 +149,10 @@ export const useTokenBalance = (tokenAddress, network = 'ethereum') => {
 
     setLoading(true);
     try {
-      const response = await blockchainAPI.getTokenBalance(tokenAddress, network);
+      const response = await blockchainAPI.getTokenBalance(
+        tokenAddress,
+        network,
+      );
       setBalance(response.data);
       setError(null);
       return true;

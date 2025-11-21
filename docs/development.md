@@ -6,11 +6,13 @@ This guide provides information for developers contributing to the ChainFinity p
 
 1. Fork and clone the repository
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Set up pre-commit hooks:
+
 ```bash
 npm run prepare
 ```
@@ -18,6 +20,7 @@ npm run prepare
 ## Code Style
 
 We follow these coding standards:
+
 - Use TypeScript for all new code
 - Follow ESLint rules (see `.eslintrc`)
 - Use Prettier for code formatting
@@ -34,6 +37,7 @@ We follow these coding standards:
 ## Commit Guidelines
 
 Follow the Conventional Commits specification:
+
 - `feat:` - New feature
 - `fix:` - Bug fix
 - `docs:` - Documentation changes
@@ -45,11 +49,13 @@ Follow the Conventional Commits specification:
 ## Testing
 
 Run tests:
+
 ```bash
 npm test
 ```
 
 Run tests with coverage:
+
 ```bash
 npm run test:coverage
 ```

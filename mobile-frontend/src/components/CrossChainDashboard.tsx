@@ -1,15 +1,14 @@
-
 // src/components/CrossChainDashboard.tsx
-'use client'
+"use client";
 
-import React from 'react';
+import React from "react";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -17,53 +16,55 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { ArrowRightLeft, TrendingUp } from 'lucide-react';
-import { motion } from 'framer-motion';
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { ArrowRightLeft, TrendingUp } from "lucide-react";
+import { motion } from "framer-motion";
 
 // Mock data for demonstration
 const mockCrossChainData = [
   {
-    id: 'txn1',
-    fromChain: 'Ethereum',
-    toChain: 'Polygon',
-    asset: 'USDC',
-    amount: '1,000',
-    status: 'Completed',
-    timestamp: '2024-04-30T10:00:00Z',
+    id: "txn1",
+    fromChain: "Ethereum",
+    toChain: "Polygon",
+    asset: "USDC",
+    amount: "1,000",
+    status: "Completed",
+    timestamp: "2024-04-30T10:00:00Z",
   },
   {
-    id: 'txn2',
-    fromChain: 'Arbitrum',
-    toChain: 'Optimism',
-    asset: 'ETH',
-    amount: '0.5',
-    status: 'Pending',
-    timestamp: '2024-04-30T10:05:00Z',
+    id: "txn2",
+    fromChain: "Arbitrum",
+    toChain: "Optimism",
+    asset: "ETH",
+    amount: "0.5",
+    status: "Pending",
+    timestamp: "2024-04-30T10:05:00Z",
   },
   {
-    id: 'txn3',
-    fromChain: 'Polygon',
-    toChain: 'Ethereum',
-    asset: 'MATIC',
-    amount: '500',
-    status: 'Failed',
-    timestamp: '2024-04-30T09:55:00Z',
+    id: "txn3",
+    fromChain: "Polygon",
+    toChain: "Ethereum",
+    asset: "MATIC",
+    amount: "500",
+    status: "Failed",
+    timestamp: "2024-04-30T09:55:00Z",
   },
 ];
 
 // Helper to get status badge variant
-const getStatusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
+const getStatusVariant = (
+  status: string,
+): "default" | "secondary" | "destructive" | "outline" => {
   switch (status.toLowerCase()) {
-    case 'completed':
-      return 'default'; // Use default (often green or blue)
-    case 'pending':
-      return 'secondary'; // Use secondary (often yellow or gray)
-    case 'failed':
-      return 'destructive'; // Use destructive (often red)
+    case "completed":
+      return "default"; // Use default (often green or blue)
+    case "pending":
+      return "secondary"; // Use secondary (often yellow or gray)
+    case "failed":
+      return "destructive"; // Use destructive (often red)
     default:
-      return 'outline';
+      return "outline";
   }
 };
 
@@ -81,7 +82,8 @@ export function CrossChainDashboard() {
       <Card className="w-full">
         <CardHeader>
           <CardTitle className="flex items-center">
-            <ArrowRightLeft className="h-5 w-5 mr-2 text-blue-500" /> Cross-Chain Activity
+            <ArrowRightLeft className="h-5 w-5 mr-2 text-blue-500" />{" "}
+            Cross-Chain Activity
           </CardTitle>
           <CardDescription>
             Overview of recent cross-chain transactions and bridging activity.
@@ -107,7 +109,9 @@ export function CrossChainDashboard() {
                     <TableCell>{txn.fromChain}</TableCell>
                     <TableCell>{txn.toChain}</TableCell>
                     <TableCell className="text-right">
-                      <Badge variant={getStatusVariant(txn.status)}>{txn.status}</Badge>
+                      <Badge variant={getStatusVariant(txn.status)}>
+                        {txn.status}
+                      </Badge>
                     </TableCell>
                   </TableRow>
                 ))}

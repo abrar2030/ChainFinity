@@ -78,6 +78,7 @@ This document outlines the security considerations and best practices for the Ch
 ## Reporting Security Issues
 
 If you discover a security vulnerability, please:
+
 1. Do not disclose it publicly
 2. Email security@chainfinity.com
 3. Include detailed information

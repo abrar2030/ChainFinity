@@ -1,15 +1,20 @@
-
 // src/components/WalletInfo.tsx
-'use client'
+"use client";
 
-import React from 'react';
-import { useApp } from '@/context/AppContext';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Wallet, Copy, Check, AlertCircle, Network } from 'lucide-react';
-import { formatAddress } from '@/utils/helpers'; // Assuming this helper exists
-import { Skeleton } from '@/components/ui/skeleton';
-import { motion } from 'framer-motion';
+import React from "react";
+import { useApp } from "@/context/AppContext";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Wallet, Copy, Check, AlertCircle, Network } from "lucide-react";
+import { formatAddress } from "@/utils/helpers"; // Assuming this helper exists
+import { Skeleton } from "@/components/ui/skeleton";
+import { motion } from "framer-motion";
 
 export function WalletInfo() {
   const { wallet, actions, loading } = useApp();
@@ -46,7 +51,9 @@ export function WalletInfo() {
           <CardTitle className="flex items-center justify-center">
             <Wallet className="h-5 w-5 mr-2" /> Wallet Not Connected
           </CardTitle>
-          <CardDescription>Connect your wallet to view details.</CardDescription>
+          <CardDescription>
+            Connect your wallet to view details.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Button onClick={actions.connectWallet} className="w-full">
@@ -58,7 +65,11 @@ export function WalletInfo() {
   }
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="flex items-center">
@@ -69,22 +80,33 @@ export function WalletInfo() {
         <CardContent className="space-y-3">
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Status:</span>
-            <span className="font-medium text-green-600 dark:text-green-400">Connected</span>
+            <span className="font-medium text-green-600 dark:text-green-400">
+              Connected
+            </span>
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Network:</span>
             <span className="font-medium flex items-center">
               <Network className="h-4 w-4 mr-1.5 text-blue-500" />
-              {wallet.network || 'N/A'}
+              {wallet.network || "N/A"}
             </span>
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Address:</span>
             <div className="flex items-center font-mono">
-              {wallet.address ? formatAddress(wallet.address) : 'N/A'}
+              {wallet.address ? formatAddress(wallet.address) : "N/A"}
               {wallet.address && (
-                <Button variant="ghost" size="icon" className="h-6 w-6 ml-1" onClick={handleCopy}>
-                  {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 ml-1"
+                  onClick={handleCopy}
+                >
+                  {copied ? (
+                    <Check className="h-4 w-4 text-green-500" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
                   <span className="sr-only">Copy address</span>
                 </Button>
               )}
@@ -92,9 +114,13 @@ export function WalletInfo() {
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Balance:</span>
-            <span className="font-medium">{wallet.balance || 'N/A'}</span>
+            <span className="font-medium">{wallet.balance || "N/A"}</span>
           </div>
-          <Button variant="outline" onClick={actions.disconnectWallet} className="w-full mt-4">
+          <Button
+            variant="outline"
+            onClick={actions.disconnectWallet}
+            className="w-full mt-4"
+          >
             Disconnect Wallet
           </Button>
         </CardContent>

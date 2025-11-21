@@ -159,233 +159,233 @@ spec:
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: app
-                  operator: In
-                  values:
-                  - chainfinity-frontend
-              topologyKey: kubernetes.io/hostname
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - chainfinity-frontend
+                topologyKey: kubernetes.io/hostname
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
-            - matchExpressions:
-              - key: chainfinity.com/workload
-                operator: In
-                values:
-                - application
+              - matchExpressions:
+                  - key: chainfinity.com/workload
+                    operator: In
+                    values:
+                      - application
 
       tolerations:
-      - key: "chainfinity.com/dedicated"
-        operator: "Equal"
-        value: "application"
-        effect: "NoSchedule"
+        - key: "chainfinity.com/dedicated"
+          operator: "Equal"
+          value: "application"
+          effect: "NoSchedule"
 
       # Init Containers for Security Checks
       initContainers:
-      - name: security-init
-        image: busybox:1.35
-        command: ['sh', '-c']
-        args:
-        - |
-          echo "Running security initialization..."
-          # Check file permissions
-          ls -la /app
-          # Verify no sensitive files
-          find /app -name "*.key" -o -name "*.pem" -o -name "*secret*" | wc -l
-          echo "Security initialization completed"
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 1000
-          runAsGroup: 1000
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
-        volumeMounts:
-        - name: app-volume
-          mountPath: /app
-          readOnly: true
-        resources:
-          requests:
-            cpu: "10m"
-            memory: "16Mi"
-          limits:
-            cpu: "50m"
-            memory: "64Mi"
+        - name: security-init
+          image: busybox:1.35
+          command: ["sh", "-c"]
+          args:
+            - |
+              echo "Running security initialization..."
+              # Check file permissions
+              ls -la /app
+              # Verify no sensitive files
+              find /app -name "*.key" -o -name "*.pem" -o -name "*secret*" | wc -l
+              echo "Security initialization completed"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: app-volume
+              mountPath: /app
+              readOnly: true
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "16Mi"
+            limits:
+              cpu: "50m"
+              memory: "64Mi"
 
       containers:
-      - name: frontend
-        image: chainfinity/frontend:1.0.0
-        imagePullPolicy: Always
+        - name: frontend
+          image: chainfinity/frontend:1.0.0
+          imagePullPolicy: Always
 
-        # Security Context
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 1000
-          runAsGroup: 1000
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
-            add:
-            - NET_BIND_SERVICE
+          # Security Context
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - NET_BIND_SERVICE
 
-        # Ports
-        ports:
-        - name: http
-          containerPort: 8080
-          protocol: TCP
-        - name: metrics
-          containerPort: 9090
-          protocol: TCP
+          # Ports
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
 
-        # Environment Variables
-        env:
-        - name: NODE_ENV
-          valueFrom:
-            configMapKeyRef:
-              name: chainfinity-config
-              key: NODE_ENV
-        - name: PORT
-          valueFrom:
-            configMapKeyRef:
-              name: chainfinity-config
-              key: PORT
-        - name: REACT_APP_API_URL
-          value: "https://api.chainfinity.com"
-        - name: REACT_APP_VERSION
-          value: "1.0.0"
-        - name: REACT_APP_ENVIRONMENT
-          value: "production"
+          # Environment Variables
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: chainfinity-config
+                  key: NODE_ENV
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: chainfinity-config
+                  key: PORT
+            - name: REACT_APP_API_URL
+              value: "https://api.chainfinity.com"
+            - name: REACT_APP_VERSION
+              value: "1.0.0"
+            - name: REACT_APP_ENVIRONMENT
+              value: "production"
 
-        # Resource Management
-        resources:
-          requests:
-            cpu: "100m"
-            memory: "128Mi"
-            ephemeral-storage: "1Gi"
-          limits:
-            cpu: "500m"
-            memory: "512Mi"
-            ephemeral-storage: "2Gi"
+          # Resource Management
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+              ephemeral-storage: "1Gi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+              ephemeral-storage: "2Gi"
 
-        # Health Checks
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: http
-            scheme: HTTP
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
+          # Health Checks
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
 
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: http
-            scheme: HTTP
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          timeoutSeconds: 3
-          successThreshold: 1
-          failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 3
 
-        startupProbe:
-          httpGet:
-            path: /health
-            port: http
-            scheme: HTTP
-          initialDelaySeconds: 10
-          periodSeconds: 5
-          timeoutSeconds: 3
-          successThreshold: 1
-          failureThreshold: 30
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 30
 
-        # Volume Mounts
-        volumeMounts:
-        - name: app-volume
-          mountPath: /app
-          readOnly: true
-        - name: tmp-volume
-          mountPath: /tmp
-        - name: cache-volume
-          mountPath: /app/cache
-        - name: logs-volume
-          mountPath: /app/logs
-        - name: tls-certs
-          mountPath: /etc/ssl/certs
-          readOnly: true
+          # Volume Mounts
+          volumeMounts:
+            - name: app-volume
+              mountPath: /app
+              readOnly: true
+            - name: tmp-volume
+              mountPath: /tmp
+            - name: cache-volume
+              mountPath: /app/cache
+            - name: logs-volume
+              mountPath: /app/logs
+            - name: tls-certs
+              mountPath: /etc/ssl/certs
+              readOnly: true
 
-      # Sidecar Container for Log Shipping
-      - name: log-shipper
-        image: fluent/fluent-bit:2.1.10
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 1000
-          runAsGroup: 1000
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
-        resources:
-          requests:
-            cpu: "50m"
-            memory: "64Mi"
-          limits:
-            cpu: "100m"
-            memory: "128Mi"
-        volumeMounts:
-        - name: logs-volume
-          mountPath: /app/logs
-          readOnly: true
-        - name: fluent-bit-config
-          mountPath: /fluent-bit/etc
-          readOnly: true
+        # Sidecar Container for Log Shipping
+        - name: log-shipper
+          image: fluent/fluent-bit:2.1.10
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "100m"
+              memory: "128Mi"
+          volumeMounts:
+            - name: logs-volume
+              mountPath: /app/logs
+              readOnly: true
+            - name: fluent-bit-config
+              mountPath: /fluent-bit/etc
+              readOnly: true
 
       # Volumes
       volumes:
-      - name: app-volume
-        emptyDir:
-          sizeLimit: "1Gi"
-      - name: tmp-volume
-        emptyDir:
-          sizeLimit: "500Mi"
-      - name: cache-volume
-        emptyDir:
-          sizeLimit: "1Gi"
-      - name: logs-volume
-        emptyDir:
-          sizeLimit: "2Gi"
-      - name: tls-certs
-        secret:
-          secretName: chainfinity-tls-secret
-          defaultMode: 0400
-      - name: fluent-bit-config
-        configMap:
-          name: fluent-bit-config
+        - name: app-volume
+          emptyDir:
+            sizeLimit: "1Gi"
+        - name: tmp-volume
+          emptyDir:
+            sizeLimit: "500Mi"
+        - name: cache-volume
+          emptyDir:
+            sizeLimit: "1Gi"
+        - name: logs-volume
+          emptyDir:
+            sizeLimit: "2Gi"
+        - name: tls-certs
+          secret:
+            secretName: chainfinity-tls-secret
+            defaultMode: 0400
+        - name: fluent-bit-config
+          configMap:
+            name: fluent-bit-config
 
       # DNS Configuration
       dnsPolicy: ClusterFirst
       dnsConfig:
         options:
-        - name: ndots
-          value: "2"
-        - name: edns0
+          - name: ndots
+            value: "2"
+          - name: edns0
 
       # Termination Grace Period
       terminationGracePeriodSeconds: 30
 
       # Image Pull Secrets
       imagePullSecrets:
-      - name: chainfinity-registry-secret
+        - name: chainfinity-registry-secret
 
 ---
 # Backend Deployment with Enhanced Security
@@ -455,243 +455,242 @@ spec:
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: app
-                  operator: In
-                  values:
-                  - chainfinity-backend
-              topologyKey: kubernetes.io/hostname
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - chainfinity-backend
+                topologyKey: kubernetes.io/hostname
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
-            - matchExpressions:
-              - key: chainfinity.com/workload
-                operator: In
-                values:
-                - application
+              - matchExpressions:
+                  - key: chainfinity.com/workload
+                    operator: In
+                    values:
+                      - application
 
       tolerations:
-      - key: "chainfinity.com/dedicated"
-        operator: "Equal"
-        value: "application"
-        effect: "NoSchedule"
+        - key: "chainfinity.com/dedicated"
+          operator: "Equal"
+          value: "application"
+          effect: "NoSchedule"
 
       # Init Containers
       initContainers:
-      - name: database-migration
-        image: chainfinity/backend:1.0.0
-        command: ['python', 'manage.py', 'migrate']
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 1001
-          runAsGroup: 1001
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
-        env:
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: chainfinity-db-secret
-              key: database-url
-        volumeMounts:
-        - name: tmp-volume
-          mountPath: /tmp
-        resources:
-          requests:
-            cpu: "100m"
-            memory: "256Mi"
-          limits:
-            cpu: "500m"
-            memory: "512Mi"
+        - name: database-migration
+          image: chainfinity/backend:1.0.0
+          command: ["python", "manage.py", "migrate"]
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+            runAsGroup: 1001
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: chainfinity-db-secret
+                  key: database-url
+          volumeMounts:
+            - name: tmp-volume
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
 
       containers:
-      - name: backend
-        image: chainfinity/backend:1.0.0
-        imagePullPolicy: Always
+        - name: backend
+          image: chainfinity/backend:1.0.0
+          imagePullPolicy: Always
 
-        # Security Context
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 1001
-          runAsGroup: 1001
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
-            add:
-            - NET_BIND_SERVICE
+          # Security Context
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+            runAsGroup: 1001
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - NET_BIND_SERVICE
 
-        # Ports
-        ports:
-        - name: http
-          containerPort: 8080
-          protocol: TCP
-        - name: metrics
-          containerPort: 9090
-          protocol: TCP
+          # Ports
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
 
-        # Environment Variables
-        envFrom:
-        - configMapRef:
-            name: chainfinity-config
-        env:
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: chainfinity-db-secret
-              key: database-url
-        - name: REDIS_URL
-          valueFrom:
-            secretKeyRef:
-              name: chainfinity-redis-secret
-              key: redis-url
-        - name: JWT_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: chainfinity-app-secret
-              key: jwt-secret
-        - name: ENCRYPTION_KEY
-          valueFrom:
-            secretKeyRef:
-              name: chainfinity-app-secret
-              key: encryption-key
+          # Environment Variables
+          envFrom:
+            - configMapRef:
+                name: chainfinity-config
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: chainfinity-db-secret
+                  key: database-url
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: chainfinity-redis-secret
+                  key: redis-url
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: chainfinity-app-secret
+                  key: jwt-secret
+            - name: ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: chainfinity-app-secret
+                  key: encryption-key
 
-        # Resource Management
-        resources:
-          requests:
-            cpu: "200m"
-            memory: "512Mi"
-            ephemeral-storage: "2Gi"
-          limits:
-            cpu: "1000m"
-            memory: "2Gi"
-            ephemeral-storage: "4Gi"
+          # Resource Management
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+              ephemeral-storage: "2Gi"
+            limits:
+              cpu: "1000m"
+              memory: "2Gi"
+              ephemeral-storage: "4Gi"
 
-        # Health Checks
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: http
-            scheme: HTTP
-          initialDelaySeconds: 60
-          periodSeconds: 10
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
+          # Health Checks
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
 
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: http
-            scheme: HTTP
-          initialDelaySeconds: 10
-          periodSeconds: 5
-          timeoutSeconds: 3
-          successThreshold: 1
-          failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 3
 
-        startupProbe:
-          httpGet:
-            path: /health
-            port: http
-            scheme: HTTP
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 30
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 30
 
-        # Volume Mounts
-        volumeMounts:
-        - name: app-volume
-          mountPath: /app
-          readOnly: true
-        - name: tmp-volume
-          mountPath: /tmp
-        - name: cache-volume
-          mountPath: /app/cache
-        - name: logs-volume
-          mountPath: /app/logs
-        - name: uploads-volume
-          mountPath: /app/uploads
-        - name: tls-certs
-          mountPath: /etc/ssl/certs
-          readOnly: true
+          # Volume Mounts
+          volumeMounts:
+            - name: app-volume
+              mountPath: /app
+              readOnly: true
+            - name: tmp-volume
+              mountPath: /tmp
+            - name: cache-volume
+              mountPath: /app/cache
+            - name: logs-volume
+              mountPath: /app/logs
+            - name: uploads-volume
+              mountPath: /app/uploads
+            - name: tls-certs
+              mountPath: /etc/ssl/certs
+              readOnly: true
 
-      # Sidecar Container for Log Shipping
-      - name: log-shipper
-        image: fluent/fluent-bit:2.1.10
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 1001
-          runAsGroup: 1001
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-            - ALL
-        resources:
-          requests:
-            cpu: "50m"
-            memory: "64Mi"
-          limits:
-            cpu: "100m"
-            memory: "128Mi"
-        volumeMounts:
-        - name: logs-volume
-          mountPath: /app/logs
-          readOnly: true
-        - name: fluent-bit-config
-          mountPath: /fluent-bit/etc
-          readOnly: true
+        # Sidecar Container for Log Shipping
+        - name: log-shipper
+          image: fluent/fluent-bit:2.1.10
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+            runAsGroup: 1001
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "100m"
+              memory: "128Mi"
+          volumeMounts:
+            - name: logs-volume
+              mountPath: /app/logs
+              readOnly: true
+            - name: fluent-bit-config
+              mountPath: /fluent-bit/etc
+              readOnly: true
 
       # Volumes
       volumes:
-      - name: app-volume
-        emptyDir:
-          sizeLimit: "2Gi"
-      - name: tmp-volume
-        emptyDir:
-          sizeLimit: "1Gi"
-      - name: cache-volume
-        emptyDir:
-          sizeLimit: "2Gi"
-      - name: logs-volume
-        emptyDir:
-          sizeLimit: "4Gi"
-      - name: uploads-volume
-        persistentVolumeClaim:
-          claimName: chainfinity-uploads-pvc
-      - name: tls-certs
-        secret:
-          secretName: chainfinity-tls-secret
-          defaultMode: 0400
-      - name: fluent-bit-config
-        configMap:
-          name: fluent-bit-config
+        - name: app-volume
+          emptyDir:
+            sizeLimit: "2Gi"
+        - name: tmp-volume
+          emptyDir:
+            sizeLimit: "1Gi"
+        - name: cache-volume
+          emptyDir:
+            sizeLimit: "2Gi"
+        - name: logs-volume
+          emptyDir:
+            sizeLimit: "4Gi"
+        - name: uploads-volume
+          persistentVolumeClaim:
+            claimName: chainfinity-uploads-pvc
+        - name: tls-certs
+          secret:
+            secretName: chainfinity-tls-secret
+            defaultMode: 0400
+        - name: fluent-bit-config
+          configMap:
+            name: fluent-bit-config
 
       # DNS Configuration
       dnsPolicy: ClusterFirst
       dnsConfig:
         options:
-        - name: ndots
-          value: "2"
-        - name: edns0
+          - name: ndots
+            value: "2"
+          - name: edns0
 
       # Termination Grace Period
       terminationGracePeriodSeconds: 60
 
       # Image Pull Secrets
       imagePullSecrets:
-      - name: chainfinity-registry-secret
-
+        - name: chainfinity-registry-secret
 
 ---
 # Persistent Volume Claim for Uploads
@@ -739,14 +738,14 @@ spec:
     app.kubernetes.io/name: chainfinity
     app.kubernetes.io/component: frontend
   ports:
-  - name: http
-    port: 80
-    targetPort: http
-    protocol: TCP
-  - name: metrics
-    port: 9090
-    targetPort: metrics
-    protocol: TCP
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+    - name: metrics
+      port: 9090
+      targetPort: metrics
+      protocol: TCP
   sessionAffinity: None
 
 ---
@@ -770,14 +769,14 @@ spec:
     app.kubernetes.io/name: chainfinity
     app.kubernetes.io/component: backend
   ports:
-  - name: http
-    port: 8080
-    targetPort: http
-    protocol: TCP
-  - name: metrics
-    port: 9090
-    targetPort: metrics
-    protocol: TCP
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP
+    - name: metrics
+      port: 9090
+      targetPort: metrics
+      protocol: TCP
   sessionAffinity: None
 
 ---
@@ -798,10 +797,10 @@ spec:
     app.kubernetes.io/name: chainfinity
     app.kubernetes.io/component: backend
   ports:
-  - name: http
-    port: 8080
-    targetPort: http
-    protocol: TCP
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP
 
 ---
 # Ingress with Enhanced Security
@@ -870,42 +869,42 @@ metadata:
 
 spec:
   tls:
-  - hosts:
-    - chainfinity.com
-    - www.chainfinity.com
-    - api.chainfinity.com
-    secretName: chainfinity-tls-secret
+    - hosts:
+        - chainfinity.com
+        - www.chainfinity.com
+        - api.chainfinity.com
+      secretName: chainfinity-tls-secret
   rules:
-  - host: chainfinity.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: chainfinity-frontend
-            port:
-              number: 80
-  - host: www.chainfinity.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: chainfinity-frontend
-            port:
-              number: 80
-  - host: api.chainfinity.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: chainfinity-backend
-            port:
-              number: 8080
+    - host: chainfinity.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: chainfinity-frontend
+                port:
+                  number: 80
+    - host: www.chainfinity.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: chainfinity-frontend
+                port:
+                  number: 80
+    - host: api.chainfinity.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: chainfinity-backend
+                port:
+                  number: 8080
 
 ---
 # Horizontal Pod Autoscaler for Frontend
@@ -925,34 +924,34 @@ spec:
   minReplicas: 3
   maxReplicas: 20
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 80
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 300
       policies:
-      - type: Percent
-        value: 10
-        periodSeconds: 60
+        - type: Percent
+          value: 10
+          periodSeconds: 60
     scaleUp:
       stabilizationWindowSeconds: 60
       policies:
-      - type: Percent
-        value: 50
-        periodSeconds: 60
-      - type: Pods
-        value: 2
-        periodSeconds: 60
+        - type: Percent
+          value: 50
+          periodSeconds: 60
+        - type: Pods
+          value: 2
+          periodSeconds: 60
       selectPolicy: Max
 
 ---
@@ -973,41 +972,41 @@ spec:
   minReplicas: 3
   maxReplicas: 50
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 80
-  - type: Pods
-    pods:
-      metric:
-        name: http_requests_per_second
-      target:
-        type: AverageValue
-        averageValue: "100"
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+    - type: Pods
+      pods:
+        metric:
+          name: http_requests_per_second
+        target:
+          type: AverageValue
+          averageValue: "100"
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 300
       policies:
-      - type: Percent
-        value: 10
-        periodSeconds: 60
+        - type: Percent
+          value: 10
+          periodSeconds: 60
     scaleUp:
       stabilizationWindowSeconds: 60
       policies:
-      - type: Percent
-        value: 100
-        periodSeconds: 60
-      - type: Pods
-        value: 5
-        periodSeconds: 60
+        - type: Percent
+          value: 100
+          periodSeconds: 60
+        - type: Pods
+          value: 5
+          periodSeconds: 60
       selectPolicy: Max
 
 ---
@@ -1191,30 +1190,30 @@ metadata:
     app.kubernetes.io/name: chainfinity
 spec:
   limits:
-  - type: Container
-    default:
-      cpu: "500m"
-      memory: "512Mi"
-      ephemeral-storage: "2Gi"
-    defaultRequest:
-      cpu: "100m"
-      memory: "128Mi"
-      ephemeral-storage: "1Gi"
-    max:
-      cpu: "4"
-      memory: "8Gi"
-      ephemeral-storage: "10Gi"
-    min:
-      cpu: "50m"
-      memory: "64Mi"
-      ephemeral-storage: "500Mi"
-  - type: Pod
-    max:
-      cpu: "8"
-      memory: "16Gi"
-      ephemeral-storage: "20Gi"
-  - type: PersistentVolumeClaim
-    max:
-      storage: "1Ti"
-    min:
-      storage: "1Gi"
+    - type: Container
+      default:
+        cpu: "500m"
+        memory: "512Mi"
+        ephemeral-storage: "2Gi"
+      defaultRequest:
+        cpu: "100m"
+        memory: "128Mi"
+        ephemeral-storage: "1Gi"
+      max:
+        cpu: "4"
+        memory: "8Gi"
+        ephemeral-storage: "10Gi"
+      min:
+        cpu: "50m"
+        memory: "64Mi"
+        ephemeral-storage: "500Mi"
+    - type: Pod
+      max:
+        cpu: "8"
+        memory: "16Gi"
+        ephemeral-storage: "20Gi"
+    - type: PersistentVolumeClaim
+      max:
+        storage: "1Ti"
+      min:
+        storage: "1Gi"

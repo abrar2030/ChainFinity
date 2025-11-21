@@ -1,32 +1,50 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { PieChart, Pie, Cell, Legend } from 'recharts';
-import { formatNumber } from '../../utils/formatters';
+import React from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../../components/ui/tabs";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import { PieChart, Pie, Cell, Legend } from "recharts";
+import { formatNumber } from "../../utils/formatters";
 
 const GovernanceAnalytics = ({ governanceData }) => {
   // Sample data for charts - in production this would come from the governanceData prop
   const participationData = [
-    { month: 'Jan', participation: 45 },
-    { month: 'Feb', participation: 52 },
-    { month: 'Mar', participation: 48 },
-    { month: 'Apr', participation: 61 },
-    { month: 'May', participation: 58 },
-    { month: 'Jun', participation: 65 },
+    { month: "Jan", participation: 45 },
+    { month: "Feb", participation: 52 },
+    { month: "Mar", participation: 48 },
+    { month: "Apr", participation: 61 },
+    { month: "May", participation: 58 },
+    { month: "Jun", participation: 65 },
   ];
 
   const proposalStatusData = [
-    { name: 'Passed', value: 24, color: '#10b981' },
-    { name: 'Failed', value: 8, color: '#ef4444' },
-    { name: 'Pending', value: 3, color: '#f59e0b' },
-    { name: 'Executed', value: 18, color: '#3b82f6' },
+    { name: "Passed", value: 24, color: "#10b981" },
+    { name: "Failed", value: 8, color: "#ef4444" },
+    { name: "Pending", value: 3, color: "#f59e0b" },
+    { name: "Executed", value: 18, color: "#3b82f6" },
   ];
 
   const votingDistributionData = [
-    { name: 'Top 10 Holders', value: 42, color: '#8b5cf6' },
-    { name: 'Next 40 Holders', value: 28, color: '#6366f1' },
-    { name: 'Remaining Holders', value: 30, color: '#a78bfa' },
+    { name: "Top 10 Holders", value: 42, color: "#8b5cf6" },
+    { name: "Next 40 Holders", value: 28, color: "#6366f1" },
+    { name: "Remaining Holders", value: 30, color: "#a78bfa" },
   ];
 
   return (
@@ -43,14 +61,18 @@ const GovernanceAnalytics = ({ governanceData }) => {
           </TabsList>
 
           <TabsContent value="participation" className="pt-4">
-            <h3 className="text-sm font-medium mb-4">Monthly Voting Participation</h3>
+            <h3 className="text-sm font-medium mb-4">
+              Monthly Voting Participation
+            </h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={participationData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis tickFormatter={(value) => `${value}%`} />
-                  <Tooltip formatter={(value) => [`${value}%`, 'Participation']} />
+                  <Tooltip
+                    formatter={(value) => [`${value}%`, "Participation"]}
+                  />
                   <Bar dataKey="participation" fill="#3b82f6" />
                 </BarChart>
               </ResponsiveContainer>
@@ -73,24 +95,29 @@ const GovernanceAnalytics = ({ governanceData }) => {
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    label={({ name, percent }) =>
+                      `${name}: ${(percent * 100).toFixed(0)}%`
+                    }
                   >
                     {proposalStatusData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
                   <Legend />
-                  <Tooltip formatter={(value) => [value, 'Proposals']} />
+                  <Tooltip formatter={(value) => [value, "Proposals"]} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
             <p className="text-xs text-gray-500 mt-4 text-center">
-              Total proposals: {proposalStatusData.reduce((sum, item) => sum + item.value, 0)}
+              Total proposals:{" "}
+              {proposalStatusData.reduce((sum, item) => sum + item.value, 0)}
             </p>
           </TabsContent>
 
           <TabsContent value="distribution" className="pt-4">
-            <h3 className="text-sm font-medium mb-4">Voting Power Distribution</h3>
+            <h3 className="text-sm font-medium mb-4">
+              Voting Power Distribution
+            </h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -102,14 +129,18 @@ const GovernanceAnalytics = ({ governanceData }) => {
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    label={({ name, percent }) =>
+                      `${name}: ${(percent * 100).toFixed(0)}%`
+                    }
                   >
                     {votingDistributionData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
                   <Legend />
-                  <Tooltip formatter={(value) => [`${value}%`, 'Voting Power']} />
+                  <Tooltip
+                    formatter={(value) => [`${value}%`, "Voting Power"]}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </div>

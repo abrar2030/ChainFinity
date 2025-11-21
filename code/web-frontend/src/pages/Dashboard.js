@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useApp } from '../context/AppContext';
-import { usePortfolioData, useTransactionHistory } from '../hooks/useProtocolData';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useApp } from "../context/AppContext";
+import {
+  usePortfolioData,
+  useTransactionHistory,
+} from "../hooks/useProtocolData";
 import {
   Box,
   Container,
@@ -20,8 +23,8 @@ import {
   Tab,
   Tabs,
   CircularProgress,
-  Alert
-} from '@mui/material';
+  Alert,
+} from "@mui/material";
 import {
   TrendingUp,
   TrendingDown,
@@ -31,10 +34,10 @@ import {
   ArrowDownward,
   SwapHoriz,
   AccountBalanceWallet,
-  Timeline
-} from '@mui/icons-material';
-import { styled } from '@mui/material/styles';
-import { motion } from 'framer-motion';
+  Timeline,
+} from "@mui/icons-material";
+import { styled } from "@mui/material/styles";
+import { motion } from "framer-motion";
 import {
   AreaChart,
   Area,
@@ -45,29 +48,29 @@ import {
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell
-} from 'recharts';
+  Cell,
+} from "recharts";
 
 // Styled components
 const DashboardCard = styled(Card)(({ theme }) => ({
-  height: '100%',
+  height: "100%",
   borderRadius: theme.shape.borderRadius,
   boxShadow: theme.shadows[2],
-  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
-  '&:hover': {
-    transform: 'translateY(-5px)',
+  transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+  "&:hover": {
+    transform: "translateY(-5px)",
     boxShadow: theme.shadows[8],
   },
 }));
 
 const StatsCard = styled(Card)(({ theme }) => ({
-  height: '100%',
+  height: "100%",
   borderRadius: theme.shape.borderRadius,
-  boxShadow: 'none',
+  boxShadow: "none",
   border: `1px solid ${theme.palette.divider}`,
-  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
-  '&:hover': {
-    transform: 'translateY(-5px)',
+  transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+  "&:hover": {
+    transform: "translateY(-5px)",
     boxShadow: theme.shadows[4],
   },
 }));
@@ -75,11 +78,11 @@ const StatsCard = styled(Card)(({ theme }) => ({
 const AssetCard = styled(Card)(({ theme }) => ({
   marginBottom: theme.spacing(2),
   borderRadius: theme.shape.borderRadius,
-  boxShadow: 'none',
+  boxShadow: "none",
   border: `1px solid ${theme.palette.divider}`,
-  transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
-  '&:hover': {
-    transform: 'translateY(-3px)',
+  transition: "transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out",
+  "&:hover": {
+    transform: "translateY(-3px)",
     boxShadow: theme.shadows[3],
   },
 }));
@@ -95,32 +98,28 @@ const TabPanel = (props) => {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box sx={{ pt: 3 }}>
-          {children}
-        </Box>
-      )}
+      {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
     </div>
   );
 };
 
 // Sample data for chart
 const portfolioData = [
-  { name: 'Jan', value: 4000 },
-  { name: 'Feb', value: 3000 },
-  { name: 'Mar', value: 5000 },
-  { name: 'Apr', value: 2780 },
-  { name: 'May', value: 1890 },
-  { name: 'Jun', value: 2390 },
-  { name: 'Jul', value: 3490 },
-  { name: 'Aug', value: 4000 },
-  { name: 'Sep', value: 5000 },
-  { name: 'Oct', value: 6000 },
-  { name: 'Nov', value: 7000 },
-  { name: 'Dec', value: 9000 },
+  { name: "Jan", value: 4000 },
+  { name: "Feb", value: 3000 },
+  { name: "Mar", value: 5000 },
+  { name: "Apr", value: 2780 },
+  { name: "May", value: 1890 },
+  { name: "Jun", value: 2390 },
+  { name: "Jul", value: 3490 },
+  { name: "Aug", value: 4000 },
+  { name: "Sep", value: 5000 },
+  { name: "Oct", value: 6000 },
+  { name: "Nov", value: 7000 },
+  { name: "Dec", value: 9000 },
 ];
 
-const COLORS = ['#3a36e0', '#6c63ff', '#4caf50', '#ff9800'];
+const COLORS = ["#3a36e0", "#6c63ff", "#4caf50", "#ff9800"];
 
 const Dashboard = () => {
   const theme = useTheme();
@@ -136,20 +135,20 @@ const Dashboard = () => {
     portfolioData: portfolio,
     loading: portfolioLoading,
     error: portfolioError,
-    refreshPortfolio
+    refreshPortfolio,
   } = usePortfolioData(walletAddress);
 
   const {
     transactions,
     loading: transactionsLoading,
     error: transactionsError,
-    refreshTransactions
+    refreshTransactions,
   } = useTransactionHistory(walletAddress);
 
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate('/login');
+      navigate("/login");
     }
   }, [isAuthenticated, navigate]);
 
@@ -162,21 +161,21 @@ const Dashboard = () => {
   };
 
   // Prepare asset allocation data for pie chart
-  const assetAllocation = portfolio?.assets ?
-    portfolio.assets.map(asset => ({
-      name: asset.symbol,
-      value: parseFloat(asset.balance) * parseFloat(asset.value_usd || 0)
-    })) :
-    [];
+  const assetAllocation = portfolio?.assets
+    ? portfolio.assets.map((asset) => ({
+        name: asset.symbol,
+        value: parseFloat(asset.balance) * parseFloat(asset.value_usd || 0),
+      }))
+    : [];
 
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const itemVariants = {
@@ -185,17 +184,17 @@ const Dashboard = () => {
       y: 0,
       opacity: 1,
       transition: {
-        duration: 0.5
-      }
-    }
+        duration: 0.5,
+      },
+    },
   };
 
   if (portfolioLoading || transactionsLoading) {
     return (
-      <Box sx={{ width: '100%', mt: 4 }}>
+      <Box sx={{ width: "100%", mt: 4 }}>
         <Container maxWidth="lg">
           <LinearProgress color="primary" />
-          <Typography variant="h6" sx={{ mt: 2, textAlign: 'center' }}>
+          <Typography variant="h6" sx={{ mt: 2, textAlign: "center" }}>
             Loading your portfolio data...
           </Typography>
         </Container>
@@ -205,10 +204,12 @@ const Dashboard = () => {
 
   if (portfolioError || transactionsError) {
     return (
-      <Box sx={{ width: '100%', mt: 4 }}>
+      <Box sx={{ width: "100%", mt: 4 }}>
         <Container maxWidth="lg">
           <Alert severity="error" sx={{ mb: 2 }}>
-            {portfolioError?.message || transactionsError?.message || 'An error occurred while loading your data.'}
+            {portfolioError?.message ||
+              transactionsError?.message ||
+              "An error occurred while loading your data."}
           </Alert>
           <Button
             variant="contained"
@@ -232,7 +233,14 @@ const Dashboard = () => {
         >
           {/* Header */}
           <motion.div variants={itemVariants}>
-            <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Box
+              sx={{
+                mb: 4,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
               <Box>
                 <Typography variant="h4" component="h1" fontWeight={700}>
                   Dashboard
@@ -246,8 +254,8 @@ const Dashboard = () => {
                 startIcon={<Refresh />}
                 onClick={handleRefresh}
                 sx={{
-                  borderRadius: '12px',
-                  boxShadow: 'none'
+                  borderRadius: "12px",
+                  boxShadow: "none",
                 }}
               >
                 Refresh
@@ -261,11 +269,18 @@ const Dashboard = () => {
               <Grid item xs={12} md={8}>
                 <DashboardCard>
                   <CardContent>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        mb: 2,
+                      }}
+                    >
                       <Typography variant="h6" fontWeight={600}>
                         Portfolio Value
                       </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Box sx={{ display: "flex", alignItems: "center" }}>
                         <Chip
                           icon={<TrendingUp />}
                           label="+12.5% this month"
@@ -278,15 +293,32 @@ const Dashboard = () => {
                         </IconButton>
                       </Box>
                     </Box>
-                    <Typography variant="h3" component="div" fontWeight={700} sx={{ mb: 1 }}>
-                      ${portfolio?.total_value || '0.00'}
+                    <Typography
+                      variant="h3"
+                      component="div"
+                      fontWeight={700}
+                      sx={{ mb: 1 }}
+                    >
+                      ${portfolio?.total_value || "0.00"}
                     </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                      <ArrowUpward color="success" fontSize="small" sx={{ mr: 0.5 }} />
-                      <Typography variant="body2" color="success.main" fontWeight={500}>
+                    <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+                      <ArrowUpward
+                        color="success"
+                        fontSize="small"
+                        sx={{ mr: 0.5 }}
+                      />
+                      <Typography
+                        variant="body2"
+                        color="success.main"
+                        fontWeight={500}
+                      >
                         +$1,423.40 (12.5%)
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ ml: 1 }}
+                      >
                         vs. last month
                       </Typography>
                     </Box>
@@ -302,12 +334,29 @@ const Dashboard = () => {
                           }}
                         >
                           <defs>
-                            <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor={theme.palette.primary.main} stopOpacity={0.8}/>
-                              <stop offset="95%" stopColor={theme.palette.primary.main} stopOpacity={0}/>
+                            <linearGradient
+                              id="colorValue"
+                              x1="0"
+                              y1="0"
+                              x2="0"
+                              y2="1"
+                            >
+                              <stop
+                                offset="5%"
+                                stopColor={theme.palette.primary.main}
+                                stopOpacity={0.8}
+                              />
+                              <stop
+                                offset="95%"
+                                stopColor={theme.palette.primary.main}
+                                stopOpacity={0}
+                              />
                             </linearGradient>
                           </defs>
-                          <CartesianGrid strokeDasharray="3 3" stroke={theme.palette.divider} />
+                          <CartesianGrid
+                            strokeDasharray="3 3"
+                            stroke={theme.palette.divider}
+                          />
                           <XAxis
                             dataKey="name"
                             stroke={theme.palette.text.secondary}
@@ -322,7 +371,7 @@ const Dashboard = () => {
                               backgroundColor: theme.palette.background.paper,
                               borderColor: theme.palette.divider,
                               borderRadius: 8,
-                              boxShadow: theme.shadows[3]
+                              boxShadow: theme.shadows[3],
                             }}
                           />
                           <Area
@@ -341,7 +390,14 @@ const Dashboard = () => {
               <Grid item xs={12} md={4}>
                 <DashboardCard>
                   <CardContent>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        mb: 2,
+                      }}
+                    >
                       <Typography variant="h6" fontWeight={600}>
                         Asset Allocation
                       </Typography>
@@ -349,7 +405,14 @@ const Dashboard = () => {
                         <MoreVert fontSize="small" />
                       </IconButton>
                     </Box>
-                    <Box sx={{ height: 250, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <Box
+                      sx={{
+                        height: 250,
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
                       {portfolio?.assets && portfolio.assets.length > 0 ? (
                         <ResponsiveContainer width="100%" height="100%">
                           <PieChart>
@@ -363,16 +426,22 @@ const Dashboard = () => {
                               dataKey="value"
                             >
                               {assetAllocation.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                <Cell
+                                  key={`cell-${index}`}
+                                  fill={COLORS[index % COLORS.length]}
+                                />
                               ))}
                             </Pie>
                             <Tooltip
-                              formatter={(value) => [`$${value.toFixed(2)}`, 'Value']}
+                              formatter={(value) => [
+                                `$${value.toFixed(2)}`,
+                                "Value",
+                              ]}
                               contentStyle={{
                                 backgroundColor: theme.palette.background.paper,
                                 borderColor: theme.palette.divider,
                                 borderRadius: 8,
-                                boxShadow: theme.shadows[3]
+                                boxShadow: theme.shadows[3],
                               }}
                             />
                           </PieChart>
@@ -385,23 +454,39 @@ const Dashboard = () => {
                     </Box>
                     <Divider sx={{ my: 2 }} />
                     <Box>
-                      {portfolio?.assets && portfolio.assets.map((asset, index) => (
-                        <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Box
-                              sx={{
-                                width: 12,
-                                height: 12,
-                                borderRadius: '50%',
-                                backgroundColor: COLORS[index % COLORS.length],
-                                mr: 1
-                              }}
-                            />
-                            <Typography variant="body2">{asset.symbol}</Typography>
+                      {portfolio?.assets &&
+                        portfolio.assets.map((asset, index) => (
+                          <Box
+                            key={index}
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              mb: 1,
+                            }}
+                          >
+                            <Box sx={{ display: "flex", alignItems: "center" }}>
+                              <Box
+                                sx={{
+                                  width: 12,
+                                  height: 12,
+                                  borderRadius: "50%",
+                                  backgroundColor:
+                                    COLORS[index % COLORS.length],
+                                  mr: 1,
+                                }}
+                              />
+                              <Typography variant="body2">
+                                {asset.symbol}
+                              </Typography>
+                            </Box>
+                            <Typography variant="body2" fontWeight={500}>
+                              $
+                              {parseFloat(asset.balance) *
+                                parseFloat(asset.value_usd || 0)}
+                            </Typography>
                           </Box>
-                          <Typography variant="body2" fontWeight={500}>${parseFloat(asset.balance) * parseFloat(asset.value_usd || 0)}</Typography>
-                        </Box>
-                      ))}
+                        ))}
                     </Box>
                   </CardContent>
                 </DashboardCard>
@@ -415,8 +500,8 @@ const Dashboard = () => {
               <Grid item xs={12} sm={6} md={3}>
                 <StatsCard>
                   <CardContent>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <Avatar sx={{ bgcolor: 'primary.light', mr: 2 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                      <Avatar sx={{ bgcolor: "primary.light", mr: 2 }}>
                         <AccountBalanceWallet />
                       </Avatar>
                       <Typography variant="subtitle2" color="text.secondary">
@@ -435,8 +520,8 @@ const Dashboard = () => {
               <Grid item xs={12} sm={6} md={3}>
                 <StatsCard>
                   <CardContent>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <Avatar sx={{ bgcolor: 'success.light', mr: 2 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                      <Avatar sx={{ bgcolor: "success.light", mr: 2 }}>
                         <TrendingUp />
                       </Avatar>
                       <Typography variant="subtitle2" color="text.secondary">
@@ -446,8 +531,12 @@ const Dashboard = () => {
                     <Typography variant="h5" fontWeight={600}>
                       +$1,423.40
                     </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <ArrowUpward color="success" fontSize="small" sx={{ mr: 0.5 }} />
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <ArrowUpward
+                        color="success"
+                        fontSize="small"
+                        sx={{ mr: 0.5 }}
+                      />
                       <Typography variant="body2" color="success.main">
                         12.5%
                       </Typography>
@@ -458,8 +547,8 @@ const Dashboard = () => {
               <Grid item xs={12} sm={6} md={3}>
                 <StatsCard>
                   <CardContent>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <Avatar sx={{ bgcolor: 'secondary.light', mr: 2 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                      <Avatar sx={{ bgcolor: "secondary.light", mr: 2 }}>
                         <SwapHoriz />
                       </Avatar>
                       <Typography variant="subtitle2" color="text.secondary">
@@ -478,8 +567,8 @@ const Dashboard = () => {
               <Grid item xs={12} sm={6} md={3}>
                 <StatsCard>
                   <CardContent>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <Avatar sx={{ bgcolor: 'info.light', mr: 2 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                      <Avatar sx={{ bgcolor: "info.light", mr: 2 }}>
                         <Timeline />
                       </Avatar>
                       <Typography variant="subtitle2" color="text.secondary">
@@ -500,17 +589,23 @@ const Dashboard = () => {
 
           {/* Assets & Transactions */}
           <motion.div variants={itemVariants}>
-            <Paper sx={{ borderRadius: theme.shape.borderRadius, overflow: 'hidden', mb: 4 }}>
+            <Paper
+              sx={{
+                borderRadius: theme.shape.borderRadius,
+                overflow: "hidden",
+                mb: 4,
+              }}
+            >
               <Tabs
                 value={tabValue}
                 onChange={handleTabChange}
                 sx={{
                   borderBottom: 1,
-                  borderColor: 'divider',
+                  borderColor: "divider",
                   px: 2,
-                  '& .MuiTabs-indicator': {
+                  "& .MuiTabs-indicator": {
                     height: 3,
-                    borderRadius: '3px 3px 0 0',
+                    borderRadius: "3px 3px 0 0",
                   },
                 }}
               >
@@ -526,7 +621,13 @@ const Dashboard = () => {
                         <CardContent sx={{ p: 2 }}>
                           <Grid container alignItems="center">
                             <Grid item xs={1}>
-                              <Avatar sx={{ bgcolor: 'primary.light', width: 40, height: 40 }}>
+                              <Avatar
+                                sx={{
+                                  bgcolor: "primary.light",
+                                  width: 40,
+                                  height: 40,
+                                }}
+                              >
                                 {asset.symbol.charAt(0)}
                               </Avatar>
                             </Grid>
@@ -534,32 +635,71 @@ const Dashboard = () => {
                               <Typography variant="subtitle1" fontWeight={600}>
                                 {asset.symbol}
                               </Typography>
-                              <Typography variant="body2" color="text.secondary">
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
                                 {asset.name || asset.symbol}
                               </Typography>
                             </Grid>
-                            <Grid item xs={3} sm={3} sx={{ textAlign: { xs: 'left', sm: 'center' } }}>
-                              <Typography variant="body2" color="text.secondary">
+                            <Grid
+                              item
+                              xs={3}
+                              sm={3}
+                              sx={{ textAlign: { xs: "left", sm: "center" } }}
+                            >
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
                                 Balance
                               </Typography>
                               <Typography variant="subtitle2" fontWeight={600}>
                                 {asset.balance} {asset.symbol}
                               </Typography>
                             </Grid>
-                            <Grid item xs={3} sm={3} sx={{ textAlign: { xs: 'right', sm: 'center' } }}>
-                              <Typography variant="body2" color="text.secondary">
+                            <Grid
+                              item
+                              xs={3}
+                              sm={3}
+                              sx={{ textAlign: { xs: "right", sm: "center" } }}
+                            >
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
                                 Value
                               </Typography>
                               <Typography variant="subtitle2" fontWeight={600}>
-                                ${(parseFloat(asset.balance) * parseFloat(asset.value_usd || 0)).toFixed(2)}
+                                $
+                                {(
+                                  parseFloat(asset.balance) *
+                                  parseFloat(asset.value_usd || 0)
+                                ).toFixed(2)}
                               </Typography>
                             </Grid>
-                            <Grid item xs={2} sm={2} sx={{ textAlign: 'right' }}>
+                            <Grid
+                              item
+                              xs={2}
+                              sm={2}
+                              sx={{ textAlign: "right" }}
+                            >
                               <Chip
-                                label={asset.change || '+0.0%'}
-                                color={asset.change && asset.change.startsWith('-') ? 'error' : 'success'}
+                                label={asset.change || "+0.0%"}
+                                color={
+                                  asset.change && asset.change.startsWith("-")
+                                    ? "error"
+                                    : "success"
+                                }
                                 size="small"
-                                icon={asset.change && asset.change.startsWith('-') ? <ArrowDownward fontSize="small" /> : <ArrowUpward fontSize="small" />}
+                                icon={
+                                  asset.change &&
+                                  asset.change.startsWith("-") ? (
+                                    <ArrowDownward fontSize="small" />
+                                  ) : (
+                                    <ArrowUpward fontSize="small" />
+                                  )
+                                }
                               />
                             </Grid>
                           </Grid>
@@ -567,7 +707,7 @@ const Dashboard = () => {
                       </AssetCard>
                     ))
                   ) : (
-                    <Box sx={{ textAlign: 'center', py: 4 }}>
+                    <Box sx={{ textAlign: "center", py: 4 }}>
                       <Typography variant="body1" color="text.secondary">
                         No assets found in your portfolio
                       </Typography>
@@ -592,45 +732,74 @@ const Dashboard = () => {
                             <Grid item xs={1}>
                               <Avatar
                                 sx={{
-                                  bgcolor: tx.type === 'receive'
-                                    ? 'success.light'
-                                    : tx.type === 'send'
-                                      ? 'error.light'
-                                      : 'info.light',
+                                  bgcolor:
+                                    tx.type === "receive"
+                                      ? "success.light"
+                                      : tx.type === "send"
+                                        ? "error.light"
+                                        : "info.light",
                                   width: 40,
-                                  height: 40
+                                  height: 40,
                                 }}
                               >
-                                {tx.type === 'receive' && <ArrowDownward />}
-                                {tx.type === 'send' && <ArrowUpward />}
-                                {tx.type === 'swap' && <SwapHoriz />}
+                                {tx.type === "receive" && <ArrowDownward />}
+                                {tx.type === "send" && <ArrowUpward />}
+                                {tx.type === "swap" && <SwapHoriz />}
                               </Avatar>
                             </Grid>
                             <Grid item xs={3} sm={3}>
-                              <Typography variant="subtitle1" fontWeight={600} sx={{ textTransform: 'capitalize' }}>
+                              <Typography
+                                variant="subtitle1"
+                                fontWeight={600}
+                                sx={{ textTransform: "capitalize" }}
+                              >
                                 {tx.type}
                               </Typography>
-                              <Typography variant="body2" color="text.secondary">
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
                                 {tx.asset}
                               </Typography>
                             </Grid>
-                            <Grid item xs={3} sm={3} sx={{ textAlign: { xs: 'left', sm: 'center' } }}>
-                              <Typography variant="body2" color="text.secondary">
+                            <Grid
+                              item
+                              xs={3}
+                              sm={3}
+                              sx={{ textAlign: { xs: "left", sm: "center" } }}
+                            >
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
                                 Amount
                               </Typography>
                               <Typography variant="subtitle2" fontWeight={600}>
                                 {tx.amount}
                               </Typography>
                             </Grid>
-                            <Grid item xs={3} sm={3} sx={{ textAlign: { xs: 'right', sm: 'center' } }}>
-                              <Typography variant="body2" color="text.secondary">
+                            <Grid
+                              item
+                              xs={3}
+                              sm={3}
+                              sx={{ textAlign: { xs: "right", sm: "center" } }}
+                            >
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
                                 Value
                               </Typography>
                               <Typography variant="subtitle2" fontWeight={600}>
                                 {tx.value}
                               </Typography>
                             </Grid>
-                            <Grid item xs={2} sm={2} sx={{ textAlign: 'right' }}>
+                            <Grid
+                              item
+                              xs={2}
+                              sm={2}
+                              sx={{ textAlign: "right" }}
+                            >
                               <Chip
                                 label={tx.status}
                                 color="success"
@@ -643,7 +812,7 @@ const Dashboard = () => {
                       </AssetCard>
                     ))
                   ) : (
-                    <Box sx={{ textAlign: 'center', py: 4 }}>
+                    <Box sx={{ textAlign: "center", py: 4 }}>
                       <Typography variant="body1" color="text.secondary">
                         No transactions found
                       </Typography>

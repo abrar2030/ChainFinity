@@ -1,36 +1,41 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { formatAddress } from '../../utils/formatters';
-import { useWeb3Context } from '../../context/Web3Context';
+import React, { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { formatAddress } from "../../utils/formatters";
+import { useWeb3Context } from "../../context/Web3Context";
 
 const DelegationManager = ({ delegatedTo, delegatedFrom, onDelegate }) => {
   const { account } = useWeb3Context();
-  const [delegateAddress, setDelegateAddress] = useState('');
+  const [delegateAddress, setDelegateAddress] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
   const handleDelegate = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
     setSuccess(false);
 
     try {
       // Validate address
       if (!delegateAddress || !ethers.utils.isAddress(delegateAddress)) {
-        throw new Error('Invalid address');
+        throw new Error("Invalid address");
       }
 
       const result = await onDelegate(delegateAddress);
       if (result) {
         setSuccess(true);
-        setDelegateAddress('');
+        setDelegateAddress("");
       }
     } catch (err) {
-      setError(err.message || 'Failed to delegate');
+      setError(err.message || "Failed to delegate");
     } finally {
       setLoading(false);
     }
@@ -45,7 +50,9 @@ const DelegationManager = ({ delegatedTo, delegatedFrom, onDelegate }) => {
         <div className="space-y-4">
           {delegatedTo ? (
             <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-md">
-              <p className="text-sm font-medium mb-1">Currently delegated to:</p>
+              <p className="text-sm font-medium mb-1">
+                Currently delegated to:
+              </p>
               <div className="flex items-center justify-between">
                 <span className="text-sm">{formatAddress(delegatedTo)}</span>
                 <Button
@@ -61,7 +68,10 @@ const DelegationManager = ({ delegatedTo, delegatedFrom, onDelegate }) => {
           ) : (
             <form onSubmit={handleDelegate} className="space-y-3">
               <div className="space-y-2">
-                <label htmlFor="delegateAddress" className="text-sm font-medium">
+                <label
+                  htmlFor="delegateAddress"
+                  className="text-sm font-medium"
+                >
                   Delegate your voting power
                 </label>
                 <div className="flex space-x-2">
@@ -73,11 +83,15 @@ const DelegationManager = ({ delegatedTo, delegatedFrom, onDelegate }) => {
                     disabled={loading}
                   />
                   <Button type="submit" disabled={loading}>
-                    {loading ? 'Delegating...' : 'Delegate'}
+                    {loading ? "Delegating..." : "Delegate"}
                   </Button>
                 </div>
                 {error && <p className="text-xs text-red-500">{error}</p>}
-                {success && <p className="text-xs text-green-500">Successfully delegated!</p>}
+                {success && (
+                  <p className="text-xs text-green-500">
+                    Successfully delegated!
+                  </p>
+                )}
               </div>
             </form>
           )}
@@ -91,8 +105,12 @@ const DelegationManager = ({ delegatedTo, delegatedFrom, onDelegate }) => {
                     key={index}
                     className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-800 rounded"
                   >
-                    <span className="text-xs">{formatAddress(delegation.address)}</span>
-                    <span className="text-xs font-medium">{formatNumber(delegation.amount)} CFG</span>
+                    <span className="text-xs">
+                      {formatAddress(delegation.address)}
+                    </span>
+                    <span className="text-xs font-medium">
+                      {formatNumber(delegation.amount)} CFG
+                    </span>
                   </div>
                 ))}
               </div>

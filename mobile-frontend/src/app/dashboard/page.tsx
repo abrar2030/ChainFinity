@@ -1,12 +1,11 @@
-
 // src/app/dashboard/page.tsx
-'use client'
+"use client";
 
-import React from 'react';
-import { WalletInfo } from '@/components/WalletInfo'; // Import the WalletInfo component
-import { CrossChainDashboard } from '@/components/CrossChainDashboard'; // Import the CrossChainDashboard component
-import { AssetAllocator } from '@/components/AssetAllocator'; // Import the AssetAllocator component
-import { motion } from 'framer-motion';
+import React from "react";
+import { WalletInfo } from "@/components/WalletInfo"; // Import the WalletInfo component
+import { CrossChainDashboard } from "@/components/CrossChainDashboard"; // Import the CrossChainDashboard component
+import { AssetAllocator } from "@/components/AssetAllocator"; // Import the AssetAllocator component
+import { motion } from "framer-motion";
 
 export default function DashboardPage() {
   return (

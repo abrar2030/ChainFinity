@@ -1,15 +1,14 @@
+"use client";
 
-'use client'
-
-import React from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { useApp } from '../context/AppContext'; // Assuming context remains compatible
-import { formatAddress } from '../utils/helpers'; // Assuming helper remains compatible
-import { Wallet, LogIn, LogOut, Menu } from 'lucide-react';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { ModeToggle } from '@/components/layout/mode-toggle'; // Assuming this exists for dark/light mode
+import React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { useApp } from "../context/AppContext"; // Assuming context remains compatible
+import { formatAddress } from "../utils/helpers"; // Assuming helper remains compatible
+import { Wallet, LogIn, LogOut, Menu } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { ModeToggle } from "@/components/layout/mode-toggle"; // Assuming this exists for dark/light mode
 
 function Navbar() {
   const pathname = usePathname();
@@ -17,18 +16,20 @@ function Navbar() {
   const { wallet, user } = state;
 
   const navItems = [
-    { label: 'Home', path: '/' },
-    { label: 'Dashboard', path: '/dashboard' },
+    { label: "Home", path: "/" },
+    { label: "Dashboard", path: "/dashboard" },
     // Add more relevant nav items for ChainFinity if needed
   ];
 
   const NavLinks = ({ isMobile = false }: { isMobile?: boolean }) => (
-    <nav className={`flex ${isMobile ? 'flex-col space-y-2 mt-4' : 'items-center space-x-4 lg:space-x-6'}`}>
+    <nav
+      className={`flex ${isMobile ? "flex-col space-y-2 mt-4" : "items-center space-x-4 lg:space-x-6"}`}
+    >
       {navItems.map((item) => (
         <Link
           key={item.path}
           href={item.path}
-          className={`text-sm font-medium transition-colors hover:text-primary ${pathname === item.path ? 'text-primary' : 'text-muted-foreground'}`}
+          className={`text-sm font-medium transition-colors hover:text-primary ${pathname === item.path ? "text-primary" : "text-muted-foreground"}`}
         >
           {item.label}
         </Link>
@@ -55,7 +56,11 @@ function Navbar() {
         {/* Right Side Actions (Desktop) */}
         <div className="hidden md:flex flex-1 items-center justify-end space-x-3">
           {wallet.isConnected ? (
-            <Button variant="outline" size="sm" onClick={actions.disconnectWallet}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={actions.disconnectWallet}
+            >
               <Wallet className="h-4 w-4 mr-2" />
               {formatAddress(wallet.address)}
             </Button>
@@ -102,7 +107,10 @@ function Navbar() {
                 <hr className="my-4" />
                 <div className="flex flex-col space-y-3">
                   {wallet.isConnected ? (
-                    <Button variant="outline" onClick={actions.disconnectWallet}>
+                    <Button
+                      variant="outline"
+                      onClick={actions.disconnectWallet}
+                    >
                       <Wallet className="h-4 w-4 mr-2" />
                       {formatAddress(wallet.address)}
                     </Button>

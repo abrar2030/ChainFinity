@@ -1,32 +1,32 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import { AppProvider } from './context/AppContext';
-import { BrowserRouter } from 'react-router-dom';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import './styles/globalStyles';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import { AppProvider } from "./context/AppContext";
+import { BrowserRouter } from "react-router-dom";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import "./styles/globalStyles";
 
 const theme = createTheme({
   palette: {
-    mode: 'light',
+    mode: "light",
     primary: {
-      main: '#6c63ff',
-      light: '#8f88ff',
-      dark: '#4b44cc',
-      contrastText: '#ffffff',
+      main: "#6c63ff",
+      light: "#8f88ff",
+      dark: "#4b44cc",
+      contrastText: "#ffffff",
     },
     secondary: {
-      main: '#03dac6',
-      light: '#66fff8',
-      dark: '#00a896',
-      contrastText: '#000000',
+      main: "#03dac6",
+      light: "#66fff8",
+      dark: "#00a896",
+      contrastText: "#000000",
     },
     background: {
-      default: '#f8f9fa',
-      paper: '#ffffff',
+      default: "#f8f9fa",
+      paper: "#ffffff",
     },
   },
   typography: {
@@ -51,7 +51,7 @@ const theme = createTheme({
     },
     button: {
       fontWeight: 600,
-      textTransform: 'none',
+      textTransform: "none",
     },
   },
   shape: {
@@ -62,10 +62,10 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 12,
-          padding: '10px 24px',
-          boxShadow: 'none',
-          '&:hover': {
-            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+          padding: "10px 24px",
+          boxShadow: "none",
+          "&:hover": {
+            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
           },
         },
       },
@@ -74,14 +74,14 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 16,
-          boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)',
+          boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
         },
       },
     },
   },
 });
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
@@ -94,5 +94,5 @@ root.render(
         </LocalizationProvider>
       </ThemeProvider>
     </BrowserRouter>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

@@ -1,33 +1,39 @@
-
 // src/components/AssetAllocator.tsx
-'use client'
+"use client";
 
-import React from 'react';
+import React from "react";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
-} from "@/components/ui/chart"
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts'; // Using recharts, already in dependencies
-import { DollarSign, PieChart as PieChartIcon } from 'lucide-react';
-import { motion } from 'framer-motion';
+} from "@/components/ui/chart";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts"; // Using recharts, already in dependencies
+import { DollarSign, PieChart as PieChartIcon } from "lucide-react";
+import { motion } from "framer-motion";
 
 // Mock data for demonstration
 const mockAssetData = [
-  { name: 'Bitcoin (BTC)', value: 40000, fill: 'hsl(var(--chart-1))' },
-  { name: 'Ethereum (ETH)', value: 30000, fill: 'hsl(var(--chart-2))' },
-  { name: 'Polygon (MATIC)', value: 15000, fill: 'hsl(var(--chart-3))' },
-  { name: 'Solana (SOL)', value: 10000, fill: 'hsl(var(--chart-4))' },
-  { name: 'Stablecoins (USDC)', value: 5000, fill: 'hsl(var(--chart-5))' },
+  { name: "Bitcoin (BTC)", value: 40000, fill: "hsl(var(--chart-1))" },
+  { name: "Ethereum (ETH)", value: 30000, fill: "hsl(var(--chart-2))" },
+  { name: "Polygon (MATIC)", value: 15000, fill: "hsl(var(--chart-3))" },
+  { name: "Solana (SOL)", value: 10000, fill: "hsl(var(--chart-4))" },
+  { name: "Stablecoins (USDC)", value: 5000, fill: "hsl(var(--chart-5))" },
 ];
 
 const totalValue = mockAssetData.reduce((acc, curr) => acc + curr.value, 0);
@@ -46,7 +52,7 @@ export function AssetAllocator() {
     matic: { label: "Polygon", color: "hsl(var(--chart-3))" },
     sol: { label: "Solana", color: "hsl(var(--chart-4))" },
     usdc: { label: "Stablecoins", color: "hsl(var(--chart-5))" },
-  }
+  };
 
   return (
     <motion.div
@@ -58,7 +64,8 @@ export function AssetAllocator() {
       <Card className="w-full">
         <CardHeader>
           <CardTitle className="flex items-center">
-            <PieChartIcon className="h-5 w-5 mr-2 text-purple-500" /> Asset Allocation
+            <PieChartIcon className="h-5 w-5 mr-2 text-purple-500" /> Asset
+            Allocation
           </CardTitle>
           <CardDescription>
             Distribution of assets across your portfolio.
@@ -66,7 +73,10 @@ export function AssetAllocator() {
         </CardHeader>
         <CardContent>
           {data.length > 0 ? (
-            <ChartContainer config={chartConfig} className="mx-auto aspect-square h-[250px]">
+            <ChartContainer
+              config={chartConfig}
+              className="mx-auto aspect-square h-[250px]"
+            >
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <ChartTooltip
@@ -99,10 +109,12 @@ export function AssetAllocator() {
                     ))}
                   </Pie>
                   <ChartLegend
-                    content={<ChartLegendContent nameKey="name" className="text-xs" />}
+                    content={
+                      <ChartLegendContent nameKey="name" className="text-xs" />
+                    }
                     verticalAlign="bottom"
                     align="center"
-                    wrapperStyle={{ marginTop: '20px' }}
+                    wrapperStyle={{ marginTop: "20px" }}
                   />
                 </PieChart>
               </ResponsiveContainer>
