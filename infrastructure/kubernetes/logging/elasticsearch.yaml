@@ -1,64 +1,64 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: elasticsearch
-  namespace: logging
+    name: elasticsearch
+    namespace: logging
 spec:
-  serviceName: elasticsearch
-  replicas: 3
-  selector:
-    matchLabels:
-      app: elasticsearch
-  template:
-    metadata:
-      labels:
-        app: elasticsearch
-    spec:
-      containers:
-        - name: elasticsearch
-          image: docker.elastic.co/elasticsearch/elasticsearch:7.14.0
-          resources:
-            limits:
-              cpu: 1000m
-              memory: 2Gi
-            requests:
-              cpu: 500m
-              memory: 1Gi
-          ports:
-            - containerPort: 9200
-              name: http
-            - containerPort: 9300
-              name: transport
-          volumeMounts:
-            - name: data
-              mountPath: /usr/share/elasticsearch/data
-          env:
-            - name: discovery.type
-              value: single-node
-            - name: ES_JAVA_OPTS
-              value: "-Xms1g -Xmx1g"
-            - name: network.host
-              value: "0.0.0.0"
-  volumeClaimTemplates:
-    - metadata:
-        name: data
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        resources:
-          requests:
-            storage: 10Gi
+    serviceName: elasticsearch
+    replicas: 3
+    selector:
+        matchLabels:
+            app: elasticsearch
+    template:
+        metadata:
+            labels:
+                app: elasticsearch
+        spec:
+            containers:
+                - name: elasticsearch
+                  image: docker.elastic.co/elasticsearch/elasticsearch:7.14.0
+                  resources:
+                      limits:
+                          cpu: 1000m
+                          memory: 2Gi
+                      requests:
+                          cpu: 500m
+                          memory: 1Gi
+                  ports:
+                      - containerPort: 9200
+                        name: http
+                      - containerPort: 9300
+                        name: transport
+                  volumeMounts:
+                      - name: data
+                        mountPath: /usr/share/elasticsearch/data
+                  env:
+                      - name: discovery.type
+                        value: single-node
+                      - name: ES_JAVA_OPTS
+                        value: '-Xms1g -Xmx1g'
+                      - name: network.host
+                        value: '0.0.0.0'
+    volumeClaimTemplates:
+        - metadata:
+              name: data
+          spec:
+              accessModes: ['ReadWriteOnce']
+              resources:
+                  requests:
+                      storage: 10Gi
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: elasticsearch
-  namespace: logging
+    name: elasticsearch
+    namespace: logging
 spec:
-  selector:
-    app: elasticsearch
-  ports:
-    - port: 9200
-      name: http
-    - port: 9300
-      name: transport
-  clusterIP: None
+    selector:
+        app: elasticsearch
+    ports:
+        - port: 9200
+          name: http
+        - port: 9300
+          name: transport
+    clusterIP: None

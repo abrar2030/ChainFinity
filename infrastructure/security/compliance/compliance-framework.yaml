@@ -5,334 +5,334 @@
 
 ### Control Environment
 organization:
-  name: "ChainFinity Financial Services"
-  type: "Financial Technology"
-  compliance_officer: "compliance@chainfinity.com"
-  security_officer: "security@chainfinity.com"
+    name: 'ChainFinity Financial Services'
+    type: 'Financial Technology'
+    compliance_officer: 'compliance@chainfinity.com'
+    security_officer: 'security@chainfinity.com'
 
 compliance_frameworks:
-  soc2:
-    enabled: true
-    type: "Type II"
-    trust_service_criteria:
-      - security
-      - availability
-      - processing_integrity
-      - confidentiality
-      - privacy
-    audit_period: "12 months"
-    auditor: "TBD - Big Four Accounting Firm"
+    soc2:
+        enabled: true
+        type: 'Type II'
+        trust_service_criteria:
+            - security
+            - availability
+            - processing_integrity
+            - confidentiality
+            - privacy
+        audit_period: '12 months'
+        auditor: 'TBD - Big Four Accounting Firm'
 
-  pci_dss:
-    enabled: true
-    level: "Level 1" # >6M transactions annually
-    version: "4.0"
-    qsa: "TBD - Qualified Security Assessor"
+    pci_dss:
+        enabled: true
+        level: 'Level 1' # >6M transactions annually
+        version: '4.0'
+        qsa: 'TBD - Qualified Security Assessor'
 
-  gdpr:
-    enabled: true
-    dpo_contact: "dpo@chainfinity.com"
-    lawful_basis: "legitimate_interest"
-    data_retention_period: "7 years"
+    gdpr:
+        enabled: true
+        dpo_contact: 'dpo@chainfinity.com'
+        lawful_basis: 'legitimate_interest'
+        data_retention_period: '7 years'
 
-  sox:
-    enabled: true
-    section: "404"
-    itgc_controls: true
+    sox:
+        enabled: true
+        section: '404'
+        itgc_controls: true
 
-  iso27001:
-    enabled: true
-    version: "2013"
-    scope: "Information Security Management"
+    iso27001:
+        enabled: true
+        version: '2013'
+        scope: 'Information Security Management'
 
 ### Security Controls Implementation
 
 security_controls:
-  access_control:
-    # CC6.1 - Logical and Physical Access Controls
-    multi_factor_authentication:
-      enabled: true
-      required_for: ["all_users", "service_accounts"]
-      methods: ["totp", "hardware_tokens", "biometric"]
+    access_control:
+        # CC6.1 - Logical and Physical Access Controls
+        multi_factor_authentication:
+            enabled: true
+            required_for: ['all_users', 'service_accounts']
+            methods: ['totp', 'hardware_tokens', 'biometric']
 
-    privileged_access_management:
-      enabled: true
-      just_in_time_access: true
-      approval_workflow: true
-      session_recording: true
+        privileged_access_management:
+            enabled: true
+            just_in_time_access: true
+            approval_workflow: true
+            session_recording: true
 
-    role_based_access:
-      enabled: true
-      principle: "least_privilege"
-      review_frequency: "quarterly"
-      segregation_of_duties: true
+        role_based_access:
+            enabled: true
+            principle: 'least_privilege'
+            review_frequency: 'quarterly'
+            segregation_of_duties: true
 
-  # CC6.2 - Authentication and Authorization
-  authentication:
-    password_policy:
-      min_length: 12
-      complexity: "high"
-      history: 24
-      max_age: 90
-      lockout_threshold: 5
+    # CC6.2 - Authentication and Authorization
+    authentication:
+        password_policy:
+            min_length: 12
+            complexity: 'high'
+            history: 24
+            max_age: 90
+            lockout_threshold: 5
 
-    session_management:
-      timeout: 30 # minutes
-      concurrent_sessions: 1
-      secure_cookies: true
+        session_management:
+            timeout: 30 # minutes
+            concurrent_sessions: 1
+            secure_cookies: true
 
-  # CC6.3 - System Access Monitoring
-  monitoring:
-    log_aggregation:
-      enabled: true
-      retention_period: "7 years"
-      real_time_analysis: true
+    # CC6.3 - System Access Monitoring
+    monitoring:
+        log_aggregation:
+            enabled: true
+            retention_period: '7 years'
+            real_time_analysis: true
 
-    security_information_event_management:
-      enabled: true
-      correlation_rules: true
-      automated_response: true
+        security_information_event_management:
+            enabled: true
+            correlation_rules: true
+            automated_response: true
 
-    user_activity_monitoring:
-      enabled: true
-      privileged_user_monitoring: true
-      anomaly_detection: true
+        user_activity_monitoring:
+            enabled: true
+            privileged_user_monitoring: true
+            anomaly_detection: true
 
 ### Data Protection Controls
 
 data_protection:
-  # CC6.7 - Data Classification and Handling
-  classification:
-    levels:
-      - public
-      - internal
-      - confidential
-      - restricted
+    # CC6.7 - Data Classification and Handling
+    classification:
+        levels:
+            - public
+            - internal
+            - confidential
+            - restricted
 
-    handling_procedures:
-      confidential:
-        encryption_at_rest: "AES-256"
-        encryption_in_transit: "TLS 1.3"
-        access_controls: "strict"
+        handling_procedures:
+            confidential:
+                encryption_at_rest: 'AES-256'
+                encryption_in_transit: 'TLS 1.3'
+                access_controls: 'strict'
 
-      restricted:
-        encryption_at_rest: "AES-256 with HSM"
-        encryption_in_transit: "TLS 1.3 with mutual auth"
-        access_controls: "need_to_know"
-        tokenization: true
+            restricted:
+                encryption_at_rest: 'AES-256 with HSM'
+                encryption_in_transit: 'TLS 1.3 with mutual auth'
+                access_controls: 'need_to_know'
+                tokenization: true
 
-  # CC6.8 - Data Loss Prevention
-  dlp:
-    enabled: true
-    policies:
-      - pii_detection
-      - financial_data_protection
-      - intellectual_property_protection
+    # CC6.8 - Data Loss Prevention
+    dlp:
+        enabled: true
+        policies:
+            - pii_detection
+            - financial_data_protection
+            - intellectual_property_protection
 
-    actions:
-      - block
-      - quarantine
-      - alert
-      - encrypt
+        actions:
+            - block
+            - quarantine
+            - alert
+            - encrypt
 
 ### Change Management Controls
 
 change_management:
-  # CC8.1 - Change Management Process
-  process:
-    approval_required: true
-    testing_required: true
-    rollback_plan_required: true
-    documentation_required: true
+    # CC8.1 - Change Management Process
+    process:
+        approval_required: true
+        testing_required: true
+        rollback_plan_required: true
+        documentation_required: true
 
-  environments:
-    development:
-      approval_level: "developer"
-      testing_required: false
+    environments:
+        development:
+            approval_level: 'developer'
+            testing_required: false
 
-    staging:
-      approval_level: "team_lead"
-      testing_required: true
+        staging:
+            approval_level: 'team_lead'
+            testing_required: true
 
-    production:
-      approval_level: "change_board"
-      testing_required: true
-      emergency_process: true
+        production:
+            approval_level: 'change_board'
+            testing_required: true
+            emergency_process: true
 
 ### Incident Response
 
 incident_response:
-  # CC7.4 - Incident Response
-  team:
-    incident_commander: "security@chainfinity.com"
-    technical_lead: "devops@chainfinity.com"
-    communications_lead: "pr@chainfinity.com"
-    legal_counsel: "legal@chainfinity.com"
+    # CC7.4 - Incident Response
+    team:
+        incident_commander: 'security@chainfinity.com'
+        technical_lead: 'devops@chainfinity.com'
+        communications_lead: 'pr@chainfinity.com'
+        legal_counsel: 'legal@chainfinity.com'
 
-  procedures:
-    detection_time_target: "15 minutes"
-    response_time_target: "1 hour"
-    containment_time_target: "4 hours"
-    recovery_time_target: "24 hours"
+    procedures:
+        detection_time_target: '15 minutes'
+        response_time_target: '1 hour'
+        containment_time_target: '4 hours'
+        recovery_time_target: '24 hours'
 
-  notification_requirements:
-    internal: "immediate"
-    customers: "within 72 hours"
-    regulators: "within 72 hours"
-    law_enforcement: "as_required"
+    notification_requirements:
+        internal: 'immediate'
+        customers: 'within 72 hours'
+        regulators: 'within 72 hours'
+        law_enforcement: 'as_required'
 
 ### Business Continuity
 
 business_continuity:
-  # CC9.1 - Business Continuity Planning
-  disaster_recovery:
-    rto: "4 hours" # Recovery Time Objective
-    rpo: "1 hour" # Recovery Point Objective
-    backup_frequency: "continuous"
-    backup_testing: "monthly"
+    # CC9.1 - Business Continuity Planning
+    disaster_recovery:
+        rto: '4 hours' # Recovery Time Objective
+        rpo: '1 hour' # Recovery Point Objective
+        backup_frequency: 'continuous'
+        backup_testing: 'monthly'
 
-  high_availability:
-    uptime_target: "99.9%"
-    redundancy: "multi_region"
-    failover_testing: "quarterly"
+    high_availability:
+        uptime_target: '99.9%'
+        redundancy: 'multi_region'
+        failover_testing: 'quarterly'
 
 ### Vendor Management
 
 vendor_management:
-  # CC9.2 - Vendor Management
-  due_diligence:
-    security_assessment: true
-    compliance_verification: true
-    contract_review: true
-    ongoing_monitoring: true
+    # CC9.2 - Vendor Management
+    due_diligence:
+        security_assessment: true
+        compliance_verification: true
+        contract_review: true
+        ongoing_monitoring: true
 
-  critical_vendors:
-    - aws
-    - vault_provider
-    - monitoring_service
-    - backup_service
+    critical_vendors:
+        - aws
+        - vault_provider
+        - monitoring_service
+        - backup_service
 
 ### Privacy Controls (GDPR)
 
 privacy_controls:
-  data_subject_rights:
-    right_to_access: true
-    right_to_rectification: true
-    right_to_erasure: true
-    right_to_portability: true
-    right_to_object: true
+    data_subject_rights:
+        right_to_access: true
+        right_to_rectification: true
+        right_to_erasure: true
+        right_to_portability: true
+        right_to_object: true
 
-  privacy_by_design:
-    data_minimization: true
-    purpose_limitation: true
-    storage_limitation: true
-    accuracy: true
+    privacy_by_design:
+        data_minimization: true
+        purpose_limitation: true
+        storage_limitation: true
+        accuracy: true
 
-  consent_management:
-    explicit_consent: true
-    granular_consent: true
-    consent_withdrawal: true
-    consent_records: true
+    consent_management:
+        explicit_consent: true
+        granular_consent: true
+        consent_withdrawal: true
+        consent_records: true
 
 ### PCI DSS Requirements
 
 pci_dss:
-  requirements:
-    req_1: # Install and maintain firewall configuration
-      firewall_rules: "documented"
-      network_segmentation: true
+    requirements:
+        req_1: # Install and maintain firewall configuration
+            firewall_rules: 'documented'
+            network_segmentation: true
 
-    req_2: # Do not use vendor-supplied defaults
-      default_passwords: "changed"
-      unnecessary_services: "disabled"
+        req_2: # Do not use vendor-supplied defaults
+            default_passwords: 'changed'
+            unnecessary_services: 'disabled'
 
-    req_3: # Protect stored cardholder data
-      data_encryption: "AES-256"
-      key_management: "HSM"
+        req_3: # Protect stored cardholder data
+            data_encryption: 'AES-256'
+            key_management: 'HSM'
 
-    req_4: # Encrypt transmission of cardholder data
-      encryption_in_transit: "TLS 1.3"
+        req_4: # Encrypt transmission of cardholder data
+            encryption_in_transit: 'TLS 1.3'
 
-    req_5: # Protect all systems against malware
-      antivirus: "enterprise_grade"
+        req_5: # Protect all systems against malware
+            antivirus: 'enterprise_grade'
 
-    req_6: # Develop and maintain secure systems
-      secure_coding: true
-      vulnerability_management: true
+        req_6: # Develop and maintain secure systems
+            secure_coding: true
+            vulnerability_management: true
 
-    req_7: # Restrict access by business need-to-know
-      access_control: "role_based"
+        req_7: # Restrict access by business need-to-know
+            access_control: 'role_based'
 
-    req_8: # Identify and authenticate access
-      unique_ids: true
-      strong_authentication: true
+        req_8: # Identify and authenticate access
+            unique_ids: true
+            strong_authentication: true
 
-    req_9: # Restrict physical access
-      physical_security: "data_center"
+        req_9: # Restrict physical access
+            physical_security: 'data_center'
 
-    req_10: # Track and monitor all access
-      logging: "comprehensive"
+        req_10: # Track and monitor all access
+            logging: 'comprehensive'
 
-    req_11: # Regularly test security systems
-      vulnerability_scanning: "quarterly"
-      penetration_testing: "annually"
+        req_11: # Regularly test security systems
+            vulnerability_scanning: 'quarterly'
+            penetration_testing: 'annually'
 
-    req_12: # Maintain information security policy
-      security_policy: "documented"
-      security_awareness: "ongoing"
+        req_12: # Maintain information security policy
+            security_policy: 'documented'
+            security_awareness: 'ongoing'
 
 ### Audit and Monitoring
 
 audit_monitoring:
-  continuous_monitoring:
-    enabled: true
-    automated_controls_testing: true
-    exception_reporting: true
+    continuous_monitoring:
+        enabled: true
+        automated_controls_testing: true
+        exception_reporting: true
 
-  audit_trails:
-    immutable_logs: true
-    log_integrity: "cryptographic_hashing"
-    log_retention: "7 years"
+    audit_trails:
+        immutable_logs: true
+        log_integrity: 'cryptographic_hashing'
+        log_retention: '7 years'
 
-  compliance_reporting:
-    frequency: "monthly"
-    automated_evidence_collection: true
-    dashboard_reporting: true
+    compliance_reporting:
+        frequency: 'monthly'
+        automated_evidence_collection: true
+        dashboard_reporting: true
 
 ### Risk Management
 
 risk_management:
-  risk_assessment:
-    frequency: "annually"
-    methodology: "NIST"
-    scope: "enterprise_wide"
+    risk_assessment:
+        frequency: 'annually'
+        methodology: 'NIST'
+        scope: 'enterprise_wide'
 
-  risk_register:
-    operational_risks: true
-    technology_risks: true
-    compliance_risks: true
-    third_party_risks: true
+    risk_register:
+        operational_risks: true
+        technology_risks: true
+        compliance_risks: true
+        third_party_risks: true
 
-  risk_treatment:
-    accept: "low_risk"
-    mitigate: "medium_risk"
-    transfer: "high_risk_insurance"
-    avoid: "unacceptable_risk"
+    risk_treatment:
+        accept: 'low_risk'
+        mitigate: 'medium_risk'
+        transfer: 'high_risk_insurance'
+        avoid: 'unacceptable_risk'
 
 ### Training and Awareness
 
 training_awareness:
-  security_training:
-    frequency: "annual"
-    role_based: true
-    testing_required: true
+    security_training:
+        frequency: 'annual'
+        role_based: true
+        testing_required: true
 
-  compliance_training:
-    new_hire_orientation: true
-    annual_refresher: true
-    specialized_roles: true
+    compliance_training:
+        new_hire_orientation: true
+        annual_refresher: true
+        specialized_roles: true
 
-  phishing_simulation:
-    frequency: "monthly"
-    reporting_metrics: true
-    remedial_training: true
+    phishing_simulation:
+        frequency: 'monthly'
+        reporting_metrics: true
+        remedial_training: true

@@ -3,76 +3,76 @@
   hosts: all
   become: true
   vars:
-    app_dir: /opt/chainfinity
-    db_host: "{{ groups['db'][0] }}"
-    db_port: 5432
-    db_name: chainfinity
-    db_user: chainfinity
-    db_password: "{{ lookup('env', 'DB_PASSWORD') }}"
+      app_dir: /opt/chainfinity
+      db_host: "{{ groups['db'][0] }}"
+      db_port: 5432
+      db_name: chainfinity
+      db_user: chainfinity
+      db_password: "{{ lookup('env', 'DB_PASSWORD') }}"
 
   tasks:
-    - name: Update apt cache
-      apt:
-        update_cache: yes
-        cache_valid_time: 3600
+      - name: Update apt cache
+        apt:
+            update_cache: yes
+            cache_valid_time: 3600
 
-    - name: Install required packages
-      apt:
-        name:
-          - python3
-          - python3-pip
-          - nodejs
-          - npm
-          - docker.io
-          - docker-compose
-          - nginx
-        state: present
+      - name: Install required packages
+        apt:
+            name:
+                - python3
+                - python3-pip
+                - nodejs
+                - npm
+                - docker.io
+                - docker-compose
+                - nginx
+            state: present
 
-    - name: Install Python dependencies
-      pip:
-        requirements: "{{ app_dir }}/code/backend/requirements.txt"
-        virtualenv: "{{ app_dir }}/venv"
+      - name: Install Python dependencies
+        pip:
+            requirements: '{{ app_dir }}/code/backend/requirements.txt'
+            virtualenv: '{{ app_dir }}/venv'
 
-    - name: Install Node.js dependencies
-      npm:
-        path: "{{ app_dir }}/code/frontend"
-        state: present
+      - name: Install Node.js dependencies
+        npm:
+            path: '{{ app_dir }}/code/frontend'
+            state: present
 
-    - name: Configure Nginx
-      template:
-        src: templates/nginx.conf.j2
-        dest: /etc/nginx/sites-available/chainfinity
-      notify: restart nginx
+      - name: Configure Nginx
+        template:
+            src: templates/nginx.conf.j2
+            dest: /etc/nginx/sites-available/chainfinity
+        notify: restart nginx
 
-    - name: Enable Nginx site
-      file:
-        src: /etc/nginx/sites-available/chainfinity
-        dest: /etc/nginx/sites-enabled/chainfinity
-        state: link
-      notify: restart nginx
+      - name: Enable Nginx site
+        file:
+            src: /etc/nginx/sites-available/chainfinity
+            dest: /etc/nginx/sites-enabled/chainfinity
+            state: link
+        notify: restart nginx
 
-    - name: Create application directory
-      file:
-        path: "{{ app_dir }}"
-        state: directory
-        mode: "0755"
+      - name: Create application directory
+        file:
+            path: '{{ app_dir }}'
+            state: directory
+            mode: '0755'
 
-    - name: Copy application files
-      copy:
-        src: "{{ item }}"
-        dest: "{{ app_dir }}/"
-      with_items:
-        - code
-        - .env
-        - docker-compose.yml
+      - name: Copy application files
+        copy:
+            src: '{{ item }}'
+            dest: '{{ app_dir }}/'
+        with_items:
+            - code
+            - .env
+            - docker-compose.yml
 
-    - name: Start application services
-      docker_compose:
-        project_src: "{{ app_dir }}"
-        state: present
+      - name: Start application services
+        docker_compose:
+            project_src: '{{ app_dir }}'
+            state: present
 
   handlers:
-    - name: restart nginx
-      service:
-        name: nginx
-        state: restarted
+      - name: restart nginx
+        service:
+            name: nginx
+            state: restarted
