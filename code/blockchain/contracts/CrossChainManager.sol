@@ -1,24 +1,30 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
-import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
-import "@chainlink/contracts/src/v0.8/ccip/interfaces/IRouterClient.sol";
-import "@chainlink/contracts/src/v0.8/ccip/interfaces/IAny2EVMMessageReceiver.sol";
-import "@chainlink/contracts/src/v0.8/ccip/libraries/Client.sol";
+import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
+import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import '@openzeppelin/contracts/security/Pausable.sol';
+import '@openzeppelin/contracts/proxy/utils/Initializable.sol';
+import '@chainlink/contracts/src/v0.8/ccip/interfaces/IRouterClient.sol';
+import '@chainlink/contracts/src/v0.8/ccip/interfaces/IAny2EVMMessageReceiver.sol';
+import '@chainlink/contracts/src/v0.8/ccip/libraries/Client.sol';
 
 /**
  * @title Enhanced CrossChainManager
  * @dev Manages cross-chain transfers with Chainlink CCIP integration, rate limiting, and circuit breakers
  */
-contract CrossChainManager is ReentrancyGuard, AccessControlEnumerable, Pausable, Initializable, IAny2EVMMessageReceiver {
+contract CrossChainManager is
+    ReentrancyGuard,
+    AccessControlEnumerable,
+    Pausable,
+    Initializable,
+    IAny2EVMMessageReceiver
+{
     // Role definitions
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
-    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
-    bytes32 public constant EMERGENCY_ROLE = keccak256("EMERGENCY_ROLE");
+    bytes32 public constant ADMIN_ROLE = keccak256('ADMIN_ROLE');
+    bytes32 public constant OPERATOR_ROLE = keccak256('OPERATOR_ROLE');
+    bytes32 public constant EMERGENCY_ROLE = keccak256('EMERGENCY_ROLE');
 
     // Chainlink CCIP Router
     IRouterClient public router;
@@ -89,14 +95,14 @@ contract CrossChainManager is ReentrancyGuard, AccessControlEnumerable, Pausable
         router = IRouterClient(routerAddress);
 
         // Initialize supported chains (using Chainlink CCIP chain selectors)
-        supportedChains[5009297550715157269] = true;  // Ethereum Mainnet
-        supportedChains[4949039107694359620] = true;  // Arbitrum
-        supportedChains[4051577828743386545] = true;  // Polygon
+        supportedChains[5009297550715157269] = true; // Ethereum Mainnet
+        supportedChains[4949039107694359620] = true; // Arbitrum
+        supportedChains[4051577828743386545] = true; // Polygon
 
         // Set default rate limits
-        transferLimit = 100000 * 10**18;      // 100,000 tokens
-        transferCooldown = 1 hours;           // 1 hour cooldown
-        dailyTransferLimit = 1000000 * 10**18; // 1,000,000 tokens daily limit
+        transferLimit = 100000 * 10 ** 18; // 100,000 tokens
+        transferCooldown = 1 hours; // 1 hour cooldown
+        dailyTransferLimit = 1000000 * 10 ** 18; // 1,000,000 tokens daily limit
         dailyResetTimestamp = block.timestamp + 1 days;
 
         // Set default fee sharing
@@ -117,17 +123,20 @@ contract CrossChainManager is ReentrancyGuard, AccessControlEnumerable, Pausable
         address targetAddress
     ) external nonReentrant whenNotPaused {
         // Check rate limits
-        require(supportedChains[targetChainId], "Unsupported target chain");
-        require(amount > 0, "Amount must be greater than 0");
-        require(amount <= transferLimit, "Amount exceeds transfer limit");
-        require(block.timestamp >= lastTransferTime[msg.sender] + transferCooldown, "Transfer cooldown active");
+        require(supportedChains[targetChainId], 'Unsupported target chain');
+        require(amount > 0, 'Amount must be greater than 0');
+        require(amount <= transferLimit, 'Amount exceeds transfer limit');
+        require(
+            block.timestamp >= lastTransferTime[msg.sender] + transferCooldown,
+            'Transfer cooldown active'
+        );
 
         // Check circuit breaker
         if (block.timestamp > dailyResetTimestamp) {
             dailyTransferTotal = 0;
             dailyResetTimestamp = block.timestamp + 1 days;
         }
-        require(dailyTransferTotal + amount <= dailyTransferLimit, "Daily transfer limit reached");
+        require(dailyTransferTotal + amount <= dailyTransferLimit, 'Daily transfer limit reached');
 
         // Update rate limiting state
         lastTransferTime[msg.sender] = block.timestamp;
@@ -138,14 +147,17 @@ contract CrossChainManager is ReentrancyGuard, AccessControlEnumerable, Pausable
         uint256 netAmount = amount - lpFee;
 
         // Transfer tokens to this contract
-        require(IERC20(token).transferFrom(msg.sender, address(this), amount), "Token transfer failed");
+        require(
+            IERC20(token).transferFrom(msg.sender, address(this), amount),
+            'Token transfer failed'
+        );
 
         // Prepare CCIP message
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(targetAddress),
             data: abi.encode(msg.sender, token, netAmount),
             tokenAmounts: new Client.EVMTokenAmount[](0), // No tokens sent through CCIP directly
-            extraArgs: "",
+            extraArgs: '',
             feeToken: address(0) // Use native gas token for fees
         });
 
@@ -198,7 +210,7 @@ contract CrossChainManager is ReentrancyGuard, AccessControlEnumerable, Pausable
      */
     function ccipReceive(Client.Any2EVMMessage calldata message) external override {
         // Verify the sender is the router
-        require(msg.sender == address(router), "Sender not router");
+        require(msg.sender == address(router), 'Sender not router');
 
         // Decode the message data
         (address sender, address token, uint256 amount) = abi.decode(
@@ -210,7 +222,7 @@ contract CrossChainManager is ReentrancyGuard, AccessControlEnumerable, Pausable
         address receiver = abi.decode(message.receiver, (address));
 
         // Transfer tokens to the receiver
-        require(IERC20(token).transfer(receiver, amount), "Token transfer failed");
+        require(IERC20(token).transfer(receiver, amount), 'Token transfer failed');
 
         emit MessageReceived(message.messageId, message.sourceChainSelector);
     }
@@ -230,7 +242,10 @@ contract CrossChainManager is ReentrancyGuard, AccessControlEnumerable, Pausable
      * @param newTransferLimit New transfer limit
      * @param newTransferCooldown New transfer cooldown
      */
-    function updateRateLimit(uint256 newTransferLimit, uint256 newTransferCooldown) external onlyRole(ADMIN_ROLE) {
+    function updateRateLimit(
+        uint256 newTransferLimit,
+        uint256 newTransferCooldown
+    ) external onlyRole(ADMIN_ROLE) {
         transferLimit = newTransferLimit;
         transferCooldown = newTransferCooldown;
         emit RateLimitUpdated(newTransferLimit, newTransferCooldown);
@@ -251,8 +266,8 @@ contract CrossChainManager is ReentrancyGuard, AccessControlEnumerable, Pausable
      * @param shares Number of shares
      */
     function addLiquidityProvider(address provider, uint256 shares) external onlyRole(ADMIN_ROLE) {
-        require(provider != address(0), "Invalid provider address");
-        require(shares > 0, "Shares must be greater than 0");
+        require(provider != address(0), 'Invalid provider address');
+        require(shares > 0, 'Shares must be greater than 0');
 
         liquidityProviderShares[provider] += shares;
         totalLiquidityShares += shares;
@@ -265,7 +280,7 @@ contract CrossChainManager is ReentrancyGuard, AccessControlEnumerable, Pausable
      * @param provider Provider address
      */
     function removeLiquidityProvider(address provider) external onlyRole(ADMIN_ROLE) {
-        require(liquidityProviderShares[provider] > 0, "Provider does not exist");
+        require(liquidityProviderShares[provider] > 0, 'Provider does not exist');
 
         totalLiquidityShares -= liquidityProviderShares[provider];
         liquidityProviderShares[provider] = 0;
@@ -278,10 +293,10 @@ contract CrossChainManager is ReentrancyGuard, AccessControlEnumerable, Pausable
      * @param token Token address
      */
     function distributeFees(address token) external onlyRole(OPERATOR_ROLE) {
-        require(totalLiquidityShares > 0, "No liquidity providers");
+        require(totalLiquidityShares > 0, 'No liquidity providers');
 
         uint256 balance = IERC20(token).balanceOf(address(this));
-        require(balance > 0, "No fees to distribute");
+        require(balance > 0, 'No fees to distribute');
 
         uint256 totalDistributed = 0;
 
@@ -290,9 +305,10 @@ contract CrossChainManager is ReentrancyGuard, AccessControlEnumerable, Pausable
         for (uint256 i = 0; i < memberCount; i++) {
             address provider = getRoleMember(OPERATOR_ROLE, i);
             if (liquidityProviderShares[provider] > 0) {
-                uint256 providerShare = (balance * liquidityProviderShares[provider]) / totalLiquidityShares;
+                uint256 providerShare = (balance * liquidityProviderShares[provider]) /
+                    totalLiquidityShares;
                 if (providerShare > 0) {
-                    require(IERC20(token).transfer(provider, providerShare), "Fee transfer failed");
+                    require(IERC20(token).transfer(provider, providerShare), 'Fee transfer failed');
                     totalDistributed += providerShare;
                 }
             }
@@ -306,7 +322,6 @@ contract CrossChainManager is ReentrancyGuard, AccessControlEnumerable, Pausable
      * @param role Role to query
      * @return Array of addresses with the role
      */
-
 
     /**
      * @dev Pause the contract

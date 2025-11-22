@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/governance/Governor.sol";
-import "@openzeppelin/contracts/governance/extensions/GovernorSettings.sol";
-import "@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol";
-import "@openzeppelin/contracts/governance/extensions/GovernorVotes.sol";
-import "@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol";
-import "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol";
+import '@openzeppelin/contracts/governance/Governor.sol';
+import '@openzeppelin/contracts/governance/extensions/GovernorSettings.sol';
+import '@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol';
+import '@openzeppelin/contracts/governance/extensions/GovernorVotes.sol';
+import '@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol';
+import '@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol';
 
 /**
  * @title ChainFinityGovernor
@@ -29,10 +29,10 @@ contract ChainFinityGovernor is
         IVotes _token,
         TimelockController _timelock
     )
-        Governor("ChainFinity Governor")
+        Governor('ChainFinity Governor')
         GovernorSettings(
-            1 days, /* Voting delay: 1 day */
-            7 days, /* Voting period: 1 week */
+            1 days /* Voting delay: 1 day */,
+            7 days /* Voting period: 1 week */,
             0 /* Proposal threshold: 0 tokens */
         )
         GovernorVotes(_token)
@@ -63,13 +63,13 @@ contract ChainFinityGovernor is
             if (useQuadratic) {
                 // Apply quadratic voting formula: sqrt(weight)
                 uint256 quadraticWeight = sqrt(weight);
-                super._countVote(proposalId, account, support, quadraticWeight, "");
+                super._countVote(proposalId, account, support, quadraticWeight, '');
                 return;
             }
         }
 
         // Default to standard voting if quadratic not specified
-        super._countVote(proposalId, account, support, weight, "");
+        super._countVote(proposalId, account, support, weight, '');
     }
 
     /**
@@ -88,39 +88,23 @@ contract ChainFinityGovernor is
 
     // The following functions are overrides required by Solidity
 
-    function votingDelay()
-        public
-        view
-        override(IGovernor, GovernorSettings)
-        returns (uint256)
-    {
+    function votingDelay() public view override(IGovernor, GovernorSettings) returns (uint256) {
         return super.votingDelay();
     }
 
-    function votingPeriod()
-        public
-        view
-        override(IGovernor, GovernorSettings)
-        returns (uint256)
-    {
+    function votingPeriod() public view override(IGovernor, GovernorSettings) returns (uint256) {
         return super.votingPeriod();
     }
 
-    function quorum(uint256 blockNumber)
-        public
-        view
-        override(IGovernor, GovernorVotesQuorumFraction)
-        returns (uint256)
-    {
+    function quorum(
+        uint256 blockNumber
+    ) public view override(IGovernor, GovernorVotesQuorumFraction) returns (uint256) {
         return super.quorum(blockNumber);
     }
 
-    function state(uint256 proposalId)
-        public
-        view
-        override(Governor, GovernorTimelockControl)
-        returns (ProposalState)
-    {
+    function state(
+        uint256 proposalId
+    ) public view override(Governor, GovernorTimelockControl) returns (ProposalState) {
         return super.state(proposalId);
     }
 
@@ -170,12 +154,9 @@ contract ChainFinityGovernor is
         return super._executor();
     }
 
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(Governor, GovernorTimelockControl)
-        returns (bool)
-    {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view override(Governor, GovernorTimelockControl) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 }

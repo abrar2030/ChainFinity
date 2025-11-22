@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
-import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
+import '@openzeppelin/contracts/access/AccessControl.sol';
+import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import '@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol';
+import '@openzeppelin/contracts/security/Pausable.sol';
+import '@openzeppelin/contracts/proxy/utils/Initializable.sol';
 
 /**
  * @title Enhanced AssetVault
@@ -14,9 +14,9 @@ import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
  */
 contract AssetVault is ReentrancyGuard, AccessControl, Pausable, Initializable {
     // Role definitions
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
-    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
-    bytes32 public constant EMERGENCY_ROLE = keccak256("EMERGENCY_ROLE");
+    bytes32 public constant ADMIN_ROLE = keccak256('ADMIN_ROLE');
+    bytes32 public constant OPERATOR_ROLE = keccak256('OPERATOR_ROLE');
+    bytes32 public constant EMERGENCY_ROLE = keccak256('EMERGENCY_ROLE');
 
     // Fee configuration
     uint256 public depositFeeRate; // Fee rate in basis points (1/100 of a percent)
@@ -57,7 +57,12 @@ contract AssetVault is ReentrancyGuard, AccessControl, Pausable, Initializable {
     // Events
     event AssetDeposited(address indexed user, address indexed token, uint256 amount, uint256 fee);
     event AssetWithdrawn(address indexed user, address indexed token, uint256 amount, uint256 fee);
-    event WithdrawalRequested(uint256 indexed requestId, address indexed user, address indexed token, uint256 amount);
+    event WithdrawalRequested(
+        uint256 indexed requestId,
+        address indexed user,
+        address indexed token,
+        uint256 amount
+    );
     event WithdrawalApproved(uint256 indexed requestId, address indexed approver);
     event WithdrawalExecuted(uint256 indexed requestId);
     event AssetFrozen(address indexed token, bool frozen);
@@ -84,7 +89,7 @@ contract AssetVault is ReentrancyGuard, AccessControl, Pausable, Initializable {
         withdrawFeeRate = 20; // 0.2% default fee
         feeCollector = _feeCollector;
 
-        largeTransferThreshold = 100000 * 10**18; // 100,000 tokens default threshold
+        largeTransferThreshold = 100000 * 10 ** 18; // 100,000 tokens default threshold
         requiredApprovals = 2; // Default required approvals
     }
 
@@ -122,28 +127,26 @@ contract AssetVault is ReentrancyGuard, AccessControl, Pausable, Initializable {
      * @dev Internal deposit implementation
      */
     function _deposit(address token, uint256 amount) internal {
-        require(amount > 0, "Amount must be greater than 0");
-        require(!frozenTokens[token], "Token is frozen");
-        require(!frozenUserAssets[msg.sender][token], "User assets are frozen");
+        require(amount > 0, 'Amount must be greater than 0');
+        require(!frozenTokens[token], 'Token is frozen');
+        require(!frozenUserAssets[msg.sender][token], 'User assets are frozen');
 
         // Calculate and deduct fee
         uint256 fee = (amount * depositFeeRate) / 10000;
         uint256 netAmount = amount - fee;
 
         // Transfer tokens
-        require(IERC20(token).transferFrom(msg.sender, address(this), amount), "Transfer failed");
+        require(IERC20(token).transferFrom(msg.sender, address(this), amount), 'Transfer failed');
 
         // Transfer fee to collector if applicable
         if (fee > 0 && feeCollector != address(0)) {
-            require(IERC20(token).transfer(feeCollector, fee), "Fee transfer failed");
+            require(IERC20(token).transfer(feeCollector, fee), 'Fee transfer failed');
         }
 
         // Update user balances
-        userAssets[msg.sender].push(Asset({
-            token: token,
-            amount: netAmount,
-            timestamp: block.timestamp
-        }));
+        userAssets[msg.sender].push(
+            Asset({token: token, amount: netAmount, timestamp: block.timestamp})
+        );
 
         userTokenBalances[msg.sender][token] += netAmount;
         emit AssetDeposited(msg.sender, token, netAmount, fee);
@@ -155,14 +158,14 @@ contract AssetVault is ReentrancyGuard, AccessControl, Pausable, Initializable {
      * @param amount Amount to withdraw
      */
     function withdraw(address token, uint256 amount) external nonReentrant whenNotPaused {
-        require(amount > 0, "Amount must be greater than 0");
-        require(!frozenTokens[token], "Token is frozen");
-        require(!frozenUserAssets[msg.sender][token], "User assets are frozen");
+        require(amount > 0, 'Amount must be greater than 0');
+        require(!frozenTokens[token], 'Token is frozen');
+        require(!frozenUserAssets[msg.sender][token], 'User assets are frozen');
         // Calculate net amount after fee
         uint256 fee = (amount * withdrawFeeRate) / 10000;
         uint256 netAmount = amount - fee;
 
-        require(userTokenBalances[msg.sender][token] >= amount, "Insufficient balance");
+        require(userTokenBalances[msg.sender][token] >= amount, 'Insufficient balance');
 
         // Check if multi-sig is required (using gross amount for threshold)
         if (amount >= largeTransferThreshold) {
@@ -198,9 +201,9 @@ contract AssetVault is ReentrancyGuard, AccessControl, Pausable, Initializable {
     function approveWithdrawal(uint256 requestId) external onlyRole(OPERATOR_ROLE) {
         WithdrawalRequest storage request = withdrawalRequests[requestId];
 
-        require(!request.executed, "Request already executed");
-        require(request.user != address(0), "Request does not exist");
-        require(!request.hasApproved[msg.sender], "Already approved");
+        require(!request.executed, 'Request already executed');
+        require(request.user != address(0), 'Request does not exist');
+        require(!request.hasApproved[msg.sender], 'Already approved');
 
         request.hasApproved[msg.sender] = true;
         request.approvals += 1;
@@ -230,11 +233,11 @@ contract AssetVault is ReentrancyGuard, AccessControl, Pausable, Initializable {
         userTokenBalances[user][token] -= netAmount;
 
         // Transfer tokens
-        require(IERC20(token).transfer(user, netAmount), "Transfer failed");
+        require(IERC20(token).transfer(user, netAmount), 'Transfer failed');
 
         // Transfer fee to collector if applicable
         if (fee > 0 && feeCollector != address(0)) {
-            require(IERC20(token).transfer(feeCollector, fee), "Fee transfer failed");
+            require(IERC20(token).transfer(feeCollector, fee), 'Fee transfer failed');
         }
 
         emit AssetWithdrawn(user, token, netAmount, fee);
@@ -245,12 +248,11 @@ contract AssetVault is ReentrancyGuard, AccessControl, Pausable, Initializable {
      * @param tokens Array of token addresses
      * @param amounts Array of amounts
      */
-    function batchDeposit(address[] calldata tokens, uint256[] calldata amounts)
-        external
-        nonReentrant
-        whenNotPaused
-    {
-        require(tokens.length == amounts.length, "Arrays length mismatch");
+    function batchDeposit(
+        address[] calldata tokens,
+        uint256[] calldata amounts
+    ) external nonReentrant whenNotPaused {
+        require(tokens.length == amounts.length, 'Arrays length mismatch');
 
         for (uint256 i = 0; i < tokens.length; i++) {
             _deposit(tokens[i], amounts[i]);
@@ -262,18 +264,17 @@ contract AssetVault is ReentrancyGuard, AccessControl, Pausable, Initializable {
      * @param tokens Array of token addresses
      * @param amounts Array of amounts
      */
-    function batchWithdraw(address[] calldata tokens, uint256[] calldata amounts)
-        external
-        nonReentrant
-        whenNotPaused
-    {
-        require(tokens.length == amounts.length, "Arrays length mismatch");
+    function batchWithdraw(
+        address[] calldata tokens,
+        uint256[] calldata amounts
+    ) external nonReentrant whenNotPaused {
+        require(tokens.length == amounts.length, 'Arrays length mismatch');
 
         for (uint256 i = 0; i < tokens.length; i++) {
-            require(amounts[i] > 0, "Amount must be greater than 0");
-            require(!frozenTokens[tokens[i]], "Token is frozen");
-            require(!frozenUserAssets[msg.sender][tokens[i]], "User assets are frozen");
-            require(userTokenBalances[msg.sender][tokens[i]] >= amounts[i], "Insufficient balance");
+            require(amounts[i] > 0, 'Amount must be greater than 0');
+            require(!frozenTokens[tokens[i]], 'Token is frozen');
+            require(!frozenUserAssets[msg.sender][tokens[i]], 'User assets are frozen');
+            require(userTokenBalances[msg.sender][tokens[i]] >= amounts[i], 'Insufficient balance');
 
             // Check if multi-sig is required
             if (amounts[i] >= largeTransferThreshold) {
@@ -300,7 +301,11 @@ contract AssetVault is ReentrancyGuard, AccessControl, Pausable, Initializable {
      * @param token Token address
      * @param frozen Frozen state
      */
-    function setUserAssetFrozen(address user, address token, bool frozen) external onlyRole(EMERGENCY_ROLE) {
+    function setUserAssetFrozen(
+        address user,
+        address token,
+        bool frozen
+    ) external onlyRole(EMERGENCY_ROLE) {
         frozenUserAssets[user][token] = frozen;
         emit UserAssetFrozen(user, token, frozen);
     }
@@ -310,9 +315,12 @@ contract AssetVault is ReentrancyGuard, AccessControl, Pausable, Initializable {
      * @param newDepositFeeRate New deposit fee rate
      * @param newWithdrawFeeRate New withdraw fee rate
      */
-    function updateFeeRates(uint256 newDepositFeeRate, uint256 newWithdrawFeeRate) external onlyRole(ADMIN_ROLE) {
-        require(newDepositFeeRate <= MAX_FEE_RATE, "Deposit fee too high");
-        require(newWithdrawFeeRate <= MAX_FEE_RATE, "Withdraw fee too high");
+    function updateFeeRates(
+        uint256 newDepositFeeRate,
+        uint256 newWithdrawFeeRate
+    ) external onlyRole(ADMIN_ROLE) {
+        require(newDepositFeeRate <= MAX_FEE_RATE, 'Deposit fee too high');
+        require(newWithdrawFeeRate <= MAX_FEE_RATE, 'Withdraw fee too high');
 
         depositFeeRate = newDepositFeeRate;
         withdrawFeeRate = newWithdrawFeeRate;
@@ -334,7 +342,10 @@ contract AssetVault is ReentrancyGuard, AccessControl, Pausable, Initializable {
      * @param newThreshold New large transfer threshold
      * @param newRequiredApprovals New required approvals count
      */
-    function updateThresholds(uint256 newThreshold, uint256 newRequiredApprovals) external onlyRole(ADMIN_ROLE) {
+    function updateThresholds(
+        uint256 newThreshold,
+        uint256 newRequiredApprovals
+    ) external onlyRole(ADMIN_ROLE) {
         largeTransferThreshold = newThreshold;
         requiredApprovals = newRequiredApprovals;
 

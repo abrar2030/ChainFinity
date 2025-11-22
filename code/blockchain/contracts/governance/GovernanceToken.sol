@@ -1,22 +1,22 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import '@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol';
+import '@openzeppelin/contracts/access/Ownable.sol';
 
 /**
  * @title GovernanceToken
  * @dev ERC20 token with voting capabilities for ChainFinity governance
  */
 contract GovernanceToken is ERC20Votes, Ownable {
-    uint256 private constant _INITIAL_SUPPLY = 100_000_000 * 10**18; // 100 million tokens
+    uint256 private constant _INITIAL_SUPPLY = 100_000_000 * 10 ** 18; // 100 million tokens
 
     /**
      * @dev Constructor that initializes the token with name, symbol, and mints initial supply
      */
     constructor()
-        ERC20("ChainFinity Governance", "CFG")
-        ERC20Permit("ChainFinity Governance")
+        ERC20('ChainFinity Governance', 'CFG')
+        ERC20Permit('ChainFinity Governance')
         Ownable(msg.sender)
     {
         _mint(msg.sender, _INITIAL_SUPPLY);
