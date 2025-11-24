@@ -483,28 +483,28 @@ mkdir -p /opt/chainfinity/monitoring
 
 ```yaml
 global:
-  scrape_interval: 15s
-  evaluation_interval: 15s
+    scrape_interval: 15s
+    evaluation_interval: 15s
 
 rule_files:
-  - "alert_rules.yml"
+    - 'alert_rules.yml'
 
 scrape_configs:
-  - job_name: "chainfinity-api"
-    static_configs:
-      - targets: ["localhost:8000"]
-    metrics_path: "/metrics"
-    scrape_interval: 30s
+    - job_name: 'chainfinity-api'
+      static_configs:
+          - targets: ['localhost:8000']
+      metrics_path: '/metrics'
+      scrape_interval: 30s
 
-  - job_name: "node-exporter"
-    static_configs:
-      - targets: ["localhost:9100"]
+    - job_name: 'node-exporter'
+      static_configs:
+          - targets: ['localhost:9100']
 
 alerting:
-  alertmanagers:
-    - static_configs:
-        - targets:
-            - alertmanager:9093
+    alertmanagers:
+        - static_configs:
+              - targets:
+                    - alertmanager:9093
 ```
 
 ## 🔧 Configuration Management
@@ -598,13 +598,13 @@ Structured JSON logging is configured for production:
 
 ```json
 {
-  "timestamp": "2025-01-08T12:00:00Z",
-  "level": "INFO",
-  "logger": "chainfinity.api",
-  "message": "User authentication successful",
-  "user_id": "123e4567-e89b-12d3-a456-426614174000",
-  "ip_address": "192.168.1.1",
-  "request_id": "req_123456"
+    "timestamp": "2025-01-08T12:00:00Z",
+    "level": "INFO",
+    "logger": "chainfinity.api",
+    "message": "User authentication successful",
+    "user_id": "123e4567-e89b-12d3-a456-426614174000",
+    "ip_address": "192.168.1.1",
+    "request_id": "req_123456"
 }
 ```
 
@@ -624,30 +624,30 @@ Set up alerts for critical metrics:
 
 1. **Prepare Green Environment**
 
-   ```bash
-   # Deploy to green environment
-   docker-compose -f docker-compose.green.yml up -d
-   ```
+    ```bash
+    # Deploy to green environment
+    docker-compose -f docker-compose.green.yml up -d
+    ```
 
 2. **Health Check**
 
-   ```bash
-   # Verify green environment health
-   curl http://green.internal:8000/health
-   ```
+    ```bash
+    # Verify green environment health
+    curl http://green.internal:8000/health
+    ```
 
 3. **Switch Traffic**
 
-   ```bash
-   # Update load balancer configuration
-   # Switch from blue to green
-   ```
+    ```bash
+    # Update load balancer configuration
+    # Switch from blue to green
+    ```
 
 4. **Cleanup**
-   ```bash
-   # Stop blue environment after verification
-   docker-compose -f docker-compose.blue.yml down
-   ```
+    ```bash
+    # Stop blue environment after verification
+    docker-compose -f docker-compose.blue.yml down
+    ```
 
 ### Rolling Deployment
 
@@ -797,31 +797,31 @@ GRANT SELECT ON ALL TABLES IN SCHEMA public TO chainfinity_readonly;
 ### Horizontal Scaling
 
 1. **Load Balancer Configuration**
-   - Use Nginx or HAProxy for load balancing
-   - Implement health checks
-   - Configure session affinity if needed
+    - Use Nginx or HAProxy for load balancing
+    - Implement health checks
+    - Configure session affinity if needed
 
 2. **Database Scaling**
-   - Set up read replicas for read-heavy workloads
-   - Implement connection pooling
-   - Consider database sharding for large datasets
+    - Set up read replicas for read-heavy workloads
+    - Implement connection pooling
+    - Consider database sharding for large datasets
 
 3. **Cache Scaling**
-   - Use Redis Cluster for high availability
-   - Implement cache warming strategies
-   - Monitor cache hit rates
+    - Use Redis Cluster for high availability
+    - Implement cache warming strategies
+    - Monitor cache hit rates
 
 ### Vertical Scaling
 
 1. **CPU Optimization**
-   - Increase worker processes
-   - Use CPU profiling to identify bottlenecks
-   - Optimize database queries
+    - Increase worker processes
+    - Use CPU profiling to identify bottlenecks
+    - Optimize database queries
 
 2. **Memory Optimization**
-   - Increase available RAM
-   - Tune database buffer settings
-   - Optimize application memory usage
+    - Increase available RAM
+    - Tune database buffer settings
+    - Optimize application memory usage
 
 ## 🚨 Disaster Recovery
 
@@ -862,19 +862,19 @@ sudo systemctl restart chainfinity
 ### Regular Maintenance Tasks
 
 1. **Daily**
-   - Monitor application logs
-   - Check system resources
-   - Verify backup completion
+    - Monitor application logs
+    - Check system resources
+    - Verify backup completion
 
 2. **Weekly**
-   - Review security logs
-   - Update dependencies
-   - Performance analysis
+    - Review security logs
+    - Update dependencies
+    - Performance analysis
 
 3. **Monthly**
-   - Security patches
-   - Database maintenance
-   - Capacity planning review
+    - Security patches
+    - Database maintenance
+    - Capacity planning review
 
 ### Getting Help
 

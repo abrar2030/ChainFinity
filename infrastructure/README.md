@@ -358,42 +358,42 @@ nslookup chainfinity.com
 #### Security Incident Response
 
 1. **Immediate Actions**:
-   - Isolate affected systems
-   - Preserve evidence
-   - Notify security team
+    - Isolate affected systems
+    - Preserve evidence
+    - Notify security team
 
 2. **Assessment**:
-   - Determine scope and impact
-   - Classify incident severity
-   - Activate incident response team
+    - Determine scope and impact
+    - Classify incident severity
+    - Activate incident response team
 
 3. **Containment**:
-   - Block malicious traffic
-   - Revoke compromised credentials
-   - Apply emergency patches
+    - Block malicious traffic
+    - Revoke compromised credentials
+    - Apply emergency patches
 
 #### Disaster Recovery
 
 1. **Database Recovery**:
 
-   ```bash
-   # Restore from backup
-   aws rds restore-db-instance-from-db-snapshot \
-     --db-instance-identifier chainfinity-db-restored \
-     --db-snapshot-identifier chainfinity-db-snapshot-YYYY-MM-DD
-   ```
+    ```bash
+    # Restore from backup
+    aws rds restore-db-instance-from-db-snapshot \
+      --db-instance-identifier chainfinity-db-restored \
+      --db-snapshot-identifier chainfinity-db-snapshot-YYYY-MM-DD
+    ```
 
 2. **Application Recovery**:
 
-   ```bash
-   # Deploy to DR region
-   terraform apply -var="region=us-east-1"
+    ```bash
+    # Deploy to DR region
+    terraform apply -var="region=us-east-1"
 
-   # Update DNS to point to DR region
-   aws route53 change-resource-record-sets \
-     --hosted-zone-id Z123456789 \
-     --change-batch file://dns-failover.json
-   ```
+    # Update DNS to point to DR region
+    aws route53 change-resource-record-sets \
+      --hosted-zone-id Z123456789 \
+      --change-batch file://dns-failover.json
+    ```
 
 ## 📞 Support
 
@@ -425,10 +425,10 @@ This infrastructure configuration is proprietary to ChainFinity and contains con
 ## 🔄 Version History
 
 - **v1.0.0** (2024-01-01): Initial financial-grade infrastructure implementation
-  - Comprehensive security controls
-  - Multi-compliance framework support
-  - Automated deployment and monitoring
-  - Disaster recovery capabilities
+    - Comprehensive security controls
+    - Multi-compliance framework support
+    - Automated deployment and monitoring
+    - Disaster recovery capabilities
 
 ---
 

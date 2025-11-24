@@ -144,14 +144,14 @@ Options:
 
 1. Extract the zip file to a directory of your choice
 2. Make the scripts executable:
-   ```bash
-   chmod +x *.sh
-   ```
+    ```bash
+    chmod +x *.sh
+    ```
 3. Copy the CI/CD workflow file to your repository:
-   ```bash
-   mkdir -p .github/workflows/
-   cp ci-cd.yml .github/workflows/
-   ```
+    ```bash
+    mkdir -p .github/workflows/
+    cp ci-cd.yml .github/workflows/
+    ```
 
 ## Requirements
 

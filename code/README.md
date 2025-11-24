@@ -42,24 +42,24 @@ ChainFinity follows a microservices architecture with clear separation of concer
 ### Core Components
 
 1. **Backend Services**
-   - Portfolio Management Service
-   - Risk Assessment Service
-   - Market Data Service
-   - Analytics Service
-   - Authentication & Authorization
-   - Compliance Service
+    - Portfolio Management Service
+    - Risk Assessment Service
+    - Market Data Service
+    - Analytics Service
+    - Authentication & Authorization
+    - Compliance Service
 
 2. **Smart Contracts**
-   - Advanced Asset Vault
-   - Institutional Governance
-   - DeFi Protocol Integration
-   - Multi-signature Wallets
+    - Advanced Asset Vault
+    - Institutional Governance
+    - DeFi Protocol Integration
+    - Multi-signature Wallets
 
 3. **AI/ML Models**
-   - Risk Prediction Models
-   - Market Analysis
-   - Portfolio Optimization
-   - Fraud Detection
+    - Risk Prediction Models
+    - Market Analysis
+    - Portfolio Optimization
+    - Fraud Detection
 
 ## Key Features
 
@@ -99,47 +99,47 @@ ChainFinity is built on a modern, high-performance, and scalable technology stac
 
 1. **Clone the repository**
 
-   ```bash
-   git clone https://github.com/abrar2030/chainfinity.git
-   cd chainfinity
-   ```
+    ```bash
+    git clone https://github.com/abrar2030/chainfinity.git
+    cd chainfinity
+    ```
 
 2. **Set up the backend**
 
-   ```bash
-   cd code/backend
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   pip install -r requirements.txt
-   ```
+    ```bash
+    cd code/backend
+    python -m venv venv
+    source venv/bin/activate  # On Windows: venv\Scripts\activate
+    pip install -r requirements.txt
+    ```
 
 3. **Configure environment variables**
 
-   ```bash
-   cp .env.example .env
-   # Edit .env with your configuration
-   ```
+    ```bash
+    cp .env.example .env
+    # Edit .env with your configuration
+    ```
 
 4. **Set up the database**
 
-   ```bash
-   alembic upgrade head
-   ```
+    ```bash
+    alembic upgrade head
+    ```
 
 5. **Start the services**
 
-   ```bash
-   docker-compose up -d
-   python -m uvicorn main:app --reload
-   ```
+    ```bash
+    docker-compose up -d
+    python -m uvicorn main:app --reload
+    ```
 
 6. **Set up smart contracts**
-   ```bash
-   cd ../blockchain
-   npm install
-   npx hardhat compile
-   npx hardhat test
-   ```
+    ```bash
+    cd ../blockchain
+    npm install
+    npx hardhat compile
+    npx hardhat test
+    ```
 
 ### Quick Start with Docker
 
@@ -205,12 +205,12 @@ All API responses follow a consistent format:
 
 ```json
 {
-  "success": true,
-  "data": {
-    // Response data
-  },
-  "message": "Operation completed successfully",
-  "timestamp": "2024-01-15T10:30:00Z"
+    "success": true,
+    "data": {
+        // Response data
+    },
+    "message": "Operation completed successfully",
+    "timestamp": "2024-01-15T10:30:00Z"
 }
 ```
 
@@ -218,13 +218,13 @@ Error responses:
 
 ```json
 {
-  "success": false,
-  "error": {
-    "code": "PORTFOLIO_NOT_FOUND",
-    "message": "Portfolio with ID 123 not found",
-    "details": {}
-  },
-  "timestamp": "2024-01-15T10:30:00Z"
+    "success": false,
+    "error": {
+        "code": "PORTFOLIO_NOT_FOUND",
+        "message": "Portfolio with ID 123 not found",
+        "details": {}
+    },
+    "timestamp": "2024-01-15T10:30:00Z"
 }
 ```
 

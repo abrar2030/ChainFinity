@@ -1,9 +1,9 @@
 {
-  "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
-    "@openzeppelin/contracts": "^5.4.0",
-    "@openzeppelin/hardhat-upgrades": "^3.9.1",
-    "hardhat": "^3.0.0"
-  },
-  "type": "module"
+    "devDependencies": {
+        "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+        "@openzeppelin/contracts": "^5.4.0",
+        "@openzeppelin/hardhat-upgrades": "^3.9.1",
+        "hardhat": "^3.0.0"
+    },
+    "type": "module"
 }
