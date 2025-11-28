@@ -169,7 +169,3 @@ Options:
 3. **Backup your data** before running deployment scripts
 4. **Customize configuration** files to match your specific needs
 5. **Monitor logs** for any errors or warnings
-
-## Support
-
-For questions or issues with these scripts, please open an issue in the ChainFinity repository.

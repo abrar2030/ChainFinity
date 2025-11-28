@@ -856,33 +856,3 @@ gunzip -c /opt/backups/chainfinity/db_backup_YYYYMMDD_HHMMSS.sql.gz | psql -h lo
 tar -xzf /opt/backups/chainfinity/app_backup_YYYYMMDD_HHMMSS.tar.gz -C /
 sudo systemctl restart chainfinity
 ```
-
-## 📞 Support and Maintenance
-
-### Regular Maintenance Tasks
-
-1. **Daily**
-    - Monitor application logs
-    - Check system resources
-    - Verify backup completion
-
-2. **Weekly**
-    - Review security logs
-    - Update dependencies
-    - Performance analysis
-
-3. **Monthly**
-    - Security patches
-    - Database maintenance
-    - Capacity planning review
-
-### Getting Help
-
-- **Documentation**: Check the README.md and API documentation
-- **Logs**: Review application and system logs
-- **Monitoring**: Check Grafana dashboards
-- **Community**: Join the project Discord/Slack channel
-
----
-
-This deployment guide provides a comprehensive foundation for deploying ChainFinity backend in production environments. Always test deployments in staging environments before applying to production, and maintain regular backups and monitoring.
