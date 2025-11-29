@@ -1,5 +1,5 @@
 """
-Enhanced Risk Management Service for Financial Industry Applications
+Risk Management Service for Financial Industry Applications
 Comprehensive risk assessment, monitoring, and management with regulatory compliance
 """
 
@@ -16,6 +16,9 @@ from models.risk import RiskAssessment
 from models.user import RiskLevel, UserRiskProfile
 from scipy import stats
 from services.market.market_data_service import MarketDataService
+from code.ai_models.train_correlation_model import CorrelationPredictor
+import os
+import tensorflow as tf
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -61,6 +64,10 @@ class StressTestScenario:
 
 
 class RiskService:
+    # Path to the trained AI model
+    CORRELATION_MODEL_PATH = os.path.join(
+        os.path.dirname(__file__), "..", "..", "ai_models", "correlation_model.h5"
+    )
     """
     Comprehensive risk management service with advanced analytics
     """
@@ -68,6 +75,7 @@ class RiskService:
     def __init__(self, db: AsyncSession):
         self.db = db
         self.market_data_service = MarketDataService()
+        self.correlation_predictor = self._load_correlation_predictor()
 
         # Risk thresholds
         self.var_thresholds = {
@@ -112,6 +120,422 @@ class RiskService:
                 duration_days=14,
             ),
         ]
+
+    def _load_correlation_predictor(self) -> CorrelationPredictor:
+        """Loads the correlation prediction model."""
+        try:
+            # Check if the model file exists
+            if not os.path.exists(self.CORRELATION_MODEL_PATH):
+                logger.warning(
+                    f"Correlation model not found at {self.CORRELATION_MODEL_PATH}. Using a mock predictor."
+                )
+
+                # In a real application, you would train the model or raise an error.
+                # For this implementation, we will return a mock object.
+                class MockCorrelationPredictor:
+                    def predict(self, df):
+                        # Return a dummy correlation matrix (identity matrix)
+                        n_assets = 3  # Assume 3 assets for the mock
+                        corr = np.identity(n_assets)
+                        return corr
+
+                return MockCorrelationPredictor()
+
+            # Load the model and return the predictor
+            predictor = CorrelationPredictor()
+            predictor.model = tf.keras.models.load_model(self.CORRELATION_MODEL_PATH)
+            logger.info("Correlation prediction model loaded successfully.")
+            return predictor
+        except Exception as e:
+            logger.error(f"Failed to load correlation predictor: {e}")
+            raise
+
+    async def _get_portfolio_with_assets(
+        self, portfolio_id: UUID, user_id: UUID
+    ) -> Optional[Portfolio]:
+        """
+        Fetches the portfolio and its assets from the database.
+        (Placeholder for actual DB query)
+        """
+
+        # Mock implementation for demonstration
+        class MockAsset:
+            def __init__(self, symbol, quantity, price):
+                self.symbol = symbol
+                self.quantity = Decimal(str(quantity))
+                self.price = Decimal(str(price))
+
+        class MockPortfolio:
+            def __init__(self, assets):
+                self.assets = assets
+
+        if str(portfolio_id) == "00000000-0000-0000-0000-000000000001":
+            assets = [
+                MockAsset("BTC", 1.5, 60000),
+                MockAsset("ETH", 10, 3000),
+                MockAsset("SOL", 50, 150),
+            ]
+            return MockPortfolio(assets)
+        return None
+
+    async def _calculate_risk_metrics(self, portfolio: Portfolio) -> RiskMetricsData:
+        """
+        Calculates core risk metrics for the portfolio.
+        """
+        assets = portfolio.assets
+        if not assets:
+            return RiskMetricsData(
+                portfolio_id=portfolio.id,
+                var_1d=Decimal(0),
+                var_5d=Decimal(0),
+                var_30d=Decimal(0),
+                expected_shortfall=Decimal(0),
+                sharpe_ratio=Decimal(0),
+                sortino_ratio=Decimal(0),
+                max_drawdown=Decimal(0),
+                beta=Decimal(0),
+                alpha=Decimal(0),
+                volatility=Decimal(0),
+                correlation_matrix={},
+                concentration_risk=Decimal(0),
+                liquidity_risk=Decimal(0),
+                credit_risk=Decimal(0),
+                market_risk=Decimal(0),
+                operational_risk=Decimal(0),
+                overall_risk_score=Decimal(0),
+                risk_grade="N/A",
+                timestamp=datetime.utcnow(),
+            )
+
+        # 1. Get Market Data (Mocked)
+        # In a real scenario, this would fetch historical returns and prices
+        historical_days = 252  # 1 year of trading days
+        asset_symbols = [asset.symbol for asset in assets]
+        # Mock historical returns (daily)
+        np.random.seed(42)
+        returns_data = {
+            symbol: np.random.normal(0.0005, 0.01, historical_days)
+            for symbol in asset_symbols
+        }
+        returns_df = pd.DataFrame(returns_data)
+
+        # 2. Portfolio Value and Weights
+        portfolio_value = sum(asset.quantity * asset.price for asset in assets)
+        weights = np.array(
+            [(asset.quantity * asset.price) / portfolio_value for asset in assets]
+        )
+
+        # 3. Volatility and VaR (Historical Simulation Method)
+        portfolio_returns = returns_df.dot(weights)
+        portfolio_volatility = Decimal(
+            str(portfolio_returns.std() * np.sqrt(252))
+        )  # Annualized
+
+        # 99% VaR (Value at Risk)
+        confidence_level = 0.01
+        var_1d = Decimal(str(np.percentile(portfolio_returns, confidence_level) * -1))
+        var_5d = var_1d * Decimal(str(np.sqrt(5)))
+        var_30d = var_1d * Decimal(str(np.sqrt(30)))
+
+        # Expected Shortfall (ES)
+        es_returns = portfolio_returns[
+            portfolio_returns <= np.percentile(portfolio_returns, confidence_level)
+        ]
+        expected_shortfall = Decimal(str(es_returns.mean() * -1))
+
+        # 4. Sharpe Ratio (Mocked Risk-Free Rate)
+        risk_free_rate = 0.02  # 2%
+        annual_return = portfolio_returns.mean() * 252
+        sharpe_ratio = Decimal(
+            str(
+                (annual_return - risk_free_rate)
+                / portfolio_returns.std()
+                / np.sqrt(252)
+            )
+        )
+
+        # 5. Concentration Risk (Herfindahl-Hirschman Index - HHI)
+        hhi = sum(w**2 for w in weights)
+        concentration_risk = Decimal(str(hhi))
+
+        # 6. AI-Powered Correlation Matrix
+        # Create a mock DataFrame for the predictor (it expects 'asset_symbol' columns)
+        # In a real scenario, this would be the last 'sequence_length' days of price data
+        mock_price_data = {
+            f"asset_{s.lower()}": np.cumsum(r) + float(assets[i].price)
+            for i, (s, r) in enumerate(returns_data.items())
+        }
+        mock_price_df = pd.DataFrame(mock_price_data)
+
+        # The predictor expects a certain structure, which we'll mock here for the sake of the implementation
+        # Since we cannot train the model, the predictor will return the mock identity matrix
+        try:
+            predicted_corr_matrix_np = self.correlation_predictor.predict(mock_price_df)
+            correlation_matrix = {
+                s1: {
+                    s2: predicted_corr_matrix_np[i][j]
+                    for j, s2 in enumerate(asset_symbols)
+                }
+                for i, s1 in enumerate(asset_symbols)
+            }
+        except Exception as e:
+            logger.error(
+                f"Correlation prediction failed: {e}. Using default correlation."
+            )
+            correlation_matrix = {
+                s: {s: 1.0 for s in asset_symbols} for s in asset_symbols
+            }
+
+        # 7. Overall Risk Score (Simplified)
+        # Score is a weighted average of key metrics
+        overall_risk_score = (
+            (var_30d * Decimal("0.4"))
+            + (expected_shortfall * Decimal("0.3"))
+            + (concentration_risk * Decimal("0.3"))
+        )
+
+        return RiskMetricsData(
+            portfolio_id=portfolio.id,
+            var_1d=var_1d,
+            var_5d=var_5d,
+            var_30d=var_30d,
+            expected_shortfall=expected_shortfall,
+            sharpe_ratio=sharpe_ratio,
+            sortino_ratio=Decimal(0),  # Placeholder
+            max_drawdown=Decimal(0),  # Placeholder
+            beta=Decimal(0),  # Placeholder
+            alpha=Decimal(0),  # Placeholder
+            volatility=portfolio_volatility,
+            correlation_matrix=correlation_matrix,
+            concentration_risk=concentration_risk,
+            liquidity_risk=Decimal(0),  # Placeholder
+            credit_risk=Decimal(0),  # Placeholder
+            market_risk=var_30d,
+            operational_risk=Decimal(0),  # Placeholder
+            overall_risk_score=overall_risk_score,
+            risk_grade=self._determine_risk_grade(overall_risk_score),
+            timestamp=datetime.utcnow(),
+        )
+
+    async def _perform_stress_tests(self, portfolio: Portfolio) -> List[Dict[str, Any]]:
+        """
+        Simulates portfolio performance under various stress scenarios.
+        """
+        results = []
+        assets = portfolio.assets
+        portfolio_value = sum(asset.quantity * asset.price for asset in assets)
+
+        for scenario in self.stress_scenarios:
+            simulated_value = portfolio_value
+            total_loss = Decimal(0)
+
+            for asset in assets:
+                shock_percent = scenario.market_shocks.get(
+                    asset.symbol, scenario.market_shocks.get("all", 0)
+                )
+
+                # Apply shock to the asset's value
+                asset_value = asset.quantity * asset.price
+                loss_amount = asset_value * Decimal(str(shock_percent)) * Decimal("-1")
+
+                total_loss += loss_amount
+                simulated_value -= loss_amount
+
+            loss_percent = (
+                (total_loss / portfolio_value) * 100
+                if portfolio_value > 0
+                else Decimal(0)
+            )
+
+            results.append(
+                {
+                    "scenario_name": scenario.name,
+                    "description": scenario.description,
+                    "initial_value": float(portfolio_value),
+                    "simulated_value": float(simulated_value),
+                    "potential_loss_amount": float(total_loss),
+                    "potential_loss_percent": float(loss_percent),
+                }
+            )
+
+        return results
+
+    async def _calculate_overall_risk_score(
+        self, risk_metrics: RiskMetricsData, stress_test_results: List[Dict[str, Any]]
+    ) -> Decimal:
+        """
+        Calculates the final overall risk score based on metrics and stress tests.
+        """
+        # Max loss from stress tests
+        max_stress_loss_percent = (
+            max(
+                [Decimal(str(r["potential_loss_percent"])) for r in stress_test_results]
+            )
+            / 100
+        )
+
+        # Weighted combination: 60% from VaR/ES, 30% from Stress Test, 10% from Concentration
+        score = (
+            (risk_metrics.var_30d + risk_metrics.expected_shortfall)
+            / 2
+            * Decimal("0.6")
+            + max_stress_loss_percent * Decimal("0.3")
+            + risk_metrics.concentration_risk * Decimal("0.1")
+        )
+
+        # Normalize to a 0-100 scale (assuming max score is around 0.5 for a very high risk portfolio)
+        normalized_score = min(Decimal("100"), score * Decimal("200"))
+        return normalized_score
+
+    def _determine_risk_grade(self, overall_risk_score: Decimal) -> str:
+        """
+        Determines the risk grade based on the overall score.
+        """
+        if overall_risk_score < 20:
+            return "A (Very Low Risk)"
+        elif overall_risk_score < 40:
+            return "B (Low Risk)"
+        elif overall_risk_score < 60:
+            return "C (Moderate Risk)"
+        elif overall_risk_score < 80:
+            return "D (High Risk)"
+        else:
+            return "E (Very High Risk)"
+
+    async def _generate_risk_recommendations(
+        self, risk_metrics: RiskMetricsData, stress_test_results: List[Dict[str, Any]]
+    ) -> List[str]:
+        """
+        Generates actionable recommendations based on risk assessment.
+        """
+        recommendations = []
+
+        # Recommendation based on VaR
+        if risk_metrics.var_30d > Decimal("0.10"):  # 10% loss in 30 days
+            recommendations.append(
+                f"High 30-day VaR ({risk_metrics.var_30d:.2%}): Consider reducing exposure to volatile assets or increasing diversification."
+            )
+
+        # Recommendation based on Concentration Risk
+        if risk_metrics.concentration_risk > Decimal(
+            "0.5"
+        ):  # HHI > 0.5 (highly concentrated)
+            recommendations.append(
+                f"High Concentration Risk (HHI: {risk_metrics.concentration_risk:.2f}): Your portfolio is heavily reliant on a few assets. Diversify across more uncorrelated assets."
+            )
+
+        # Recommendation based on Stress Test
+        max_loss_scenario = max(
+            stress_test_results, key=lambda x: x["potential_loss_percent"]
+        )
+        if max_loss_scenario["potential_loss_percent"] > 30:
+            recommendations.append(
+                f"Extreme Stress Test Loss ({max_loss_scenario['potential_loss_percent']:.2f}% in '{max_loss_scenario['scenario_name']}'): Your portfolio is highly vulnerable to a major market event. Implement hedging strategies."
+            )
+
+        # Recommendation based on Sharpe Ratio
+        if risk_metrics.sharpe_ratio < Decimal("0.5"):
+            recommendations.append(
+                f"Low Sharpe Ratio ({risk_metrics.sharpe_ratio:.2f}): The risk-adjusted return is low. Seek assets with higher expected returns for the level of risk taken."
+            )
+
+        if not recommendations:
+            recommendations.append(
+                "Portfolio risk profile is healthy. Continue to monitor market conditions."
+            )
+
+        return recommendations
+
+    async def _get_user_risk_profile(self, user_id: UUID) -> Optional[UserRiskProfile]:
+        """Fetches the user's risk profile. (Placeholder)"""
+        return None
+
+    async def _calculate_user_risk_score(
+        self, assessment_data: Dict[str, Any]
+    ) -> Decimal:
+        """Calculates user risk tolerance score based on questionnaire. (Placeholder)"""
+        # Mock score calculation
+        return Decimal(str(assessment_data.get("risk_score", 50)))
+
+    def _determine_user_risk_level(self, risk_score: Decimal) -> RiskLevel:
+        """Determines user risk level. (Placeholder)"""
+        if risk_score < 30:
+            return RiskLevel.LOW
+        elif risk_score < 70:
+            return RiskLevel.MEDIUM
+        else:
+            return RiskLevel.HIGH
+
+    def _calculate_risk_based_limits(
+        self, risk_level: RiskLevel, assessment_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Calculates risk-based limits for the user. (Placeholder)"""
+        # Mock limits
+        if risk_level == RiskLevel.LOW:
+            return {
+                "daily_transaction_limit": Decimal("10000"),
+                "monthly_transaction_limit": Decimal("50000"),
+                "max_portfolio_value": Decimal("100000"),
+                "max_single_asset_allocation": Decimal("0.25"),
+            }
+        elif risk_level == RiskLevel.MEDIUM:
+            return {
+                "daily_transaction_limit": Decimal("50000"),
+                "monthly_transaction_limit": Decimal("250000"),
+                "max_portfolio_value": Decimal("500000"),
+                "max_single_asset_allocation": Decimal("0.50"),
+            }
+        else:
+            return {
+                "daily_transaction_limit": Decimal("100000"),
+                "monthly_transaction_limit": Decimal("500000"),
+                "max_portfolio_value": Decimal("1000000"),
+                "max_single_asset_allocation": Decimal("0.75"),
+            }
+
+    async def _get_latest_risk_assessment(
+        self, portfolio_id: UUID
+    ) -> Optional[RiskAssessment]:
+        """Fetches the latest risk assessment. (Placeholder)"""
+        return None
+
+    async def _check_risk_thresholds(
+        self,
+        current_metrics: RiskMetricsData,
+        latest_assessment: Optional[RiskAssessment],
+    ) -> List[Dict[str, Any]]:
+        """Checks for breaches of predefined risk thresholds. (Placeholder)"""
+        alerts = []
+        # Mock check
+        if current_metrics.overall_risk_score > Decimal("70"):
+            alerts.append(
+                {
+                    "type": "CRITICAL",
+                    "metric": "Overall Risk Score",
+                    "value": float(current_metrics.overall_risk_score),
+                    "threshold": 70,
+                    "message": "Overall risk score is critically high. Immediate review required.",
+                }
+            )
+        return alerts
+
+    async def _check_concentration_limits(
+        self, portfolio: Portfolio
+    ) -> List[Dict[str, Any]]:
+        """Checks for breaches of concentration limits. (Placeholder)"""
+        return []
+
+    async def _check_correlation_changes(
+        self, portfolio: Portfolio, latest_assessment: Optional[RiskAssessment]
+    ) -> List[Dict[str, Any]]:
+        """Checks for significant changes in asset correlation. (Placeholder)"""
+        return []
+
+    async def _generate_monitoring_recommendations(
+        self, current_metrics: RiskMetricsData
+    ) -> List[str]:
+        """Generates recommendations for real-time monitoring. (Placeholder)"""
+        return ["Monitor the 1-day VaR closely for sudden market movements."]
 
     async def assess_portfolio_risk(
         self, portfolio_id: UUID, user_id: UUID
