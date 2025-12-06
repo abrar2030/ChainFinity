@@ -3,7 +3,6 @@ Unit tests for authentication service
 """
 
 from datetime import datetime, timedelta
-
 import pytest
 from fastapi import HTTPException
 from models.user import UserStatus
@@ -15,21 +14,18 @@ class TestAuthService:
     """Test cases for AuthService"""
 
     @pytest.fixture
-    def auth_service(self):
+    def auth_service(self) -> Any:
         return AuthService()
 
     @pytest.fixture
-    def password_service(self):
+    def password_service(self) -> Any:
         return PasswordService()
 
     @pytest.mark.asyncio
     async def test_authenticate_user_success(self, auth_service, db_session, test_user):
         """Test successful user authentication"""
-        # Mock client info
         ip_address = "192.168.1.1"
         user_agent = "Test Browser"
-
-        # Authenticate user
         user, tokens = await auth_service.authenticate_user(
             db=db_session,
             email=test_user.email,
@@ -37,7 +33,6 @@ class TestAuthService:
             ip_address=ip_address,
             user_agent=user_agent,
         )
-
         assert user.id == test_user.id
         assert "access_token" in tokens
         assert "refresh_token" in tokens
@@ -54,7 +49,6 @@ class TestAuthService:
                 ip_address="192.168.1.1",
                 user_agent="Test Browser",
             )
-
         assert exc_info.value.status_code == 401
         assert "Invalid credentials" in str(exc_info.value.detail)
 
@@ -71,7 +65,6 @@ class TestAuthService:
                 ip_address="192.168.1.1",
                 user_agent="Test Browser",
             )
-
         assert exc_info.value.status_code == 401
         assert "Invalid credentials" in str(exc_info.value.detail)
 
@@ -80,11 +73,9 @@ class TestAuthService:
         self, auth_service, db_session, test_user
     ):
         """Test authentication with locked account"""
-        # Lock the account
         test_user.failed_login_attempts = 5
         test_user.locked_until = datetime.utcnow() + timedelta(hours=1)
         await db_session.commit()
-
         with pytest.raises(HTTPException) as exc_info:
             await auth_service.authenticate_user(
                 db=db_session,
@@ -93,7 +84,6 @@ class TestAuthService:
                 ip_address="192.168.1.1",
                 user_agent="Test Browser",
             )
-
         assert exc_info.value.status_code == 423
         assert "locked" in str(exc_info.value.detail).lower()
 
@@ -108,7 +98,6 @@ class TestAuthService:
             ip_address="192.168.1.1",
             user_agent="Test Browser",
         )
-
         assert user.email == "newuser@example.com"
         assert user.status == UserStatus.PENDING
         assert (
@@ -129,7 +118,6 @@ class TestAuthService:
                 ip_address="192.168.1.1",
                 user_agent="Test Browser",
             )
-
         assert exc_info.value.status_code == 400
         assert "already registered" in str(exc_info.value.detail)
 
@@ -144,8 +132,6 @@ class TestAuthService:
             ip_address="192.168.1.1",
             user_agent="Test Browser",
         )
-
-        # Verify password was changed
         password_service = PasswordService()
         assert password_service.verify_password(
             "NewPassword123!", test_user.hashed_password
@@ -168,37 +154,29 @@ class TestAuthService:
                 ip_address="192.168.1.1",
                 user_agent="Test Browser",
             )
-
         assert exc_info.value.status_code == 400
         assert "incorrect" in str(exc_info.value.detail).lower()
 
-    def test_password_hashing(self, password_service):
+    def test_password_hashing(self, password_service: Any) -> Any:
         """Test password hashing and verification"""
         password = "TestPassword123!"
         hashed = password_service.hash_password(password)
-
         assert hashed != password
         assert password_service.verify_password(password, hashed)
         assert not password_service.verify_password("wrongpassword", hashed)
 
-    def test_password_strength_validation(self, password_service):
+    def test_password_strength_validation(self, password_service: Any) -> Any:
         """Test password strength validation"""
-        # Valid passwords
         valid_passwords = ["TestPassword123!", "MySecure@Pass1", "Complex#Password9"]
-
         for password in valid_passwords:
-            # Should not raise exception
             password_service._validate_password_strength(password)
-
-        # Invalid passwords
         invalid_passwords = [
-            "short",  # Too short
-            "nouppercase123!",  # No uppercase
-            "NOLOWERCASE123!",  # No lowercase
-            "NoNumbers!",  # No numbers
-            "NoSpecialChars123",  # No special characters
+            "short",
+            "nouppercase123!",
+            "NOLOWERCASE123!",
+            "NoNumbers!",
+            "NoSpecialChars123",
         ]
-
         for password in invalid_passwords:
             with pytest.raises(ValueError):
                 password_service._validate_password_strength(password)

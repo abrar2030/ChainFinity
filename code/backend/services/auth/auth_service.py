@@ -6,7 +6,6 @@ import logging
 from datetime import datetime
 from typing import Dict, Optional, Tuple
 from uuid import UUID
-
 from config.database import cache
 from config.settings import settings
 from fastapi import HTTPException, status
@@ -14,7 +13,6 @@ from models.compliance import AuditEventType, AuditLog
 from models.user import User, UserStatus
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from .jwt_service import JWTService
 from .mfa_service import MFAService
 from .password_service import PasswordService
@@ -27,7 +25,7 @@ class AuthService:
     Comprehensive authentication service with security features
     """
 
-    def __init__(self):
+    def __init__(self) -> Any:
         self.jwt_service = JWTService()
         self.password_service = PasswordService()
         self.mfa_service = MFAService()
@@ -45,12 +43,10 @@ class AuthService:
         Authenticate user with comprehensive security checks
         """
         try:
-            # Get user by email
             result = await db.execute(
                 select(User).where(User.email == email, User.is_deleted == False)
             )
             user = result.scalar_one_or_none()
-
             if not user:
                 await self._log_failed_login(
                     db, email, ip_address, user_agent, "user_not_found"
@@ -59,8 +55,6 @@ class AuthService:
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Invalid credentials",
                 )
-
-            # Check if account is locked
             if user.is_locked():
                 await self._log_failed_login(
                     db, email, ip_address, user_agent, "account_locked"
@@ -69,8 +63,6 @@ class AuthService:
                     status_code=status.HTTP_423_LOCKED,
                     detail="Account is temporarily locked due to multiple failed login attempts",
                 )
-
-            # Check account status
             if not user.can_login():
                 await self._log_failed_login(
                     db, email, ip_address, user_agent, "account_inactive"
@@ -79,8 +71,6 @@ class AuthService:
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail="Account is not active or email not verified",
                 )
-
-            # Verify password
             if not self.password_service.verify_password(
                 password, user.hashed_password
             ):
@@ -93,8 +83,6 @@ class AuthService:
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Invalid credentials",
                 )
-
-            # Check MFA if enabled
             if user.mfa_enabled:
                 if not mfa_code:
                     raise HTTPException(
@@ -102,7 +90,6 @@ class AuthService:
                         detail="MFA code required",
                         headers={"X-MFA-Required": "true"},
                     )
-
                 if not self.mfa_service.verify_totp(user.mfa_secret, mfa_code):
                     user.increment_failed_login()
                     await db.commit()
@@ -113,22 +100,12 @@ class AuthService:
                         status_code=status.HTTP_401_UNAUTHORIZED,
                         detail="Invalid MFA code",
                     )
-
-            # Successful login
             user.record_login()
             await db.commit()
-
-            # Generate tokens
             tokens = await self._generate_tokens(user)
-
-            # Log successful login
             await self._log_successful_login(db, user, ip_address, user_agent)
-
-            # Cache user session
             await self._cache_user_session(user.id, tokens["access_token"])
-
-            return user, tokens
-
+            return (user, tokens)
         except HTTPException:
             raise
         except Exception as e:
@@ -152,33 +129,24 @@ class AuthService:
         Register new user with validation and security checks
         """
         try:
-            # Check if user already exists
             result = await db.execute(select(User).where(User.email == email))
             existing_user = result.scalar_one_or_none()
-
             if existing_user:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="Email already registered",
                 )
-
-            # Check wallet address uniqueness if provided
             if wallet_address:
                 result = await db.execute(
                     select(User).where(User.primary_wallet_address == wallet_address)
                 )
                 existing_wallet = result.scalar_one_or_none()
-
                 if existing_wallet:
                     raise HTTPException(
                         status_code=status.HTTP_400_BAD_REQUEST,
                         detail="Wallet address already registered",
                     )
-
-            # Hash password
             hashed_password = self.password_service.hash_password(password)
-
-            # Create user
             user = User(
                 email=email,
                 hashed_password=hashed_password,
@@ -186,16 +154,11 @@ class AuthService:
                 status=UserStatus.PENDING,
                 **kwargs,
             )
-
             db.add(user)
             await db.commit()
             await db.refresh(user)
-
-            # Log registration
             await self._log_user_registration(db, user, ip_address, user_agent)
-
             return user
-
         except HTTPException:
             raise
         except Exception as e:
@@ -212,40 +175,27 @@ class AuthService:
         Refresh access token using refresh token
         """
         try:
-            # Verify refresh token
             payload = self.jwt_service.verify_refresh_token(refresh_token)
             user_id = payload.get("sub")
-
             if not user_id:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Invalid refresh token",
                 )
-
-            # Get user
             result = await db.execute(
                 select(User).where(User.id == UUID(user_id), User.is_deleted == False)
             )
             user = result.scalar_one_or_none()
-
             if not user or not user.can_login():
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="User not found or inactive",
                 )
-
-            # Generate new tokens
             tokens = await self._generate_tokens(user)
-
-            # Update user activity
             user.last_activity_at = datetime.utcnow()
             await db.commit()
-
-            # Update cached session
             await self._cache_user_session(user.id, tokens["access_token"])
-
             return tokens
-
         except HTTPException:
             raise
         except Exception as e:
@@ -266,18 +216,11 @@ class AuthService:
         Logout user and invalidate tokens
         """
         try:
-            # Invalidate token in cache
             await self._invalidate_token(access_token)
-
-            # Remove user session from cache
             await cache.delete(f"user_session:{user.id}")
-
-            # Log logout
             await self._log_user_logout(db, user, ip_address, user_agent)
-
         except Exception as e:
             logger.error(f"Logout error: {e}")
-            # Don't raise exception for logout errors
 
     async def change_password(
         self,
@@ -292,7 +235,6 @@ class AuthService:
         Change user password with validation
         """
         try:
-            # Verify current password
             if not self.password_service.verify_password(
                 current_password, user.hashed_password
             ):
@@ -300,19 +242,11 @@ class AuthService:
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="Current password is incorrect",
                 )
-
-            # Hash new password
             new_hashed_password = self.password_service.hash_password(new_password)
-
-            # Update password
             user.hashed_password = new_hashed_password
             user.password_changed_at = datetime.utcnow()
-
             await db.commit()
-
-            # Log password change
             await self._log_password_change(db, user, ip_address, user_agent)
-
         except HTTPException:
             raise
         except Exception as e:
@@ -327,40 +261,29 @@ class AuthService:
         Verify and get current user from token
         """
         try:
-            # Check if token is blacklisted
             if await self._is_token_blacklisted(token):
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Token has been invalidated",
                 )
-
-            # Verify token
             payload = self.jwt_service.verify_access_token(token)
             user_id = payload.get("sub")
-
             if not user_id:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token"
                 )
-
-            # Get user from database
             result = await db.execute(
                 select(User).where(User.id == UUID(user_id), User.is_deleted == False)
             )
             user = result.scalar_one_or_none()
-
             if not user or not user.can_login():
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="User not found or inactive",
                 )
-
-            # Update last activity
             user.last_activity_at = datetime.utcnow()
             await db.commit()
-
             return user
-
         except HTTPException:
             raise
         except Exception as e:
@@ -368,8 +291,6 @@ class AuthService:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token"
             )
-
-    # Private helper methods
 
     async def _generate_tokens(self, user: User) -> Dict[str, str]:
         """Generate access and refresh tokens"""
@@ -379,7 +300,6 @@ class AuthService:
         refresh_token = self.jwt_service.create_refresh_token(
             data={"sub": str(user.id)}
         )
-
         return {
             "access_token": access_token,
             "refresh_token": refresh_token,
@@ -394,17 +314,14 @@ class AuthService:
             "access_token": access_token,
             "created_at": datetime.utcnow().isoformat(),
         }
-
         await cache.set(
             f"user_session:{user_id}", str(session_data), ttl=settings.redis.SESSION_TTL
         )
 
     async def _invalidate_token(self, token: str) -> None:
         """Add token to blacklist"""
-        # Extract token expiry from JWT
         payload = self.jwt_service.decode_token_without_verification(token)
         exp = payload.get("exp")
-
         if exp:
             ttl = exp - datetime.utcnow().timestamp()
             if ttl > 0:
@@ -432,7 +349,6 @@ class AuthService:
                 ),
             },
         )
-
         db.add(audit_log)
         await db.commit()
 
@@ -454,7 +370,6 @@ class AuthService:
             metadata={"email": email, "failure_reason": reason},
             is_suspicious=True,
         )
-
         db.add(audit_log)
         await db.commit()
 
@@ -472,7 +387,6 @@ class AuthService:
             entity_type="user",
             entity_id=str(user.id),
         )
-
         db.add(audit_log)
         await db.commit()
 
@@ -488,7 +402,6 @@ class AuthService:
             ip_address=ip_address,
             user_agent=user_agent,
         )
-
         db.add(audit_log)
         await db.commit()
 
@@ -506,6 +419,5 @@ class AuthService:
             entity_type="user",
             entity_id=str(user.id),
         )
-
         db.add(audit_log)
         await db.commit()

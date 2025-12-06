@@ -7,20 +7,17 @@ Create Date: 2025-01-08 12:00:00.000000
 """
 
 import uuid
-
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import postgresql
 
-# revision identifiers, used by Alembic.
 revision = "002"
 down_revision = "001"
 branch_labels = None
 depends_on = None
 
 
-def upgrade():
-    # Create portfolios table
+def upgrade() -> Any:
     op.create_table(
         "portfolios",
         sa.Column(
@@ -76,12 +73,9 @@ def upgrade():
         sa.Column("updated_by", postgresql.UUID(as_uuid=True), nullable=True),
         sa.Column("version", sa.Integer(), nullable=False, default=1),
     )
-
     op.create_index("idx_portfolio_user_id", "portfolios", ["user_id"])
     op.create_index("idx_portfolio_user_active", "portfolios", ["user_id", "is_active"])
     op.create_index("idx_portfolio_type", "portfolios", ["portfolio_type"])
-
-    # Create portfolio_assets table
     op.create_table(
         "portfolio_assets",
         sa.Column(
@@ -125,7 +119,6 @@ def upgrade():
         sa.Column("updated_by", postgresql.UUID(as_uuid=True), nullable=True),
         sa.Column("version", sa.Integer(), nullable=False, default=1),
     )
-
     op.create_index(
         "idx_portfolio_asset_portfolio_id", "portfolio_assets", ["portfolio_id"]
     )
@@ -136,8 +129,6 @@ def upgrade():
         "portfolio_assets",
         ["portfolio_id", "asset_symbol", "chain_id"],
     )
-
-    # Create transactions table
     op.create_table(
         "transactions",
         sa.Column(
@@ -223,7 +214,6 @@ def upgrade():
         sa.Column("updated_by", postgresql.UUID(as_uuid=True), nullable=True),
         sa.Column("version", sa.Integer(), nullable=False, default=1),
     )
-
     op.create_index("idx_transaction_user_id", "transactions", ["user_id"])
     op.create_index("idx_transaction_portfolio_id", "transactions", ["portfolio_id"])
     op.create_index("idx_transaction_hash", "transactions", ["transaction_hash"])
@@ -232,8 +222,6 @@ def upgrade():
     op.create_index("idx_transaction_chain", "transactions", ["chain_id"])
     op.create_index("idx_transaction_created", "transactions", ["created_at"])
     op.create_index("idx_transaction_compliance", "transactions", ["compliance_status"])
-
-    # Create blockchain_networks table
     op.create_table(
         "blockchain_networks",
         sa.Column(
@@ -263,7 +251,6 @@ def upgrade():
             onupdate=sa.func.now(),
         ),
     )
-
     op.create_index(
         "idx_blockchain_network_chain_id", "blockchain_networks", ["chain_id"]
     )
@@ -272,13 +259,11 @@ def upgrade():
     )
 
 
-def downgrade():
+def downgrade() -> Any:
     op.drop_table("blockchain_networks")
     op.drop_table("transactions")
     op.drop_table("portfolio_assets")
     op.drop_table("portfolios")
-
-    # Drop enums
     op.execute("DROP TYPE IF EXISTS portfoliotype")
     op.execute("DROP TYPE IF EXISTS assettype")
     op.execute("DROP TYPE IF EXISTS transactiontype")

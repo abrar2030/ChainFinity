@@ -5,9 +5,7 @@ Authentication and authorization schemas
 import re
 from datetime import datetime
 from typing import List, Optional
-
 from pydantic import BaseModel, EmailStr, Field, validator
-
 from .base import BaseSchema
 
 
@@ -22,8 +20,8 @@ class LoginRequest(BaseModel):
     )
 
     @validator("mfa_code")
-    def validate_mfa_code(cls, v):
-        if v is not None and not re.match(r"^\d{6}$", v):
+    def validate_mfa_code(cls: Any, v: Any) -> Any:
+        if v is not None and (not re.match("^\\d{6}$", v)):
             raise ValueError("MFA code must be 6 digits")
         return v
 
@@ -42,45 +40,40 @@ class RegisterRequest(BaseModel):
     )
 
     @validator("password")
-    def validate_password(cls, v):
+    def validate_password(cls: Any, v: Any) -> Any:
         """Validate password strength"""
         if len(v) < 8:
             raise ValueError("Password must be at least 8 characters long")
-
-        if not re.search(r"[A-Z]", v):
+        if not re.search("[A-Z]", v):
             raise ValueError("Password must contain at least one uppercase letter")
-
-        if not re.search(r"[a-z]", v):
+        if not re.search("[a-z]", v):
             raise ValueError("Password must contain at least one lowercase letter")
-
-        if not re.search(r"\d", v):
+        if not re.search("\\d", v):
             raise ValueError("Password must contain at least one digit")
-
-        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', v):
+        if not re.search('[!@#$%^&*(),.?":{}|<>]', v):
             raise ValueError("Password must contain at least one special character")
-
         return v
 
     @validator("confirm_password")
-    def validate_password_match(cls, v, values):
+    def validate_password_match(cls: Any, v: Any, values: Any) -> Any:
         if "password" in values and v != values["password"]:
             raise ValueError("Passwords do not match")
         return v
 
     @validator("wallet_address")
-    def validate_wallet_address(cls, v):
-        if v is not None and not re.match(r"^0x[a-fA-F0-9]{40}$", v):
+    def validate_wallet_address(cls: Any, v: Any) -> Any:
+        if v is not None and (not re.match("^0x[a-fA-F0-9]{40}$", v)):
             raise ValueError("Invalid Ethereum wallet address format")
         return v
 
     @validator("terms_accepted")
-    def validate_terms_accepted(cls, v):
+    def validate_terms_accepted(cls: Any, v: Any) -> Any:
         if not v:
             raise ValueError("Terms and conditions must be accepted")
         return v
 
     @validator("privacy_accepted")
-    def validate_privacy_accepted(cls, v):
+    def validate_privacy_accepted(cls: Any, v: Any) -> Any:
         if not v:
             raise ValueError("Privacy policy must be accepted")
         return v
@@ -94,27 +87,22 @@ class PasswordChangeRequest(BaseModel):
     confirm_password: str = Field(..., description="New password confirmation")
 
     @validator("new_password")
-    def validate_new_password(cls, v):
+    def validate_new_password(cls: Any, v: Any) -> Any:
         """Validate new password strength"""
         if len(v) < 8:
             raise ValueError("Password must be at least 8 characters long")
-
-        if not re.search(r"[A-Z]", v):
+        if not re.search("[A-Z]", v):
             raise ValueError("Password must contain at least one uppercase letter")
-
-        if not re.search(r"[a-z]", v):
+        if not re.search("[a-z]", v):
             raise ValueError("Password must contain at least one lowercase letter")
-
-        if not re.search(r"\d", v):
+        if not re.search("\\d", v):
             raise ValueError("Password must contain at least one digit")
-
-        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', v):
+        if not re.search('[!@#$%^&*(),.?":{}|<>]', v):
             raise ValueError("Password must contain at least one special character")
-
         return v
 
     @validator("confirm_password")
-    def validate_password_match(cls, v, values):
+    def validate_password_match(cls: Any, v: Any, values: Any) -> Any:
         if "new_password" in values and v != values["new_password"]:
             raise ValueError("Passwords do not match")
         return v
@@ -134,27 +122,22 @@ class PasswordResetConfirm(BaseModel):
     confirm_password: str = Field(..., description="New password confirmation")
 
     @validator("new_password")
-    def validate_new_password(cls, v):
+    def validate_new_password(cls: Any, v: Any) -> Any:
         """Validate new password strength"""
         if len(v) < 8:
             raise ValueError("Password must be at least 8 characters long")
-
-        if not re.search(r"[A-Z]", v):
+        if not re.search("[A-Z]", v):
             raise ValueError("Password must contain at least one uppercase letter")
-
-        if not re.search(r"[a-z]", v):
+        if not re.search("[a-z]", v):
             raise ValueError("Password must contain at least one lowercase letter")
-
-        if not re.search(r"\d", v):
+        if not re.search("\\d", v):
             raise ValueError("Password must contain at least one digit")
-
-        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', v):
+        if not re.search('[!@#$%^&*(),.?":{}|<>]', v):
             raise ValueError("Password must contain at least one special character")
-
         return v
 
     @validator("confirm_password")
-    def validate_password_match(cls, v, values):
+    def validate_password_match(cls: Any, v: Any, values: Any) -> Any:
         if "new_password" in values and v != values["new_password"]:
             raise ValueError("Passwords do not match")
         return v
@@ -182,8 +165,8 @@ class MFAVerifyRequest(BaseModel):
     code: str = Field(..., description="TOTP code from authenticator app")
 
     @validator("code")
-    def validate_mfa_code(cls, v):
-        if not re.match(r"^\d{6}$", v):
+    def validate_mfa_code(cls: Any, v: Any) -> Any:
+        if not re.match("^\\d{6}$", v):
             raise ValueError("MFA code must be 6 digits")
         return v
 
@@ -195,8 +178,8 @@ class MFADisableRequest(BaseModel):
     code: str = Field(..., description="TOTP code from authenticator app")
 
     @validator("code")
-    def validate_mfa_code(cls, v):
-        if not re.match(r"^\d{6}$", v):
+    def validate_mfa_code(cls: Any, v: Any) -> Any:
+        if not re.match("^\\d{6}$", v):
             raise ValueError("MFA code must be 6 digits")
         return v
 
@@ -241,7 +224,7 @@ class APIKeyResponse(BaseSchema):
     id: str
     name: str
     description: Optional[str]
-    key_prefix: str  # Only show first 8 characters
+    key_prefix: str
     scopes: List[str]
     is_active: bool
     expires_at: Optional[datetime]

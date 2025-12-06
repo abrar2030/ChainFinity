@@ -7,23 +7,18 @@ Create Date: 2025-01-08 12:00:00.000000
 """
 
 import uuid
-
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import postgresql
 
-# revision identifiers, used by Alembic.
 revision = "001"
 down_revision = None
 branch_labels = None
 depends_on = None
 
 
-def upgrade():
-    # Create UUID extension
+def upgrade() -> Any:
     op.execute('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
-
-    # Create users table
     op.create_table(
         "users",
         sa.Column(
@@ -79,8 +74,6 @@ def upgrade():
         sa.Column("updated_by", postgresql.UUID(as_uuid=True), nullable=True),
         sa.Column("version", sa.Integer(), nullable=False, default=1),
     )
-
-    # Create indexes for users table
     op.create_index("idx_user_email", "users", ["email"])
     op.create_index("idx_user_email_status", "users", ["email", "status"])
     op.create_index(
@@ -88,8 +81,6 @@ def upgrade():
     )
     op.create_index("idx_user_created_status", "users", ["created_at", "status"])
     op.create_index("idx_user_status", "users", ["status"])
-
-    # Create user_profiles table
     op.create_table(
         "user_profiles",
         sa.Column(
@@ -141,10 +132,7 @@ def upgrade():
         sa.Column("updated_by", postgresql.UUID(as_uuid=True), nullable=True),
         sa.Column("version", sa.Integer(), nullable=False, default=1),
     )
-
     op.create_index("idx_user_profile_user_id", "user_profiles", ["user_id"])
-
-    # Create user_kyc table
     op.create_table(
         "user_kyc",
         sa.Column(
@@ -214,11 +202,8 @@ def upgrade():
         sa.Column("updated_by", postgresql.UUID(as_uuid=True), nullable=True),
         sa.Column("version", sa.Integer(), nullable=False, default=1),
     )
-
     op.create_index("idx_user_kyc_user_id", "user_kyc", ["user_id"])
     op.create_index("idx_user_kyc_status", "user_kyc", ["status"])
-
-    # Create user_risk_profiles table
     op.create_table(
         "user_risk_profiles",
         sa.Column(
@@ -268,20 +253,17 @@ def upgrade():
         sa.Column("updated_by", postgresql.UUID(as_uuid=True), nullable=True),
         sa.Column("version", sa.Integer(), nullable=False, default=1),
     )
-
     op.create_index("idx_user_risk_profile_user_id", "user_risk_profiles", ["user_id"])
     op.create_index(
         "idx_user_risk_profile_risk_level", "user_risk_profiles", ["risk_level"]
     )
 
 
-def downgrade():
+def downgrade() -> Any:
     op.drop_table("user_risk_profiles")
     op.drop_table("user_kyc")
     op.drop_table("user_profiles")
     op.drop_table("users")
-
-    # Drop enums
     op.execute("DROP TYPE IF EXISTS userstatus")
     op.execute("DROP TYPE IF EXISTS kycstatus")
     op.execute("DROP TYPE IF EXISTS risklevel")

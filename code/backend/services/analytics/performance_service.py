@@ -9,7 +9,6 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Any, Dict, List, Optional, Tuple
 from uuid import UUID
-
 import numpy as np
 from models.portfolio import Portfolio
 from services.market.market_data_service import MarketDataService
@@ -69,17 +68,15 @@ class PerformanceService:
     Comprehensive performance analytics service with institutional-grade metrics
     """
 
-    def __init__(self, db: AsyncSession):
+    def __init__(self, db: AsyncSession) -> Any:
         self.db = db
         self.market_data_service = MarketDataService()
-
-        # Benchmark mappings
         self.benchmarks = {
             "crypto": "BTC",
             "equity": "SPY",
             "bond": "AGG",
             "commodity": "DJP",
-            "mixed": "60/40",  # 60% equity, 40% bonds
+            "mixed": "60/40",
         }
 
     async def calculate_performance_metrics(
@@ -93,30 +90,20 @@ class PerformanceService:
         Calculate comprehensive performance metrics for a portfolio
         """
         try:
-            # Get portfolio
             portfolio = await self._get_portfolio(portfolio_id, user_id)
             if not portfolio:
                 raise ValueError("Portfolio not found")
-
-            # Determine date range
             start_date, end_date = self._get_date_range(period)
-
-            # Get portfolio returns
             portfolio_returns = await self._get_portfolio_returns(
                 portfolio, start_date, end_date
             )
-
             if not portfolio_returns:
                 raise ValueError("Insufficient data for performance calculation")
-
-            # Get benchmark returns if specified
             benchmark_returns = None
             if benchmark:
                 benchmark_returns = await self._get_benchmark_returns(
                     benchmark, start_date, end_date
                 )
-
-            # Calculate performance metrics
             performance_data = await self._calculate_all_metrics(
                 portfolio_id,
                 period,
@@ -125,9 +112,7 @@ class PerformanceService:
                 portfolio_returns,
                 benchmark_returns,
             )
-
             return performance_data
-
         except Exception as e:
             logger.error(f"Error calculating performance metrics: {e}")
             raise
@@ -142,32 +127,21 @@ class PerformanceService:
             portfolio = await self._get_portfolio(portfolio_id, user_id)
             if not portfolio:
                 raise ValueError("Portfolio not found")
-
-            # Calculate performance metrics
             performance_data = await self.calculate_performance_metrics(
                 portfolio_id, user_id, period
             )
-
-            # Get benchmark comparison
             benchmark_comparison = await self._get_benchmark_comparison(
                 portfolio, performance_data, period
             )
-
-            # Perform attribution analysis
             attribution_analysis = await self._perform_attribution_analysis(
                 portfolio, period
             )
-
-            # Calculate rolling performance
             rolling_performance = await self._calculate_rolling_performance(
                 portfolio, period
             )
-
-            # Generate insights and recommendations
             insights = await self._generate_performance_insights(
                 performance_data, benchmark_comparison, attribution_analysis
             )
-
             report = {
                 "portfolio_id": str(portfolio_id),
                 "report_date": datetime.utcnow().isoformat(),
@@ -196,9 +170,7 @@ class PerformanceService:
                     "downside_capture": float(performance_data.downside_capture),
                 },
             }
-
             return report
-
         except Exception as e:
             logger.error(f"Error generating performance report: {e}")
             raise
@@ -213,10 +185,7 @@ class PerformanceService:
             portfolio = await self._get_portfolio(portfolio_id, user_id)
             if not portfolio:
                 raise ValueError("Portfolio not found")
-
             start_date, end_date = self._get_date_range(period)
-
-            # Get portfolio and benchmark weights and returns
             portfolio_weights = await self._get_portfolio_weights(
                 portfolio, start_date, end_date
             )
@@ -226,53 +195,43 @@ class PerformanceService:
             asset_returns = await self._get_asset_returns(
                 portfolio, start_date, end_date
             )
-
-            # Calculate attribution effects
             asset_allocation_effect = {}
             security_selection_effect = {}
             interaction_effect = {}
-
             total_aa_effect = Decimal("0.0")
             total_ss_effect = Decimal("0.0")
             total_interaction = Decimal("0.0")
-
             for asset in portfolio_weights:
                 if asset in benchmark_weights and asset in asset_returns:
-                    wp = portfolio_weights[asset]  # Portfolio weight
-                    wb = benchmark_weights[asset]  # Benchmark weight
-                    rp = asset_returns[asset]["portfolio"]  # Portfolio return
-                    rb = asset_returns[asset]["benchmark"]  # Benchmark return
-
-                    # Asset Allocation Effect: (wp - wb) * rb
+                    wp = portfolio_weights[asset]
+                    wb = benchmark_weights[asset]
+                    rp = asset_returns[asset]["portfolio"]
+                    rb = asset_returns[asset]["benchmark"]
                     aa_effect = (wp - wb) * rb
                     asset_allocation_effect[asset] = aa_effect
                     total_aa_effect += aa_effect
-
-                    # Security Selection Effect: wb * (rp - rb)
                     ss_effect = wb * (rp - rb)
                     security_selection_effect[asset] = ss_effect
                     total_ss_effect += ss_effect
-
-                    # Interaction Effect: (wp - wb) * (rp - rb)
                     int_effect = (wp - wb) * (rp - rb)
                     interaction_effect[asset] = int_effect
                     total_interaction += int_effect
-
-            # Calculate total returns
             portfolio_return = sum(
-                portfolio_weights[asset] * asset_returns[asset]["portfolio"]
-                for asset in portfolio_weights
-                if asset in asset_returns
+                (
+                    portfolio_weights[asset] * asset_returns[asset]["portfolio"]
+                    for asset in portfolio_weights
+                    if asset in asset_returns
+                )
             )
             benchmark_return = sum(
-                benchmark_weights[asset] * asset_returns[asset]["benchmark"]
-                for asset in benchmark_weights
-                if asset in asset_returns
+                (
+                    benchmark_weights[asset] * asset_returns[asset]["benchmark"]
+                    for asset in benchmark_weights
+                    if asset in asset_returns
+                )
             )
-
             total_attribution = total_aa_effect + total_ss_effect + total_interaction
             excess_return = portfolio_return - benchmark_return
-
             return AttributionResult(
                 asset_allocation=asset_allocation_effect,
                 security_selection=security_selection_effect,
@@ -282,7 +241,6 @@ class PerformanceService:
                 portfolio_return=portfolio_return,
                 excess_return=excess_return,
             )
-
         except Exception as e:
             logger.error(f"Error calculating attribution analysis: {e}")
             raise
@@ -301,23 +259,16 @@ class PerformanceService:
             portfolio = await self._get_portfolio(portfolio_id, user_id)
             if not portfolio:
                 raise ValueError("Portfolio not found")
-
             start_date, end_date = self._get_date_range(period)
-
-            # Get daily portfolio values
             daily_values = await self._get_daily_portfolio_values(
                 portfolio, start_date, end_date
             )
-
             if len(daily_values) < window_days:
                 raise ValueError("Insufficient data for rolling calculation")
-
             rolling_metrics = []
-
             for i in range(window_days, len(daily_values)):
                 window_values = daily_values[i - window_days : i]
                 window_returns = self._calculate_returns_from_values(window_values)
-
                 if window_returns:
                     metrics = {
                         "date": daily_values[i]["date"].isoformat(),
@@ -328,9 +279,7 @@ class PerformanceService:
                         "var_95": self._calculate_var(window_returns, 0.95),
                     }
                     rolling_metrics.append(metrics)
-
             return rolling_metrics
-
         except Exception as e:
             logger.error(f"Error calculating rolling metrics: {e}")
             raise
@@ -342,19 +291,13 @@ class PerformanceService:
         Compare portfolio performance with peer portfolios
         """
         try:
-            # Get portfolio performance
             portfolio_performance = await self.calculate_performance_metrics(
                 portfolio_id, user_id, period
             )
-
-            # Get peer portfolios (similar risk/strategy)
             peer_portfolios = await self._get_peer_portfolios(portfolio_id, user_id)
-
-            # Calculate peer statistics
             peer_returns = []
             peer_sharpe_ratios = []
             peer_volatilities = []
-
             for peer_id in peer_portfolios:
                 try:
                     peer_performance = await self.calculate_performance_metrics(
@@ -365,19 +308,15 @@ class PerformanceService:
                     peer_volatilities.append(float(peer_performance.volatility))
                 except Exception:
                     continue
-
             if not peer_returns:
                 return {
                     "portfolio_id": str(portfolio_id),
                     "period": period,
                     "peer_comparison": "No peer data available",
                 }
-
-            # Calculate percentiles
             portfolio_return = float(portfolio_performance.total_return)
             portfolio_sharpe = float(portfolio_performance.sharpe_ratio)
             portfolio_vol = float(portfolio_performance.volatility)
-
             return_percentile = self._calculate_percentile(
                 portfolio_return, peer_returns
             )
@@ -387,7 +326,6 @@ class PerformanceService:
             vol_percentile = self._calculate_percentile(
                 portfolio_vol, peer_volatilities
             )
-
             return {
                 "portfolio_id": str(portfolio_id),
                 "period": period,
@@ -417,12 +355,9 @@ class PerformanceService:
                     },
                 },
             }
-
         except Exception as e:
             logger.error(f"Error comparing with peers: {e}")
             raise
-
-    # Private helper methods
 
     async def _get_portfolio(
         self, portfolio_id: UUID, user_id: Optional[UUID]
@@ -431,7 +366,6 @@ class PerformanceService:
         conditions = [Portfolio.id == portfolio_id, Portfolio.is_deleted == False]
         if user_id:
             conditions.append(Portfolio.user_id == user_id)
-
         stmt = select(Portfolio).where(and_(*conditions))
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
@@ -439,7 +373,6 @@ class PerformanceService:
     def _get_date_range(self, period: str) -> Tuple[datetime, datetime]:
         """Get start and end dates for period"""
         end_date = datetime.utcnow()
-
         if period == "1d":
             start_date = end_date - timedelta(days=1)
         elif period == "7d":
@@ -455,34 +388,27 @@ class PerformanceService:
         elif period == "5y":
             start_date = end_date - timedelta(days=1825)
         else:
-            start_date = end_date - timedelta(days=365)  # Default to 1 year
-
-        return start_date, end_date
+            start_date = end_date - timedelta(days=365)
+        return (start_date, end_date)
 
     async def _get_portfolio_returns(
         self, portfolio: Portfolio, start_date: datetime, end_date: datetime
     ) -> List[float]:
         """Get portfolio returns for the specified period"""
         try:
-            # Get portfolio snapshots or calculate from asset prices
             daily_values = await self._get_daily_portfolio_values(
                 portfolio, start_date, end_date
             )
-
             if len(daily_values) < 2:
                 return []
-
             returns = []
             for i in range(1, len(daily_values)):
                 prev_value = daily_values[i - 1]["value"]
                 curr_value = daily_values[i]["value"]
-
                 if prev_value > 0:
                     daily_return = (curr_value - prev_value) / prev_value
                     returns.append(daily_return)
-
             return returns
-
         except Exception as e:
             logger.error(f"Error getting portfolio returns: {e}")
             return []
@@ -492,23 +418,15 @@ class PerformanceService:
     ) -> List[Dict[str, Any]]:
         """Get daily portfolio values"""
         try:
-            # This would ideally get from portfolio snapshots table
-            # For now, generate mock daily values
             daily_values = []
             current_date = start_date
-            base_value = 100000.0  # Starting value
-
+            base_value = 100000.0
             while current_date <= end_date:
-                # Simulate daily portfolio value changes
-                daily_change = np.random.normal(0.001, 0.02)  # 0.1% mean, 2% volatility
+                daily_change = np.random.normal(0.001, 0.02)
                 base_value *= 1 + daily_change
-
                 daily_values.append({"date": current_date, "value": base_value})
-
                 current_date += timedelta(days=1)
-
             return daily_values
-
         except Exception as e:
             logger.error(f"Error getting daily portfolio values: {e}")
             return []
@@ -518,25 +436,19 @@ class PerformanceService:
     ) -> List[float]:
         """Get benchmark returns for the specified period"""
         try:
-            # Get historical data for benchmark
             historical_data = await self.market_data_service.get_historical_data(
                 benchmark, start_date, end_date
             )
-
             if len(historical_data) < 2:
                 return []
-
             returns = []
             for i in range(1, len(historical_data)):
                 prev_price = historical_data[i - 1].close_price
                 curr_price = historical_data[i].close_price
-
                 if prev_price > 0:
                     daily_return = float((curr_price - prev_price) / prev_price)
                     returns.append(daily_return)
-
             return returns
-
         except Exception as e:
             logger.error(f"Error getting benchmark returns: {e}")
             return []
@@ -551,27 +463,16 @@ class PerformanceService:
         benchmark_returns: Optional[List[float]],
     ) -> PerformanceData:
         """Calculate all performance metrics"""
-
         returns_array = np.array(portfolio_returns)
-
-        # Basic return metrics
         total_return = self._calculate_total_return(portfolio_returns)
         annualized_return = self._calculate_annualized_return(portfolio_returns, period)
         volatility = self._calculate_volatility(portfolio_returns)
-
-        # Risk-adjusted metrics
         sharpe_ratio = self._calculate_sharpe_ratio(portfolio_returns)
         sortino_ratio = self._calculate_sortino_ratio(portfolio_returns)
         calmar_ratio = self._calculate_calmar_ratio(portfolio_returns)
-
-        # Drawdown metrics
         max_drawdown = self._calculate_max_drawdown(portfolio_returns)
-
-        # Risk metrics
         var_95 = self._calculate_var(portfolio_returns, 0.95)
         cvar_95 = self._calculate_cvar(portfolio_returns, 0.95)
-
-        # Benchmark-relative metrics
         alpha = Decimal("0.0")
         beta = Decimal("1.0")
         information_ratio = Decimal("0.0")
@@ -583,15 +484,10 @@ class PerformanceService:
         downside_capture = Decimal("100.0")
         benchmark_return = None
         excess_return = None
-
         if benchmark_returns and len(benchmark_returns) == len(portfolio_returns):
             benchmark_array = np.array(benchmark_returns)
-
-            # Calculate benchmark metrics
             benchmark_return = self._calculate_total_return(benchmark_returns)
             excess_return = total_return - benchmark_return
-
-            # Beta and Alpha
             if np.var(benchmark_array) > 0:
                 beta = Decimal(
                     str(
@@ -607,14 +503,10 @@ class PerformanceService:
                         - Decimal("0.02")
                     )
                 )
-
-            # Information Ratio and Tracking Error
             excess_returns = returns_array - benchmark_array
             tracking_error = Decimal(str(np.std(excess_returns) * np.sqrt(252)))
             if tracking_error > 0:
                 information_ratio = excess_return / tracking_error
-
-            # R-squared
             if len(returns_array) > 1 and len(benchmark_array) > 1:
                 correlation = np.corrcoef(returns_array, benchmark_array)[0, 1]
                 r_squared = (
@@ -622,23 +514,14 @@ class PerformanceService:
                     if not np.isnan(correlation)
                     else Decimal("0.0")
                 )
-
-            # Treynor Ratio
             if beta != 0:
                 treynor_ratio = (annualized_return - Decimal("0.02")) / beta
-
-            # Jensen's Alpha
             jensen_alpha = alpha
-
-            # Upside/Downside Capture
             upside_capture, downside_capture = self._calculate_capture_ratios(
                 portfolio_returns, benchmark_returns
             )
-
-        # Win rate and profit factor
         win_rate = self._calculate_win_rate(portfolio_returns)
         profit_factor = self._calculate_profit_factor(portfolio_returns)
-
         return PerformanceData(
             portfolio_id=portfolio_id,
             period=period,
@@ -672,11 +555,9 @@ class PerformanceService:
         """Calculate total return"""
         if not returns:
             return Decimal("0.0")
-
         cumulative_return = 1.0
         for ret in returns:
             cumulative_return *= 1 + ret
-
         return Decimal(str(cumulative_return - 1))
 
     def _calculate_annualized_return(
@@ -685,10 +566,7 @@ class PerformanceService:
         """Calculate annualized return"""
         if not returns:
             return Decimal("0.0")
-
         total_return = self._calculate_total_return(returns)
-
-        # Determine number of years
         if period == "1d":
             years = 1 / 365
         elif period == "7d":
@@ -704,11 +582,9 @@ class PerformanceService:
         elif period == "5y":
             years = 5
         else:
-            years = len(returns) / 252  # Trading days
-
+            years = len(returns) / 252
         if years <= 0:
             return total_return
-
         annualized = (1 + float(total_return)) ** (1 / years) - 1
         return Decimal(str(annualized))
 
@@ -716,11 +592,9 @@ class PerformanceService:
         """Calculate annualized volatility"""
         if not returns:
             return Decimal("0.0")
-
         returns_array = np.array(returns)
         daily_vol = np.std(returns_array)
-        annualized_vol = daily_vol * np.sqrt(252)  # 252 trading days
-
+        annualized_vol = daily_vol * np.sqrt(252)
         return Decimal(str(annualized_vol))
 
     def _calculate_sharpe_ratio(
@@ -729,13 +603,10 @@ class PerformanceService:
         """Calculate Sharpe ratio"""
         if not returns:
             return Decimal("0.0")
-
         returns_array = np.array(returns)
-        excess_returns = returns_array - (risk_free_rate / 252)  # Daily risk-free rate
-
+        excess_returns = returns_array - risk_free_rate / 252
         if np.std(excess_returns) == 0:
             return Decimal("0.0")
-
         sharpe = np.mean(excess_returns) / np.std(excess_returns) * np.sqrt(252)
         return Decimal(str(sharpe))
 
@@ -745,18 +616,14 @@ class PerformanceService:
         """Calculate Sortino ratio"""
         if not returns:
             return Decimal("0.0")
-
         returns_array = np.array(returns)
-        excess_returns = returns_array - (risk_free_rate / 252)
+        excess_returns = returns_array - risk_free_rate / 252
         downside_returns = excess_returns[excess_returns < 0]
-
         if len(downside_returns) == 0:
             return Decimal("0.0")
-
         downside_deviation = np.std(downside_returns)
         if downside_deviation == 0:
             return Decimal("0.0")
-
         sortino = np.mean(excess_returns) / downside_deviation * np.sqrt(252)
         return Decimal(str(sortino))
 
@@ -764,48 +631,39 @@ class PerformanceService:
         """Calculate maximum drawdown"""
         if not returns:
             return Decimal("0.0")
-
         returns_array = np.array(returns)
         cumulative_returns = np.cumprod(1 + returns_array)
         running_max = np.maximum.accumulate(cumulative_returns)
         drawdown = (cumulative_returns - running_max) / running_max
         max_drawdown = np.min(drawdown)
-
         return Decimal(str(abs(max_drawdown)))
 
     def _calculate_calmar_ratio(self, returns: List[float]) -> Decimal:
         """Calculate Calmar ratio"""
         annualized_return = self._calculate_annualized_return(returns, "1y")
         max_drawdown = self._calculate_max_drawdown(returns)
-
         if max_drawdown == 0:
             return Decimal("0.0")
-
         return annualized_return / max_drawdown
 
     def _calculate_var(self, returns: List[float], confidence_level: float) -> Decimal:
         """Calculate Value at Risk"""
         if not returns:
             return Decimal("0.0")
-
         returns_array = np.array(returns)
         percentile = (1 - confidence_level) * 100
         var = np.percentile(returns_array, percentile)
-
         return Decimal(str(abs(var)))
 
     def _calculate_cvar(self, returns: List[float], confidence_level: float) -> Decimal:
         """Calculate Conditional Value at Risk"""
         if not returns:
             return Decimal("0.0")
-
         returns_array = np.array(returns)
         percentile = (1 - confidence_level) * 100
         var_threshold = np.percentile(returns_array, percentile)
-
         tail_returns = returns_array[returns_array <= var_threshold]
         cvar = np.mean(tail_returns) if len(tail_returns) > 0 else var_threshold
-
         return Decimal(str(abs(cvar)))
 
     def _calculate_capture_ratios(
@@ -813,63 +671,51 @@ class PerformanceService:
     ) -> Tuple[Decimal, Decimal]:
         """Calculate upside and downside capture ratios"""
         if len(portfolio_returns) != len(benchmark_returns):
-            return Decimal("100.0"), Decimal("100.0")
-
+            return (Decimal("100.0"), Decimal("100.0"))
         portfolio_array = np.array(portfolio_returns)
         benchmark_array = np.array(benchmark_returns)
-
-        # Upside capture
         upside_mask = benchmark_array > 0
         if np.sum(upside_mask) > 0:
             upside_portfolio = np.mean(portfolio_array[upside_mask])
             upside_benchmark = np.mean(benchmark_array[upside_mask])
             upside_capture = (
-                (upside_portfolio / upside_benchmark * 100)
+                upside_portfolio / upside_benchmark * 100
                 if upside_benchmark != 0
                 else 100
             )
         else:
             upside_capture = 100
-
-        # Downside capture
         downside_mask = benchmark_array < 0
         if np.sum(downside_mask) > 0:
             downside_portfolio = np.mean(portfolio_array[downside_mask])
             downside_benchmark = np.mean(benchmark_array[downside_mask])
             downside_capture = (
-                (downside_portfolio / downside_benchmark * 100)
+                downside_portfolio / downside_benchmark * 100
                 if downside_benchmark != 0
                 else 100
             )
         else:
             downside_capture = 100
-
-        return Decimal(str(upside_capture)), Decimal(str(downside_capture))
+        return (Decimal(str(upside_capture)), Decimal(str(downside_capture)))
 
     def _calculate_win_rate(self, returns: List[float]) -> Decimal:
         """Calculate win rate (percentage of positive returns)"""
         if not returns:
             return Decimal("0.0")
-
-        positive_returns = sum(1 for ret in returns if ret > 0)
+        positive_returns = sum((1 for ret in returns if ret > 0))
         win_rate = positive_returns / len(returns) * 100
-
         return Decimal(str(win_rate))
 
     def _calculate_profit_factor(self, returns: List[float]) -> Decimal:
         """Calculate profit factor"""
         if not returns:
             return Decimal("1.0")
-
         positive_returns = [ret for ret in returns if ret > 0]
         negative_returns = [ret for ret in returns if ret < 0]
-
         total_gains = sum(positive_returns) if positive_returns else 0
         total_losses = abs(sum(negative_returns)) if negative_returns else 0
-
         if total_losses == 0:
             return Decimal("1.0") if total_gains == 0 else Decimal("999.0")
-
         profit_factor = total_gains / total_losses
         return Decimal(str(profit_factor))
 
@@ -879,38 +725,31 @@ class PerformanceService:
         """Calculate returns from portfolio values"""
         if len(values) < 2:
             return []
-
         returns = []
         for i in range(1, len(values)):
             prev_value = values[i - 1]["value"]
             curr_value = values[i]["value"]
-
             if prev_value > 0:
                 daily_return = (curr_value - prev_value) / prev_value
                 returns.append(daily_return)
-
         return returns
 
     def _calculate_percentile(self, value: float, peer_values: List[float]) -> float:
         """Calculate percentile rank of value in peer group"""
         if not peer_values:
             return 50.0
-
         peer_array = np.array(peer_values)
-        percentile = (np.sum(peer_array <= value) / len(peer_array)) * 100
-
+        percentile = np.sum(peer_array <= value) / len(peer_array) * 100
         return percentile
 
     async def _get_benchmark_comparison(
         self, portfolio: Portfolio, performance_data: PerformanceData, period: str
     ) -> Dict[str, Any]:
         """Get benchmark comparison data"""
-        # This would compare against relevant benchmarks
-        # For now, return mock comparison
         return {
             "benchmark": "BTC",
             "portfolio_return": float(performance_data.total_return),
-            "benchmark_return": 0.15,  # 15% benchmark return
+            "benchmark_return": 0.15,
             "excess_return": float(performance_data.total_return) - 0.15,
             "tracking_error": float(performance_data.tracking_error),
             "information_ratio": float(performance_data.information_ratio),
@@ -920,21 +759,17 @@ class PerformanceService:
         self, portfolio: Portfolio, period: str
     ) -> Dict[str, Any]:
         """Perform performance attribution analysis"""
-        # This would perform detailed attribution analysis
-        # For now, return mock attribution
         return {
-            "asset_allocation_effect": 0.02,  # 2% from asset allocation
-            "security_selection_effect": 0.01,  # 1% from security selection
-            "interaction_effect": 0.005,  # 0.5% interaction
-            "total_excess_return": 0.035,  # 3.5% total excess return
+            "asset_allocation_effect": 0.02,
+            "security_selection_effect": 0.01,
+            "interaction_effect": 0.005,
+            "total_excess_return": 0.035,
         }
 
     async def _calculate_rolling_performance(
         self, portfolio: Portfolio, period: str
     ) -> List[Dict[str, Any]]:
         """Calculate rolling performance metrics"""
-        # This would calculate rolling metrics
-        # For now, return mock rolling data
         return [
             {
                 "date": "2024-01-01",
@@ -952,43 +787,32 @@ class PerformanceService:
     ) -> List[str]:
         """Generate performance insights and recommendations"""
         insights = []
-
-        # Return insights
         if performance_data.total_return > Decimal("0.10"):
             insights.append("Portfolio has delivered strong positive returns")
         elif performance_data.total_return < Decimal("-0.05"):
             insights.append(
                 "Portfolio has experienced negative returns - review strategy"
             )
-
-        # Risk-adjusted performance insights
         if performance_data.sharpe_ratio > Decimal("1.0"):
             insights.append("Excellent risk-adjusted returns (Sharpe ratio > 1.0)")
         elif performance_data.sharpe_ratio < Decimal("0.5"):
             insights.append(
                 "Poor risk-adjusted returns - consider reducing risk or improving returns"
             )
-
-        # Volatility insights
         if performance_data.volatility > Decimal("0.30"):
             insights.append(
                 "High portfolio volatility - consider diversification or hedging"
             )
-
-        # Drawdown insights
         if performance_data.max_drawdown > Decimal("0.20"):
             insights.append(
                 "Significant maximum drawdown - implement risk management measures"
             )
-
         return insights
 
     async def _get_portfolio_weights(
         self, portfolio: Portfolio, start_date: datetime, end_date: datetime
     ) -> Dict[str, Decimal]:
         """Get portfolio weights over period"""
-        # This would get actual portfolio weights
-        # For now, return mock weights
         return {
             "BTC": Decimal("0.40"),
             "ETH": Decimal("0.30"),
@@ -1000,8 +824,6 @@ class PerformanceService:
         self, benchmark: str, start_date: datetime, end_date: datetime
     ) -> Dict[str, Decimal]:
         """Get benchmark weights"""
-        # This would get actual benchmark weights
-        # For now, return mock weights
         return {
             "BTC": Decimal("0.50"),
             "ETH": Decimal("0.25"),
@@ -1013,8 +835,6 @@ class PerformanceService:
         self, portfolio: Portfolio, start_date: datetime, end_date: datetime
     ) -> Dict[str, Dict[str, Decimal]]:
         """Get asset returns for portfolio and benchmark"""
-        # This would get actual asset returns
-        # For now, return mock returns
         return {
             "BTC": {"portfolio": Decimal("0.15"), "benchmark": Decimal("0.12")},
             "ETH": {"portfolio": Decimal("0.20"), "benchmark": Decimal("0.18")},
@@ -1026,6 +846,4 @@ class PerformanceService:
         self, portfolio_id: UUID, user_id: UUID
     ) -> List[UUID]:
         """Get peer portfolios for comparison"""
-        # This would find similar portfolios based on strategy, risk, etc.
-        # For now, return empty list
         return []

@@ -7,20 +7,17 @@ Create Date: 2025-01-08 12:00:00.000000
 """
 
 import uuid
-
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import postgresql
 
-# revision identifiers, used by Alembic.
 revision = "003"
 down_revision = "002"
 branch_labels = None
 depends_on = None
 
 
-def upgrade():
-    # Create audit_logs table
+def upgrade() -> Any:
     op.create_table(
         "audit_logs",
         sa.Column(
@@ -55,7 +52,6 @@ def upgrade():
         ),
         sa.Column("created_at", sa.DateTime(), nullable=False, default=sa.func.now()),
     )
-
     op.create_index("idx_audit_log_user_id", "audit_logs", ["user_id"])
     op.create_index("idx_audit_log_action", "audit_logs", ["action"])
     op.create_index(
@@ -64,8 +60,6 @@ def upgrade():
     op.create_index("idx_audit_log_created", "audit_logs", ["created_at"])
     op.create_index("idx_audit_log_severity", "audit_logs", ["severity"])
     op.create_index("idx_audit_log_session", "audit_logs", ["session_id"])
-
-    # Create compliance_checks table
     op.create_table(
         "compliance_checks",
         sa.Column(
@@ -134,7 +128,6 @@ def upgrade():
             onupdate=sa.func.now(),
         ),
     )
-
     op.create_index("idx_compliance_check_user_id", "compliance_checks", ["user_id"])
     op.create_index(
         "idx_compliance_check_transaction_id", "compliance_checks", ["transaction_id"]
@@ -145,8 +138,6 @@ def upgrade():
         "idx_compliance_check_risk_level", "compliance_checks", ["risk_level"]
     )
     op.create_index("idx_compliance_check_created", "compliance_checks", ["created_at"])
-
-    # Create suspicious_activities table
     op.create_table(
         "suspicious_activities",
         sa.Column(
@@ -221,7 +212,6 @@ def upgrade():
             onupdate=sa.func.now(),
         ),
     )
-
     op.create_index(
         "idx_suspicious_activity_user_id", "suspicious_activities", ["user_id"]
     )
@@ -245,8 +235,6 @@ def upgrade():
     op.create_index(
         "idx_suspicious_activity_assigned", "suspicious_activities", ["assigned_to"]
     )
-
-    # Create regulatory_reports table
     op.create_table(
         "regulatory_reports",
         sa.Column(
@@ -305,7 +293,6 @@ def upgrade():
             onupdate=sa.func.now(),
         ),
     )
-
     op.create_index("idx_regulatory_report_type", "regulatory_reports", ["report_type"])
     op.create_index("idx_regulatory_report_status", "regulatory_reports", ["status"])
     op.create_index(
@@ -322,8 +309,6 @@ def upgrade():
     op.create_index(
         "idx_regulatory_report_created", "regulatory_reports", ["created_at"]
     )
-
-    # Create risk_assessments table
     op.create_table(
         "risk_assessments",
         sa.Column(
@@ -393,7 +378,6 @@ def upgrade():
             onupdate=sa.func.now(),
         ),
     )
-
     op.create_index("idx_risk_assessment_user_id", "risk_assessments", ["user_id"])
     op.create_index(
         "idx_risk_assessment_portfolio_id", "risk_assessments", ["portfolio_id"]
@@ -409,14 +393,12 @@ def upgrade():
     op.create_index("idx_risk_assessment_valid", "risk_assessments", ["valid_until"])
 
 
-def downgrade():
+def downgrade() -> Any:
     op.drop_table("risk_assessments")
     op.drop_table("regulatory_reports")
     op.drop_table("suspicious_activities")
     op.drop_table("compliance_checks")
     op.drop_table("audit_logs")
-
-    # Drop enums
     op.execute("DROP TYPE IF EXISTS severitylevel")
     op.execute("DROP TYPE IF EXISTS compliancechecktype")
     op.execute("DROP TYPE IF EXISTS compliancecheckstatus")

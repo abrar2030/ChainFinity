@@ -6,7 +6,6 @@ Production-ready database setup with connection pooling, read replicas, and moni
 import logging
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator, Optional
-
 import redis.asyncio as redis
 from config.settings import settings
 from sqlalchemy import create_engine, event
@@ -16,11 +15,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import QueuePool
 
 logger = logging.getLogger(__name__)
-
-# Base class for all models
 Base = declarative_base()
-
-# Async Engine for primary database
 async_engine = create_async_engine(
     settings.database.DATABASE_URL,
     echo=settings.database.DB_ECHO,
@@ -32,8 +27,6 @@ async_engine = create_async_engine(
     poolclass=QueuePool,
     future=True,
 )
-
-# Async Engine for read replica (if configured)
 async_read_engine = None
 if settings.database.DATABASE_READ_URL:
     async_read_engine = create_async_engine(
@@ -47,8 +40,6 @@ if settings.database.DATABASE_READ_URL:
         poolclass=QueuePool,
         future=True,
     )
-
-# Session makers
 AsyncSessionLocal = async_sessionmaker(
     bind=async_engine,
     class_=AsyncSession,
@@ -56,7 +47,6 @@ AsyncSessionLocal = async_sessionmaker(
     autoflush=False,
     autocommit=False,
 )
-
 AsyncReadSessionLocal = None
 if async_read_engine:
     AsyncReadSessionLocal = async_sessionmaker(
@@ -66,8 +56,6 @@ if async_read_engine:
         autoflush=False,
         autocommit=False,
     )
-
-# Synchronous engine for migrations and admin tasks
 sync_engine = create_engine(
     settings.database.DATABASE_URL.replace("+asyncpg", ""),
     echo=settings.database.DB_ECHO,
@@ -76,14 +64,7 @@ sync_engine = create_engine(
     pool_timeout=settings.database.DB_POOL_TIMEOUT,
     pool_recycle=settings.database.DB_POOL_RECYCLE,
 )
-
-SyncSessionLocal = sessionmaker(
-    bind=sync_engine,
-    autocommit=False,
-    autoflush=False,
-)
-
-# Redis connection
+SyncSessionLocal = sessionmaker(bind=sync_engine, autocommit=False, autoflush=False)
 redis_client: Optional[redis.Redis] = None
 
 
@@ -100,7 +81,6 @@ async def init_redis():
             socket_connect_timeout=settings.redis.REDIS_SOCKET_CONNECT_TIMEOUT,
             decode_responses=True,
         )
-        # Test connection
         await redis_client.ping()
         logger.info("Redis connection established successfully")
     except Exception as e:
@@ -122,30 +102,29 @@ def get_redis() -> Optional[redis.Redis]:
     return redis_client
 
 
-# Database event listeners for monitoring
 @event.listens_for(async_engine.sync_engine, "connect")
-def set_sqlite_pragma(dbapi_connection, connection_record):
+def set_sqlite_pragma(dbapi_connection: Any, connection_record: Any) -> Any:
     """Set database connection parameters"""
     if "postgresql" in str(dbapi_connection):
-        # Set PostgreSQL specific parameters
         with dbapi_connection.cursor() as cursor:
             cursor.execute("SET timezone TO 'UTC'")
             cursor.execute("SET statement_timeout = '30s'")
 
 
 @event.listens_for(async_engine.sync_engine, "checkout")
-def receive_checkout(dbapi_connection, connection_record, connection_proxy):
+def receive_checkout(
+    dbapi_connection: Any, connection_record: Any, connection_proxy: Any
+) -> Any:
     """Log database connection checkout"""
     logger.debug("Database connection checked out")
 
 
 @event.listens_for(async_engine.sync_engine, "checkin")
-def receive_checkin(dbapi_connection, connection_record):
+def receive_checkin(dbapi_connection: Any, connection_record: Any) -> Any:
     """Log database connection checkin"""
     logger.debug("Database connection checked in")
 
 
-# Dependency functions
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     """
     Dependency function to get async database session
@@ -199,7 +178,6 @@ async def get_async_session_context():
             await session.close()
 
 
-# Health check functions
 async def check_database_health() -> bool:
     """
     Check database connectivity and health
@@ -227,26 +205,19 @@ async def check_redis_health() -> bool:
         return False
 
 
-# Database initialization
 async def init_database():
     """
     Initialize database connections and create tables
     """
     try:
-        # Test primary database connection
         async with AsyncSessionLocal() as session:
             await session.execute("SELECT 1")
         logger.info("Primary database connection established")
-
-        # Test read replica connection if configured
         if AsyncReadSessionLocal:
             async with AsyncReadSessionLocal() as session:
                 await session.execute("SELECT 1")
             logger.info("Read replica database connection established")
-
-        # Initialize Redis
         await init_redis()
-
     except Exception as e:
         logger.error(f"Database initialization failed: {e}")
         raise
@@ -266,7 +237,6 @@ async def close_database():
         logger.error(f"Error closing database connections: {e}")
 
 
-# Cache utilities
 class CacheManager:
     """Redis cache manager with TTL support"""
 
@@ -314,11 +284,9 @@ class CacheManager:
         return False
 
 
-# Global cache manager instance
 cache = CacheManager()
 
 
-# Database transaction utilities
 class DatabaseManager:
     """
     Enhanced database manager for handling complex transactions and operations
@@ -389,10 +357,8 @@ class DatabaseManager:
         """
         db_healthy = await check_database_health()
         redis_healthy = await check_redis_health()
-
         db_stats = await DatabaseManager.get_database_stats()
         redis_stats = await DatabaseManager.get_redis_stats()
-
         return {
             "database": {"healthy": db_healthy, "stats": db_stats},
             "redis": {"healthy": redis_healthy, "stats": redis_stats},
@@ -400,5 +366,4 @@ class DatabaseManager:
         }
 
 
-# Global database manager instance
 db_manager = DatabaseManager()

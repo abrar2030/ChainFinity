@@ -5,7 +5,6 @@ Base model classes with common functionality
 import uuid
 from datetime import datetime
 from typing import Any, Dict, Optional
-
 from sqlalchemy import JSON, Boolean, Column, DateTime, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declared_attr
@@ -20,11 +19,10 @@ class BaseModel(Base):
     """
 
     __abstract__ = True
-
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
 
     @declared_attr
-    def __tablename__(cls):
+    def __tablename__(cls: Any) -> Any:
         """Generate table name from class name"""
         return cls.__name__.lower() + "s"
 
@@ -85,8 +83,6 @@ class AuditMixin:
 
     created_by = Column(UUID(as_uuid=True), nullable=True, index=True)
     updated_by = Column(UUID(as_uuid=True), nullable=True, index=True)
-
-    # Audit metadata
     audit_metadata = Column(JSON, nullable=True)
 
     def set_audit_info(
@@ -96,7 +92,6 @@ class AuditMixin:
         if not self.created_by:
             self.created_by = user_id
         self.updated_by = user_id
-
         if metadata:
             self.audit_metadata = metadata
 
@@ -133,7 +128,7 @@ class MetadataMixin:
     """
 
     metadata = Column(JSON, nullable=True)
-    tags = Column(JSON, nullable=True)  # For tagging and categorization
+    tags = Column(JSON, nullable=True)
 
     def add_metadata(self, key: str, value: Any) -> None:
         """Add metadata key-value pair"""

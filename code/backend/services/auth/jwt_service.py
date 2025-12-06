@@ -5,7 +5,6 @@ JWT token service for authentication
 import logging
 from datetime import datetime, timedelta
 from typing import Any, Dict, Optional
-
 from config.settings import settings
 from jose import JWTError, jwt
 
@@ -17,7 +16,7 @@ class JWTService:
     JWT token management service
     """
 
-    def __init__(self):
+    def __init__(self) -> Any:
         self.secret_key = settings.security.SECRET_KEY
         self.algorithm = settings.security.ALGORITHM
         self.access_token_expire_minutes = settings.security.ACCESS_TOKEN_EXPIRE_MINUTES
@@ -30,16 +29,13 @@ class JWTService:
         Create JWT access token
         """
         to_encode = data.copy()
-
         if expires_delta:
             expire = datetime.utcnow() + expires_delta
         else:
             expire = datetime.utcnow() + timedelta(
                 minutes=self.access_token_expire_minutes
             )
-
         to_encode.update({"exp": expire, "iat": datetime.utcnow(), "type": "access"})
-
         try:
             encoded_jwt = jwt.encode(
                 to_encode, self.secret_key, algorithm=self.algorithm
@@ -56,14 +52,11 @@ class JWTService:
         Create JWT refresh token
         """
         to_encode = data.copy()
-
         if expires_delta:
             expire = datetime.utcnow() + expires_delta
         else:
             expire = datetime.utcnow() + timedelta(days=self.refresh_token_expire_days)
-
         to_encode.update({"exp": expire, "iat": datetime.utcnow(), "type": "refresh"})
-
         try:
             encoded_jwt = jwt.encode(
                 to_encode, self.secret_key, algorithm=self.algorithm
@@ -79,18 +72,12 @@ class JWTService:
         """
         try:
             payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
-
-            # Check token type
             if payload.get("type") != "access":
                 raise JWTError("Invalid token type")
-
-            # Check expiration
             exp = payload.get("exp")
             if exp and datetime.fromtimestamp(exp) < datetime.utcnow():
                 raise JWTError("Token has expired")
-
             return payload
-
         except JWTError as e:
             logger.warning(f"Invalid access token: {e}")
             raise
@@ -104,18 +91,12 @@ class JWTService:
         """
         try:
             payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
-
-            # Check token type
             if payload.get("type") != "refresh":
                 raise JWTError("Invalid token type")
-
-            # Check expiration
             exp = payload.get("exp")
             if exp and datetime.fromtimestamp(exp) < datetime.utcnow():
                 raise JWTError("Token has expired")
-
             return payload
-
         except JWTError as e:
             logger.warning(f"Invalid refresh token: {e}")
             raise

@@ -6,7 +6,6 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Any, Dict, List, Optional
 from uuid import UUID
-
 from pydantic import BaseModel, Field, validator
 
 
@@ -53,7 +52,7 @@ class PaginatedResponse(BaseModel):
     pages: int
 
     @validator("pages", always=True)
-    def calculate_pages(cls, v, values):
+    def calculate_pages(cls: Any, v: Any, values: Any) -> Any:
         total = values.get("total", 0)
         size = values.get("size", 20)
         return (total + size - 1) // size if total > 0 else 0
@@ -69,7 +68,7 @@ class FilterParams(BaseModel):
     )
 
     @validator("search")
-    def validate_search(cls, v):
+    def validate_search(cls: Any, v: Any) -> Any:
         if v is not None and len(v.strip()) < 2:
             raise ValueError("Search term must be at least 2 characters")
         return v.strip() if v else None
@@ -82,9 +81,9 @@ class DateRangeFilter(BaseModel):
     end_date: Optional[datetime] = Field(None, description="End date")
 
     @validator("end_date")
-    def validate_date_range(cls, v, values):
+    def validate_date_range(cls: Any, v: Any, values: Any) -> Any:
         start_date = values.get("start_date")
-        if start_date and v and v < start_date:
+        if start_date and v and (v < start_date):
             raise ValueError("End date must be after start date")
         return v
 
