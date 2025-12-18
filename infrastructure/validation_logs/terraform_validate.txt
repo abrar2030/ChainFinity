@@ -1,0 +1,5 @@
+[31m╷[0m[0m
+[31m│[0m [0m[1m[31mError: [0m[0m[1mCycle: aws_security_group.eks_cluster, aws_security_group.eks_nodes, aws_security_group.alb[0m
+[31m│[0m [0m
+[31m│[0m [0m[0m
+[31m╵[0m[0m

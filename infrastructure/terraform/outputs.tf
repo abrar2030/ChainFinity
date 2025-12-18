@@ -40,17 +40,17 @@ output "internet_gateway_id" {
 # Security Group Outputs
 output "alb_security_group_id" {
   description = "ID of the ALB security group"
-  value       = aws_security_group.alb.id
+  value       = aws_security_group.alb_fixed.id
 }
 
 output "eks_cluster_security_group_id" {
   description = "ID of the EKS cluster security group"
-  value       = aws_security_group.eks_cluster.id
+  value       = aws_security_group.eks_cluster_fixed.id
 }
 
 output "eks_nodes_security_group_id" {
   description = "ID of the EKS nodes security group"
-  value       = aws_security_group.eks_nodes.id
+  value       = aws_security_group.eks_nodes_fixed.id
 }
 
 output "rds_security_group_id" {
@@ -346,7 +346,7 @@ output "kubectl_config" {
     cluster_name     = aws_eks_cluster.chainfinity.name
     cluster_endpoint = aws_eks_cluster.chainfinity.endpoint
     cluster_ca_data  = aws_eks_cluster.chainfinity.certificate_authority[0].data
-    region          = data.aws_region.current.name
+    region           = data.aws_region.current.name
   }
   sensitive = true
 }
@@ -357,16 +357,16 @@ output "compliance_info" {
   value = {
     encryption_at_rest_enabled    = true
     encryption_in_transit_enabled = true
-    vpc_flow_logs_enabled        = true
-    cloudtrail_enabled           = var.enable_cloudtrail
-    guardduty_enabled            = var.enable_guardduty
-    config_enabled               = var.enable_config
-    security_hub_enabled         = var.enable_security_hub
-    waf_enabled                  = var.enable_waf
-    backup_retention_days        = local.backup_retention_days
-    log_retention_days           = local.log_retention_days
-    compliance_frameworks        = var.compliance_frameworks
-    data_classification_level    = var.data_classification_level
+    vpc_flow_logs_enabled         = true
+    cloudtrail_enabled            = var.enable_cloudtrail
+    guardduty_enabled             = var.enable_guardduty
+    config_enabled                = var.enable_config
+    security_hub_enabled          = var.enable_security_hub
+    waf_enabled                   = var.enable_waf
+    backup_retention_days         = local.backup_retention_days
+    log_retention_days            = local.log_retention_days
+    compliance_frameworks         = var.compliance_frameworks
+    data_classification_level     = var.data_classification_level
   }
 }
 
@@ -374,16 +374,16 @@ output "compliance_info" {
 output "estimated_monthly_cost" {
   description = "Estimated monthly cost breakdown (approximate)"
   value = {
-    eks_cluster      = "~$73/month (control plane)"
-    eks_nodes        = "~$150-300/month (depending on instance types and count)"
-    rds_database     = "~$200-500/month (depending on instance class)"
-    alb              = "~$20-50/month"
-    nat_gateways     = "~$45/month (per NAT gateway)"
-    data_transfer    = "Variable based on usage"
-    cloudwatch_logs  = "Variable based on log volume"
-    s3_storage       = "Variable based on storage usage"
-    kms              = "~$1/month per key + usage"
-    total_estimated  = "~$500-1000/month (baseline, excluding data transfer and storage)"
+    eks_cluster     = "~$73/month (control plane)"
+    eks_nodes       = "~$150-300/month (depending on instance types and count)"
+    rds_database    = "~$200-500/month (depending on instance class)"
+    alb             = "~$20-50/month"
+    nat_gateways    = "~$45/month (per NAT gateway)"
+    data_transfer   = "Variable based on usage"
+    cloudwatch_logs = "Variable based on log volume"
+    s3_storage      = "Variable based on storage usage"
+    kms             = "~$1/month per key + usage"
+    total_estimated = "~$500-1000/month (baseline, excluding data transfer and storage)"
   }
 }
 
@@ -391,11 +391,11 @@ output "estimated_monthly_cost" {
 output "connection_info" {
   description = "Connection information for accessing services"
   value = {
-    application_url    = "https://${var.domain_name}"
-    monitoring_url     = var.manage_dns ? "https://monitoring.${var.domain_name}" : "Configure DNS manually"
-    database_endpoint  = aws_db_instance.chainfinity_db.endpoint
-    cluster_endpoint   = aws_eks_cluster.chainfinity.endpoint
-    load_balancer_dns  = aws_lb.main.dns_name
+    application_url   = "https://${var.domain_name}"
+    monitoring_url    = var.manage_dns ? "https://monitoring.${var.domain_name}" : "Configure DNS manually"
+    database_endpoint = aws_db_instance.chainfinity_db.endpoint
+    cluster_endpoint  = aws_eks_cluster.chainfinity.endpoint
+    load_balancer_dns = aws_lb.main.dns_name
   }
   sensitive = true
 }
@@ -404,12 +404,12 @@ output "connection_info" {
 output "backup_recovery_info" {
   description = "Backup and disaster recovery information"
   value = {
-    rds_backup_retention_days     = aws_db_instance.chainfinity_db.backup_retention_period
-    rds_backup_window            = aws_db_instance.chainfinity_db.backup_window
-    rds_maintenance_window       = aws_db_instance.chainfinity_db.maintenance_window
-    s3_backup_bucket             = aws_s3_bucket.backups.bucket
-    point_in_time_recovery       = var.enable_point_in_time_recovery
-    multi_az_enabled             = aws_db_instance.chainfinity_db.multi_az
-    deletion_protection_enabled  = aws_db_instance.chainfinity_db.deletion_protection
+    rds_backup_retention_days   = aws_db_instance.chainfinity_db.backup_retention_period
+    rds_backup_window           = aws_db_instance.chainfinity_db.backup_window
+    rds_maintenance_window      = aws_db_instance.chainfinity_db.maintenance_window
+    s3_backup_bucket            = aws_s3_bucket.backups.bucket
+    point_in_time_recovery      = var.enable_point_in_time_recovery
+    multi_az_enabled            = aws_db_instance.chainfinity_db.multi_az
+    deletion_protection_enabled = aws_db_instance.chainfinity_db.deletion_protection
   }
 }

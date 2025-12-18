@@ -1,0 +1,11 @@
+[WARNING]: No inventory was parsed, only implicit localhost is available
+[WARNING]: provided hosts list is empty, only localhost is available. Note that the implicit localhost does not match 'all'
+[WARNING]: Error loading plugin 'community.general.npm': No module named 'ansible_collections.community'
+[ERROR]: couldn't resolve module/action 'npm'. This often indicates a misspelling, missing collection, or incorrect module path.
+Origin: /home/user/infrastructure_fixed/ansible/playbook.yml:36:9
+
+34             virtualenv: '{{ app_dir }}/venv'
+35
+36       - name: Install Node.js dependencies
+           ^ column 9
+

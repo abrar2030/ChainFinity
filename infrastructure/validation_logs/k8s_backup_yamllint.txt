@@ -1,0 +1,3 @@
+kubernetes/backup/cronjob.yaml
+  19:121    warning  line too long (141 > 120 characters)  (line-length)
+

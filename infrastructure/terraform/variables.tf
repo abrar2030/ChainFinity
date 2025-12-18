@@ -26,7 +26,7 @@ variable "allowed_cidr_blocks" {
   default     = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
 
   validation {
-    condition = length(var.allowed_cidr_blocks) > 0
+    condition     = length(var.allowed_cidr_blocks) > 0
     error_message = "At least one CIDR block must be specified."
   }
 }
@@ -263,7 +263,7 @@ variable "enable_detailed_monitoring" {
 variable "log_retention_days" {
   description = "CloudWatch log retention period in days"
   type        = number
-  default     = 2555  # 7 years for financial compliance
+  default     = 2555 # 7 years for financial compliance
 
   validation {
     condition = contains([
@@ -277,7 +277,7 @@ variable "log_retention_days" {
 variable "backup_retention_days" {
   description = "Backup retention period in days"
   type        = number
-  default     = 2555  # 7 years for financial compliance
+  default     = 2555 # 7 years for financial compliance
 
   validation {
     condition     = var.backup_retention_days >= 7 && var.backup_retention_days <= 3653
@@ -308,7 +308,7 @@ variable "maintenance_window" {
   default     = "sun:04:00-sun:05:00"
 
   validation {
-    condition = can(regex("^(mon|tue|wed|thu|fri|sat|sun):[0-2][0-9]:[0-5][0-9]-(mon|tue|wed|thu|fri|sat|sun):[0-2][0-9]:[0-5][0-9]$", var.maintenance_window))
+    condition     = can(regex("^(mon|tue|wed|thu|fri|sat|sun):[0-2][0-9]:[0-5][0-9]-(mon|tue|wed|thu|fri|sat|sun):[0-2][0-9]:[0-5][0-9]$", var.maintenance_window))
     error_message = "Maintenance window must be in format ddd:HH:MM-ddd:HH:MM."
   }
 }
@@ -420,11 +420,11 @@ variable "enable_bastion_host" {
 variable "feature_flags" {
   description = "Feature flags for enabling/disabling specific features"
   type = object({
-    enable_api_gateway     = optional(bool, false)
-    enable_elasticsearch   = optional(bool, true)
-    enable_redis_cluster   = optional(bool, true)
-    enable_message_queue   = optional(bool, true)
-    enable_cdn             = optional(bool, true)
+    enable_api_gateway        = optional(bool, false)
+    enable_elasticsearch      = optional(bool, true)
+    enable_redis_cluster      = optional(bool, true)
+    enable_message_queue      = optional(bool, true)
+    enable_cdn                = optional(bool, true)
     enable_container_insights = optional(bool, true)
   })
   default = {}

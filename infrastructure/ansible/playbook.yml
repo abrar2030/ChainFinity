@@ -34,9 +34,10 @@
             virtualenv: '{{ app_dir }}/venv'
 
       - name: Install Node.js dependencies
-        npm:
-            path: '{{ app_dir }}/code/frontend'
-            state: present
+        command: npm install
+        args:
+            chdir: '{{ app_dir }}/code/frontend'
+            creates: '{{ app_dir }}/code/frontend/node_modules'
 
       - name: Configure Nginx
         template:
@@ -67,9 +68,9 @@
             - docker-compose.yml
 
       - name: Start application services
-        docker_compose:
-            project_src: '{{ app_dir }}'
-            state: present
+        command: docker-compose up -d
+        args:
+            chdir: '{{ app_dir }}'
 
   handlers:
       - name: restart nginx

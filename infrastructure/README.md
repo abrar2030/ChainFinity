@@ -395,3 +395,155 @@ nslookup chainfinity.com
       --change-batch file://dns-failover.json
     ```s
     ````
+
+## 🔧 Validation & Deployment Commands
+
+### Prerequisites Installation
+
+```bash
+# Install Terraform
+wget https://releases.hashicorp.com/terraform/1.6.6/terraform_1.6.6_linux_amd64.zip
+unzip terraform_1.6.6_linux_amd64.zip
+sudo mv terraform /usr/local/bin/
+
+# Install kubectl
+curl -LO "https://dl.k8s.io/release/v1.28.0/bin/linux/amd64/kubectl"
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+# Install yamllint
+pip install yamllint
+
+# Install ansible-lint
+pip install ansible-lint
+
+# Install helm (optional)
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+```
+
+### Terraform Validation
+
+```bash
+cd infrastructure/terraform
+
+# 1. Format check (should show no changes)
+terraform fmt -recursive -check
+
+# 2. Initialize with local backend for testing
+terraform init -backend=false
+
+# 3. Validate configuration
+terraform validate
+
+# 4. Plan with example variables (local dev)
+terraform plan -var-file=terraform.tfvars.example -out=plan.out
+
+# For production deployment with actual values:
+# terraform init -backend-config="bucket=YOUR_BUCKET"
+# export TF_VAR_db_password="YOUR_ACTUAL_PASSWORD"
+# terraform plan -var-file=terraform.tfvars
+```
+
+### Kubernetes Validation
+
+```bash
+cd infrastructure/kubernetes
+
+# 1. YAML lint check
+yamllint deployment.yaml
+yamllint backup/cronjob.yaml
+yamllint logging/elasticsearch.yaml
+yamllint monitoring/prometheus-config.yaml
+
+# 2. Kubernetes dry-run validation
+kubectl apply --dry-run=client -f deployment.yaml
+kubectl apply --dry-run=client -f backup/cronjob.yaml
+kubectl apply --dry-run=client -f logging/elasticsearch.yaml
+kubectl apply --dry-run=client -f monitoring/prometheus-config.yaml
+
+# 3. Apply to cluster (with caution)
+kubectl apply -f deployment.yaml
+kubectl apply -f backup/cronjob.yaml
+```
+
+### Ansible Validation
+
+```bash
+cd infrastructure/ansible
+
+# 1. Syntax check
+ansible-playbook playbook.yml --syntax-check
+
+# 2. Lint check
+ansible-lint playbook.yml
+
+# 3. Dry run
+ansible-playbook -i inventory.example.ini playbook.yml --check
+
+# 4. Actual run (with caution)
+# ansible-playbook -i inventory.ini playbook.yml
+```
+
+### CI/CD Pipeline Validation
+
+```bash
+cd infrastructure/ci-cd
+
+# 1. Validate YAML syntax
+yamllint ci-cd.yml
+
+# 2. If using GitHub Actions locally (with act):
+# act -n  # Dry run
+# act push  # Test push event
+```
+
+## 🔐 Secret Management
+
+**IMPORTANT**: Never commit secrets to version control!
+
+### Using Terraform with Secrets
+
+```bash
+# Option 1: Environment variables
+export TF_VAR_db_password="your-password"
+export AWS_ACCESS_KEY_ID="your-key"
+export AWS_SECRET_ACCESS_KEY="your-secret"
+
+# Option 2: terraform.tfvars (add to .gitignore)
+cp terraform.tfvars.example terraform.tfvars
+# Edit terraform.tfvars with actual values
+
+# Option 3: AWS Secrets Manager (recommended for production)
+# Secrets are automatically retrieved by Terraform
+```
+
+### Using Kubernetes Secrets
+
+```bash
+# Option 1: kubectl create secret
+kubectl create secret generic chainfinity-secrets \
+  --from-literal=DB_PASSWORD='your-password' \
+  --from-literal=JWT_SECRET='your-jwt-secret' \
+  -n chainfinity
+
+# Option 2: From file
+cp kubernetes/secret.example.yaml kubernetes/secret.yaml
+# Edit secret.yaml with actual values (add to .gitignore)
+kubectl apply -f kubernetes/secret.yaml
+
+# Option 3: External Secrets Operator (recommended for production)
+# Configure External Secrets to pull from AWS Secrets Manager or Vault
+```
+
+### Using Ansible Vault
+
+```bash
+# Create encrypted vault file
+ansible-vault create ansible/vault.yml
+
+# Add secrets to vault:
+# db_password: your_actual_password
+# api_key: your_actual_api_key
+
+# Run playbook with vault
+ansible-playbook -i inventory.ini playbook.yml --ask-vault-pass
+```

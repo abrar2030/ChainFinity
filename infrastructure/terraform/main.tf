@@ -28,41 +28,41 @@ terraform {
   }
 
   # Enhanced backend configuration with encryption
-  backend "s3" {
-    bucket         = "chainfinity-terraform-state"
-    key            = "infrastructure/terraform.tfstate"
-    region         = "us-west-2"
-    encrypt        = true
-    kms_key_id     = "arn:aws:kms:us-west-2:123456789012:key/12345678-1234-1234-1234-123456789012"
-    dynamodb_table = "chainfinity-terraform-locks"
-
-    # Additional security settings
-    versioning                = true
-    server_side_encryption_configuration {
-      rule {
-        apply_server_side_encryption_by_default {
-          kms_master_key_id = "arn:aws:kms:us-west-2:123456789012:key/12345678-1234-1234-1234-123456789012"
-          sse_algorithm     = "aws:kms"
-        }
-      }
-    }
-  }
+  #   backend "s3" {
+  #     bucket         = "chainfinity-terraform-state"
+  #     key            = "infrastructure/terraform.tfstate"
+  #     region         = "us-west-2"
+  #     encrypt        = true
+  #     kms_key_id     = "arn:aws:kms:us-west-2:123456789012:key/12345678-1234-1234-1234-123456789012"
+  #     dynamodb_table = "chainfinity-terraform-locks"
+  # 
+  #     # Additional security settings
+  #     versioning                = true
+  #     server_side_encryption_configuration {
+  #       rule {
+  #         apply_server_side_encryption_by_default {
+  #           kms_master_key_id = "arn:aws:kms:us-west-2:123456789012:key/12345678-1234-1234-1234-123456789012"
+  #           sse_algorithm     = "aws:kms"
+  #         }
+  #       }
+  #     }
+  #   }
 }
 
 # Local variables for consistent tagging and configuration
 locals {
   common_tags = {
-    Project             = "ChainFinity"
-    Environment         = var.environment
-    Owner               = "DevOps Team"
-    CostCenter          = "Engineering"
-    Compliance          = "SOC2-PCI-DSS"
-    DataClassification  = "Confidential"
-    BackupRequired      = "true"
-    MonitoringRequired  = "true"
-    SecurityLevel       = "High"
-    CreatedBy           = "Terraform"
-    CreatedDate         = timestamp()
+    Project            = "ChainFinity"
+    Environment        = var.environment
+    Owner              = "DevOps Team"
+    CostCenter         = "Engineering"
+    Compliance         = "SOC2-PCI-DSS"
+    DataClassification = "Confidential"
+    BackupRequired     = "true"
+    MonitoringRequired = "true"
+    SecurityLevel      = "High"
+    CreatedBy          = "Terraform"
+    CreatedDate        = timestamp()
   }
 
   # Network configuration
@@ -73,8 +73,8 @@ locals {
   allowed_cidr_blocks = var.allowed_cidr_blocks
 
   # Compliance settings
-  backup_retention_days = 2555  # 7 years for financial compliance
-  log_retention_days   = 2555   # 7 years for financial compliance
+  backup_retention_days = 3653 # 7 years for financial compliance
+  log_retention_days    = 2555 # 7 years for financial compliance
 }
 
 # Data sources
@@ -226,9 +226,9 @@ resource "aws_subnet" "private" {
   map_public_ip_on_launch = false
 
   tags = merge(local.common_tags, {
-    Name                              = "chainfinity-private-${local.azs[count.index]}"
-    Type                              = "PrivateSubnet"
-    "kubernetes.io/role/internal-elb" = "1"
+    Name                                        = "chainfinity-private-${local.azs[count.index]}"
+    Type                                        = "PrivateSubnet"
+    "kubernetes.io/role/internal-elb"           = "1"
     "kubernetes.io/cluster/chainfinity-cluster" = "owned"
   })
 }
@@ -244,9 +244,9 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 
   tags = merge(local.common_tags, {
-    Name                     = "chainfinity-public-${local.azs[count.index]}"
-    Type                     = "PublicSubnet"
-    "kubernetes.io/role/elb" = "1"
+    Name                                        = "chainfinity-public-${local.azs[count.index]}"
+    Type                                        = "PublicSubnet"
+    "kubernetes.io/role/elb"                    = "1"
     "kubernetes.io/cluster/chainfinity-cluster" = "owned"
   })
 }
@@ -450,7 +450,7 @@ resource "aws_network_acl" "database" {
     protocol   = "tcp"
     rule_no    = 100
     action     = "allow"
-    cidr_block = "10.0.1.0/22"  # Private subnets range
+    cidr_block = "10.0.0.0/22" # Private subnets range
     from_port  = 5432
     to_port    = 5432
   }
@@ -460,7 +460,7 @@ resource "aws_network_acl" "database" {
     protocol   = "tcp"
     rule_no    = 110
     action     = "allow"
-    cidr_block = "10.0.1.0/22"
+    cidr_block = "10.0.0.0/22"
     from_port  = 1024
     to_port    = 65535
   }
@@ -470,7 +470,7 @@ resource "aws_network_acl" "database" {
     protocol   = "tcp"
     rule_no    = 100
     action     = "allow"
-    cidr_block = "10.0.1.0/22"
+    cidr_block = "10.0.0.0/22"
     from_port  = 1024
     to_port    = 65535
   }
@@ -668,7 +668,7 @@ resource "aws_db_parameter_group" "postgresql" {
 
   parameter {
     name  = "log_min_duration_statement"
-    value = "1000"  # Log queries taking more than 1 second
+    value = "1000" # Log queries taking more than 1 second
   }
 
   parameter {
@@ -734,7 +734,7 @@ resource "aws_db_instance" "chainfinity_db" {
   max_allocated_storage = var.db_max_allocated_storage
   storage_type          = "gp3"
   storage_encrypted     = true
-  kms_key_id           = aws_kms_key.chainfinity.arn
+  kms_key_id            = aws_kms_key.chainfinity.arn
 
   # Database configuration
   db_name  = var.db_name
@@ -753,15 +753,15 @@ resource "aws_db_instance" "chainfinity_db" {
 
   # Backup configuration for compliance
   backup_retention_period = local.backup_retention_days
-  backup_window          = "03:00-04:00"  # UTC
-  maintenance_window     = "sun:04:00-sun:05:00"  # UTC
+  backup_window           = "03:00-04:00"         # UTC
+  maintenance_window      = "sun:04:00-sun:05:00" # UTC
 
   # Security features
-  copy_tags_to_snapshot                = true
-  deletion_protection                  = true
-  skip_final_snapshot                 = false
-  final_snapshot_identifier           = "chainfinity-db-final-snapshot-${formatdate("YYYY-MM-DD-hhmm", timestamp())}"
-  delete_automated_backups            = false
+  copy_tags_to_snapshot     = true
+  deletion_protection       = true
+  skip_final_snapshot       = false
+  final_snapshot_identifier = "chainfinity-db-final-snapshot-${formatdate("YYYY-MM-DD-hhmm", timestamp())}"
+  delete_automated_backups  = false
 
   # Monitoring and logging
   monitoring_interval = 60
@@ -773,8 +773,8 @@ resource "aws_db_instance" "chainfinity_db" {
 
   # Performance insights
   performance_insights_enabled          = true
-  performance_insights_kms_key_id      = aws_kms_key.chainfinity.arn
-  performance_insights_retention_period = 731  # 2 years
+  performance_insights_kms_key_id       = aws_kms_key.chainfinity.arn
+  performance_insights_retention_period = 731 # 2 years
 
   # Multi-AZ for high availability
   multi_az = var.environment == "production" ? true : false
@@ -1017,7 +1017,7 @@ resource "aws_launch_template" "eks_nodes" {
       volume_size           = var.node_disk_size
       volume_type           = "gp3"
       encrypted             = true
-      kms_key_id           = aws_kms_key.chainfinity.arn
+      kms_key_id            = aws_kms_key.chainfinity.arn
       delete_on_termination = true
     }
   }
@@ -1078,8 +1078,8 @@ resource "aws_eks_node_group" "chainfinity" {
   }
 
   # Security
-  ami_type       = "AL2_x86_64"
-  disk_size      = var.node_disk_size
+  ami_type  = "AL2_x86_64"
+  disk_size = var.node_disk_size
 
   tags = merge(local.common_tags, {
     Name = "chainfinity-node-group"
@@ -1323,7 +1323,7 @@ resource "aws_route53_record" "main" {
 resource "aws_secretsmanager_secret" "db_credentials" {
   name                    = "chainfinity/database/credentials"
   description             = "Database credentials for ChainFinity"
-  kms_key_id             = aws_kms_key.chainfinity.arn
+  kms_key_id              = aws_kms_key.chainfinity.arn
   recovery_window_in_days = 30
 
   tags = merge(local.common_tags, {
@@ -1348,7 +1348,7 @@ resource "aws_secretsmanager_secret_version" "db_credentials" {
 resource "aws_secretsmanager_secret" "app_secrets" {
   name                    = "chainfinity/application/secrets"
   description             = "Application secrets for ChainFinity"
-  kms_key_id             = aws_kms_key.chainfinity.arn
+  kms_key_id              = aws_kms_key.chainfinity.arn
   recovery_window_in_days = 30
 
   tags = merge(local.common_tags, {
