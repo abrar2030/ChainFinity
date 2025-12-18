@@ -1,7 +1,0 @@
-kubernetes/deployment.yaml
-  434:121   warning  line too long (192 > 120 characters)  (line-length)
-  727:121   warning  line too long (124 > 120 characters)  (line-length)
-  825:121   warning  line too long (130 > 120 characters)  (line-length)
-  834:121   warning  line too long (248 > 120 characters)  (line-length)
-  1119:121  warning  line too long (217 > 120 characters)  (line-length)
-
