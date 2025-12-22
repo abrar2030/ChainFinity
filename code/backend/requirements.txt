@@ -43,6 +43,7 @@ sentry-sdk[fastapi]==1.38.0
 # Validation & Serialization
 marshmallow==3.20.2
 cerberus==1.3.5
+user-agents==2.2.0
 
 # Financial & Risk
 numpy==1.25.2

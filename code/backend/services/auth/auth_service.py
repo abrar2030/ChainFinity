@@ -4,7 +4,7 @@ Authentication service with enhanced security features
 
 import logging
 from datetime import datetime
-from typing import Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 from uuid import UUID
 from config.database import cache
 from config.settings import settings

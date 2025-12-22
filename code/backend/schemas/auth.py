@@ -4,8 +4,8 @@ Authentication and authorization schemas
 
 import re
 from datetime import datetime
-from typing import List, Optional
-from pydantic import BaseModel, EmailStr, Field, validator
+from typing import Any, List, Optional
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from .base import BaseSchema
 
 
@@ -19,8 +19,9 @@ class LoginRequest(BaseModel):
         None, description="Multi-factor authentication code"
     )
 
-    @validator("mfa_code")
-    def validate_mfa_code(cls: Any, v: Any) -> Any:
+    @field_validator("mfa_code")
+    @classmethod
+    def validate_mfa_code(cls, v: Any) -> Any:
         if v is not None and (not re.match("^\\d{6}$", v)):
             raise ValueError("MFA code must be 6 digits")
         return v
@@ -39,8 +40,9 @@ class RegisterRequest(BaseModel):
         default=False, description="Marketing communications consent"
     )
 
-    @validator("password")
-    def validate_password(cls: Any, v: Any) -> Any:
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, v: Any) -> Any:
         """Validate password strength"""
         if len(v) < 8:
             raise ValueError("Password must be at least 8 characters long")
@@ -54,26 +56,30 @@ class RegisterRequest(BaseModel):
             raise ValueError("Password must contain at least one special character")
         return v
 
-    @validator("confirm_password")
-    def validate_password_match(cls: Any, v: Any, values: Any) -> Any:
-        if "password" in values and v != values["password"]:
+    @field_validator("confirm_password")
+    @classmethod
+    def validate_password_match(cls, v: Any, info: Any) -> Any:
+        if "password" in info.data and v != info.data["password"]:
             raise ValueError("Passwords do not match")
         return v
 
-    @validator("wallet_address")
-    def validate_wallet_address(cls: Any, v: Any) -> Any:
+    @field_validator("wallet_address")
+    @classmethod
+    def validate_wallet_address(cls, v: Any) -> Any:
         if v is not None and (not re.match("^0x[a-fA-F0-9]{40}$", v)):
             raise ValueError("Invalid Ethereum wallet address format")
         return v
 
-    @validator("terms_accepted")
-    def validate_terms_accepted(cls: Any, v: Any) -> Any:
+    @field_validator("terms_accepted")
+    @classmethod
+    def validate_terms_accepted(cls, v: Any) -> Any:
         if not v:
             raise ValueError("Terms and conditions must be accepted")
         return v
 
-    @validator("privacy_accepted")
-    def validate_privacy_accepted(cls: Any, v: Any) -> Any:
+    @field_validator("privacy_accepted")
+    @classmethod
+    def validate_privacy_accepted(cls, v: Any) -> Any:
         if not v:
             raise ValueError("Privacy policy must be accepted")
         return v
@@ -86,8 +92,9 @@ class PasswordChangeRequest(BaseModel):
     new_password: str = Field(..., min_length=8, description="New password")
     confirm_password: str = Field(..., description="New password confirmation")
 
-    @validator("new_password")
-    def validate_new_password(cls: Any, v: Any) -> Any:
+    @field_validator("new_password")
+    @classmethod
+    def validate_new_password(cls, v: Any) -> Any:
         """Validate new password strength"""
         if len(v) < 8:
             raise ValueError("Password must be at least 8 characters long")
@@ -101,9 +108,10 @@ class PasswordChangeRequest(BaseModel):
             raise ValueError("Password must contain at least one special character")
         return v
 
-    @validator("confirm_password")
-    def validate_password_match(cls: Any, v: Any, values: Any) -> Any:
-        if "new_password" in values and v != values["new_password"]:
+    @field_validator("confirm_password")
+    @classmethod
+    def validate_password_match(cls, v: Any, info: Any) -> Any:
+        if "new_password" in info.data and v != info.data["new_password"]:
             raise ValueError("Passwords do not match")
         return v
 
@@ -121,8 +129,9 @@ class PasswordResetConfirm(BaseModel):
     new_password: str = Field(..., min_length=8, description="New password")
     confirm_password: str = Field(..., description="New password confirmation")
 
-    @validator("new_password")
-    def validate_new_password(cls: Any, v: Any) -> Any:
+    @field_validator("new_password")
+    @classmethod
+    def validate_new_password(cls, v: Any) -> Any:
         """Validate new password strength"""
         if len(v) < 8:
             raise ValueError("Password must be at least 8 characters long")
@@ -136,9 +145,10 @@ class PasswordResetConfirm(BaseModel):
             raise ValueError("Password must contain at least one special character")
         return v
 
-    @validator("confirm_password")
-    def validate_password_match(cls: Any, v: Any, values: Any) -> Any:
-        if "new_password" in values and v != values["new_password"]:
+    @field_validator("confirm_password")
+    @classmethod
+    def validate_password_match(cls, v: Any, info: Any) -> Any:
+        if "new_password" in info.data and v != info.data["new_password"]:
             raise ValueError("Passwords do not match")
         return v
 
@@ -164,8 +174,9 @@ class MFAVerifyRequest(BaseModel):
 
     code: str = Field(..., description="TOTP code from authenticator app")
 
-    @validator("code")
-    def validate_mfa_code(cls: Any, v: Any) -> Any:
+    @field_validator("code")
+    @classmethod
+    def validate_mfa_code(cls, v: Any) -> Any:
         if not re.match("^\\d{6}$", v):
             raise ValueError("MFA code must be 6 digits")
         return v
@@ -177,8 +188,9 @@ class MFADisableRequest(BaseModel):
     password: str = Field(..., description="Current password for verification")
     code: str = Field(..., description="TOTP code from authenticator app")
 
-    @validator("code")
-    def validate_mfa_code(cls: Any, v: Any) -> Any:
+    @field_validator("code")
+    @classmethod
+    def validate_mfa_code(cls, v: Any) -> Any:
         if not re.match("^\\d{6}$", v):
             raise ValueError("MFA code must be 6 digits")
         return v

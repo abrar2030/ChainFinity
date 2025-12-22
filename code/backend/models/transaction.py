@@ -141,7 +141,7 @@ class Transaction(BaseModel, TimestampMixin, AuditMixin):
     # Additional Data
     description = Column(Text, nullable=True)
     tags = Column(JSON, nullable=True)
-    metadata = Column(JSON, nullable=True)
+    extra_metadata = Column(JSON, nullable=True)
 
     # External References
     external_id = Column(String(255), nullable=True, index=True)

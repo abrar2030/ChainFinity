@@ -127,7 +127,7 @@ class MetadataMixin:
     Mixin for storing additional metadata
     """
 
-    metadata = Column(JSON, nullable=True)
+    extra_metadata = Column(JSON, nullable=True)
     tags = Column(JSON, nullable=True)
 
     def add_metadata(self, key: str, value: Any) -> None:

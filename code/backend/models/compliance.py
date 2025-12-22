@@ -124,7 +124,7 @@ class AuditLog(BaseModel, TimestampMixin):
     compliance_flags = Column(JSON, nullable=True)
 
     # Additional Context
-    metadata = Column(JSON, nullable=True)
+    extra_metadata = Column(JSON, nullable=True)
     tags = Column(JSON, nullable=True)
 
     # Relationships
@@ -414,7 +414,7 @@ class ComplianceRule(BaseModel, TimestampMixin, AuditMixin):
 
     # Metadata
     tags = Column(JSON, nullable=True)
-    metadata = Column(JSON, nullable=True)
+    extra_metadata = Column(JSON, nullable=True)
 
     def is_due_for_execution(self) -> bool:
         """Check if rule is due for execution"""

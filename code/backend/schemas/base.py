@@ -6,22 +6,23 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Any, Dict, List, Optional
 from uuid import UUID
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class BaseSchema(BaseModel):
     """Base schema with common configuration"""
 
-    class Config:
-        orm_mode = True
-        use_enum_values = True
-        validate_assignment = True
-        arbitrary_types_allowed = True
-        json_encoders = {
+    model_config = ConfigDict(
+        from_attributes=True,
+        use_enum_values=True,
+        validate_assignment=True,
+        arbitrary_types_allowed=True,
+        json_encoders={
             datetime: lambda v: v.isoformat(),
             Decimal: lambda v: str(v),
             UUID: lambda v: str(v),
-        }
+        },
+    )
 
 
 class TimestampSchema(BaseSchema):
@@ -51,10 +52,11 @@ class PaginatedResponse(BaseModel):
     size: int
     pages: int
 
-    @validator("pages", always=True)
-    def calculate_pages(cls: Any, v: Any, values: Any) -> Any:
-        total = values.get("total", 0)
-        size = values.get("size", 20)
+    @field_validator("pages", mode="before")
+    @classmethod
+    def calculate_pages(cls, v: Any, info: Any) -> Any:
+        total = info.data.get("total", 0)
+        size = info.data.get("size", 20)
         return (total + size - 1) // size if total > 0 else 0
 
 
@@ -64,11 +66,12 @@ class FilterParams(BaseModel):
     search: Optional[str] = Field(None, description="Search term")
     sort_by: Optional[str] = Field(None, description="Sort field")
     sort_order: Optional[str] = Field(
-        "asc", regex="^(asc|desc)$", description="Sort order"
+        "asc", pattern="^(asc|desc)$", description="Sort order"
     )
 
-    @validator("search")
-    def validate_search(cls: Any, v: Any) -> Any:
+    @field_validator("search")
+    @classmethod
+    def validate_search(cls, v: Any) -> Any:
         if v is not None and len(v.strip()) < 2:
             raise ValueError("Search term must be at least 2 characters")
         return v.strip() if v else None
@@ -80,9 +83,10 @@ class DateRangeFilter(BaseModel):
     start_date: Optional[datetime] = Field(None, description="Start date")
     end_date: Optional[datetime] = Field(None, description="End date")
 
-    @validator("end_date")
-    def validate_date_range(cls: Any, v: Any, values: Any) -> Any:
-        start_date = values.get("start_date")
+    @field_validator("end_date")
+    @classmethod
+    def validate_date_range(cls, v: Any, info: Any) -> Any:
+        start_date = info.data.get("start_date")
         if start_date and v and (v < start_date):
             raise ValueError("End date must be after start date")
         return v

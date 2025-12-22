@@ -7,7 +7,7 @@ import ipaddress
 import json
 import logging
 import time
-from typing import Callable, Optional
+from typing import Any, Callable, Optional
 from config.database import cache
 from config.settings import settings
 from starlette.middleware.base import BaseHTTPMiddleware

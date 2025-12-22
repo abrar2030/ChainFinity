@@ -117,7 +117,7 @@ class BlockchainNetwork(BaseModel, TimestampMixin, AuditMixin):
     max_reorg_depth = Column(Integer, default=100, nullable=False)
 
     # Metadata
-    metadata = Column(JSON, nullable=True)
+    contract_metadata = Column(JSON, nullable=True)
 
     # Relationships
     contracts = relationship(
@@ -214,7 +214,7 @@ class SmartContract(BaseModel, TimestampMixin, AuditMixin):
 
     # Metadata
     tags = Column(JSON, nullable=True)
-    metadata = Column(JSON, nullable=True)
+    contract_metadata = Column(JSON, nullable=True)
 
     # Relationships
     network = relationship("BlockchainNetwork", back_populates="contracts")
@@ -293,7 +293,7 @@ class ContractEvent(BaseModel, TimestampMixin):
     processing_error = Column(Text, nullable=True)
 
     # Metadata
-    metadata = Column(JSON, nullable=True)
+    contract_metadata = Column(JSON, nullable=True)
 
     # Relationships
     contract = relationship("SmartContract", back_populates="events")
@@ -367,7 +367,7 @@ class BlockchainSync(BaseModel, TimestampMixin):
     last_error_at = Column(DateTime, nullable=True)
 
     # Metadata
-    metadata = Column(JSON, nullable=True)
+    contract_metadata = Column(JSON, nullable=True)
 
     # Relationships
     network = relationship("BlockchainNetwork")

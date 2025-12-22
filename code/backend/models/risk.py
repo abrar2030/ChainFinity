@@ -194,7 +194,7 @@ class RiskMetrics(BaseModel, TimestampMixin):
     threshold_breached = Column(Boolean, default=False, nullable=False, index=True)
 
     # Metadata
-    metadata = Column(JSON, nullable=True)
+    extra_metadata = Column(JSON, nullable=True)
 
     # Relationships
     user = relationship("User")
@@ -268,7 +268,7 @@ class AlertRule(BaseModel, TimestampMixin, AuditMixin):
 
     # Metadata
     tags = Column(JSON, nullable=True)
-    metadata = Column(JSON, nullable=True)
+    extra_metadata = Column(JSON, nullable=True)
 
     def is_due_for_execution(self) -> bool:
         """Check if rule is due for execution"""

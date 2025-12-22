@@ -5,14 +5,14 @@ Production-ready database setup with connection pooling, read replicas, and moni
 
 import logging
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator, Optional
+from typing import Any, AsyncGenerator, Optional
 import redis.asyncio as redis
 from config.settings import settings
 from sqlalchemy import create_engine, event
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, sessionmaker
-from sqlalchemy.pool import QueuePool
+from sqlalchemy.pool import NullPool
 
 logger = logging.getLogger(__name__)
 Base = declarative_base()
@@ -20,11 +20,7 @@ async_engine = create_async_engine(
     settings.database.DATABASE_URL,
     echo=settings.database.DB_ECHO,
     echo_pool=settings.database.DB_ECHO_POOL,
-    pool_size=settings.database.DB_POOL_SIZE,
-    max_overflow=settings.database.DB_MAX_OVERFLOW,
-    pool_timeout=settings.database.DB_POOL_TIMEOUT,
-    pool_recycle=settings.database.DB_POOL_RECYCLE,
-    poolclass=QueuePool,
+    poolclass=NullPool,  # Use NullPool for async
     future=True,
 )
 async_read_engine = None
@@ -33,11 +29,7 @@ if settings.database.DATABASE_READ_URL:
         settings.database.DATABASE_READ_URL,
         echo=settings.database.DB_ECHO,
         echo_pool=settings.database.DB_ECHO_POOL,
-        pool_size=settings.database.DB_POOL_SIZE,
-        max_overflow=settings.database.DB_MAX_OVERFLOW,
-        pool_timeout=settings.database.DB_POOL_TIMEOUT,
-        pool_recycle=settings.database.DB_POOL_RECYCLE,
-        poolclass=QueuePool,
+        poolclass=NullPool,  # Use NullPool for async
         future=True,
     )
 AsyncSessionLocal = async_sessionmaker(

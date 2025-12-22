@@ -128,7 +128,7 @@ class Portfolio(BaseModel, TimestampMixin, AuditMixin):
     next_rebalance = Column(DateTime, nullable=True)
 
     # Metadata
-    metadata = Column(JSON, nullable=True)
+    extra_metadata = Column(JSON, nullable=True)
     tags = Column(JSON, nullable=True)
 
     # Relationships
@@ -246,7 +246,7 @@ class PortfolioAsset(BaseModel, TimestampMixin, AuditMixin):
     last_quantity_update = Column(DateTime, nullable=True)
 
     # Metadata
-    metadata = Column(JSON, nullable=True)
+    extra_metadata = Column(JSON, nullable=True)
 
     # Relationships
     portfolio = relationship("Portfolio", back_populates="assets")
