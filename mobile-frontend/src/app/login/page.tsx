@@ -1,6 +1,8 @@
+'use client';
+
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useApp } from '../context/AppContext';
+import { useApp } from '@/context/AppContext';
 import {
     Box,
     Container,
@@ -16,7 +18,7 @@ import {
     Alert,
     Checkbox,
     FormControlLabel,
-    Link,
+    Link as MuiLink,
     CircularProgress,
 } from '@mui/material';
 import { Visibility, VisibilityOff, Email, Lock, AccountBalanceWallet } from '@mui/icons-material';
@@ -73,7 +75,8 @@ const SocialButton = styled(Button)(({ theme }) => ({
 const Login = () => {
     const theme = useTheme();
     const router = useRouter();
-    const { login, error, loading, clearError } = useApp();
+    const { actions, error, loading } = useApp();
+    const { login, clearError, connectWallet } = actions;
 
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState('');
@@ -85,11 +88,11 @@ const Login = () => {
         setShowPassword(!showPassword);
     };
 
-    const handleMouseDownPassword = (event) => {
+    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         // Clear previous errors
@@ -113,6 +116,15 @@ const Login = () => {
         }
     };
 
+    const handleConnectWallet = async () => {
+        try {
+            await connectWallet();
+            router.push('/dashboard');
+        } catch (err) {
+            setFormError('Failed to connect wallet. Please try again.');
+        }
+    };
+
     return (
         <AuthContainer maxWidth="sm">
             <motion.div
@@ -123,7 +135,7 @@ const Login = () => {
             >
                 <Box sx={{ textAlign: 'center', mb: 4 }}>
                     <Typography
-                        variant={{ xs: 'h5', md: 'h4' }}
+                        variant="h4"
                         component="h1"
                         fontWeight={700}
                         sx={{
@@ -220,8 +232,10 @@ const Login = () => {
                                 }
                                 label="Remember me"
                             />
-                            <Link href="/forgot-password" variant="body2" color="primary">
-                                Forgot password?
+                            <Link href="/forgot-password" passHref legacyBehavior>
+                                <MuiLink variant="body2" color="primary">
+                                    Forgot password?
+                                </MuiLink>
                             </Link>
                         </Box>
 
@@ -240,8 +254,10 @@ const Login = () => {
                         <Box sx={{ textAlign: 'center', mt: 1 }}>
                             <Typography variant="body2" color="text.secondary">
                                 Don't have an account?{' '}
-                                <Link href="/register" fontWeight={600} color="primary">
-                                    Sign Up
+                                <Link href="/register" passHref legacyBehavior>
+                                    <MuiLink fontWeight={600} color="primary">
+                                        Sign Up
+                                    </MuiLink>
                                 </Link>
                             </Typography>
                         </Box>
@@ -270,7 +286,7 @@ const Login = () => {
                                 fullWidth
                                 variant="outlined"
                                 startIcon={<AccountBalanceWallet />}
-                                onClick={() => console.log('Connect wallet')}
+                                onClick={handleConnectWallet}
                                 disabled={loading}
                             >
                                 Connect Wallet
@@ -280,7 +296,7 @@ const Login = () => {
                             <SocialButton
                                 fullWidth
                                 variant="outlined"
-                                onClick={() => console.log('Guest login')}
+                                onClick={() => router.push('/dashboard')}
                                 disabled={loading}
                             >
                                 Guest Access

@@ -1,6 +1,8 @@
+'use client';
+
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useApp } from '../context/AppContext';
+import { useApp } from '@/context/AppContext';
 import {
     Box,
     Container,
@@ -14,7 +16,7 @@ import {
     Divider,
     useTheme,
     Alert,
-    Link,
+    Link as MuiLink,
     CircularProgress,
 } from '@mui/material';
 import {
@@ -43,7 +45,7 @@ const AuthContainer = styled(Container)(({ theme }) => ({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 'calc(100vh - 140px)', // Account for header and footer
+    minHeight: 'calc(100vh - 140px)',
     padding: theme.spacing(3),
 }));
 
@@ -51,16 +53,6 @@ const AuthDivider = styled(Divider)(({ theme }) => ({
     margin: theme.spacing(3, 0),
     width: '100%',
     position: 'relative',
-    '&::before': {
-        content: '""',
-        position: 'absolute',
-        top: '-8px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        padding: '0 16px',
-        backgroundColor: theme.palette.background.paper,
-        color: theme.palette.text.secondary,
-    },
 }));
 
 const SocialButton = styled(Button)(({ theme }) => ({
@@ -78,7 +70,8 @@ const SocialButton = styled(Button)(({ theme }) => ({
 const Register = () => {
     const theme = useTheme();
     const router = useRouter();
-    const { register, error, loading, clearError } = useApp();
+    const { actions, error, loading } = useApp();
+    const { register, clearError, connectWallet } = actions;
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -89,26 +82,11 @@ const Register = () => {
     const [walletAddress, setWalletAddress] = useState('');
     const [formError, setFormError] = useState('');
 
-    const handleClickShowPassword = () => {
-        setShowPassword(!showPassword);
-    };
-
-    const handleClickShowConfirmPassword = () => {
-        setShowConfirmPassword(!showConfirmPassword);
-    };
-
-    const handleMouseDownPassword = (event) => {
-        event.preventDefault();
-    };
-
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
-        // Clear previous errors
         clearError();
         setFormError('');
 
-        // Form validation
         if (!name || !email || !password || !confirmPassword) {
             setFormError('Please fill in all required fields');
             return;
@@ -133,13 +111,18 @@ const Register = () => {
             });
 
             if (result.success) {
-                // Redirect to login on success
-                // Note: Next.js router.push doesn't directly support passing state like react-router
-                // We might need to use query parameters or another state management approach if the message is crucial
-                router.push('/login?registration=success'); // Pass info via query param
+                router.push('/login?registration=success');
             }
         } catch (err) {
             setFormError('An unexpected error occurred. Please try again.');
+        }
+    };
+
+    const handleConnectWallet = async () => {
+        try {
+            await connectWallet();
+        } catch (err) {
+            setFormError('Failed to connect wallet.');
         }
     };
 
@@ -153,7 +136,7 @@ const Register = () => {
             >
                 <Box sx={{ textAlign: 'center', mb: 4 }}>
                     <Typography
-                        variant={{ xs: 'h5', md: 'h4' }}
+                        variant="h4"
                         component="h1"
                         fontWeight={700}
                         sx={{
@@ -235,9 +218,7 @@ const Register = () => {
                                 endAdornment: (
                                     <InputAdornment position="end">
                                         <IconButton
-                                            aria-label="toggle password visibility"
-                                            onClick={handleClickShowPassword}
-                                            onMouseDown={handleMouseDownPassword}
+                                            onClick={() => setShowPassword(!showPassword)}
                                             edge="end"
                                             disabled={loading}
                                         >
@@ -267,9 +248,9 @@ const Register = () => {
                                 endAdornment: (
                                     <InputAdornment position="end">
                                         <IconButton
-                                            aria-label="toggle password visibility"
-                                            onClick={handleClickShowConfirmPassword}
-                                            onMouseDown={handleMouseDownPassword}
+                                            onClick={() =>
+                                                setShowConfirmPassword(!showConfirmPassword)
+                                            }
                                             edge="end"
                                             disabled={loading}
                                         >
@@ -322,8 +303,10 @@ const Register = () => {
                         <Box sx={{ textAlign: 'center', mt: 1 }}>
                             <Typography variant="body2" color="text.secondary">
                                 Already have an account?{' '}
-                                <Link href="/login" fontWeight={600} color="primary">
-                                    Sign In
+                                <Link href="/login" passHref legacyBehavior>
+                                    <MuiLink fontWeight={600} color="primary">
+                                        Sign In
+                                    </MuiLink>
                                 </Link>
                             </Typography>
                         </Box>
@@ -352,7 +335,7 @@ const Register = () => {
                                 fullWidth
                                 variant="outlined"
                                 startIcon={<AccountBalanceWallet />}
-                                onClick={() => console.log('Connect wallet')}
+                                onClick={handleConnectWallet}
                                 disabled={loading}
                             >
                                 Connect Wallet
