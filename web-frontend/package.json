@@ -1,6 +1,7 @@
 {
     "name": "chainfinity-frontend",
     "version": "1.0.0",
+    "description": "ChainFinity - Cross-Chain DeFi Risk Management Platform Frontend",
     "dependencies": {
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.0",
@@ -8,6 +9,8 @@
         "@mui/material": "^5.14.0",
         "@mui/x-date-pickers": "^7.28.3",
         "@tanstack/react-query": "^4.32.0",
+        "@testing-library/jest-dom": "^5.16.5",
+        "@testing-library/user-event": "^14.4.3",
         "@web3-react/core": "^8.0.5",
         "axios": "^1.5.0",
         "date-fns": "^2.30.0",
@@ -24,8 +27,12 @@
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",
-        "test": "react-scripts test",
-        "eject": "react-scripts eject"
+        "test": "react-scripts test --watchAll=false",
+        "test:watch": "react-scripts test",
+        "test:coverage": "react-scripts test --coverage --watchAll=false",
+        "eject": "react-scripts eject",
+        "lint": "eslint src --ext .js,.jsx",
+        "format": "prettier --write \"src/**/*.{js,jsx,json,css,md}\""
     },
     "eslintConfig": {
         "extends": [
@@ -46,11 +53,18 @@
         ]
     },
     "devDependencies": {
-        "@testing-library/react": "^16.3.0"
+        "@testing-library/react": "^14.0.0",
+        "@types/jest": "^29.5.0"
     },
     "jest": {
         "transformIgnorePatterns": [
             "/node_modules/(?!axios)/"
+        ],
+        "collectCoverageFrom": [
+            "src/**/*.{js,jsx}",
+            "!src/index.js",
+            "!src/setupTests.js",
+            "!src/__mocks__/**"
         ]
     }
 }
