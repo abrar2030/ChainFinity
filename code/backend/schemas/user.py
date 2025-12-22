@@ -62,3 +62,47 @@ class UserRiskProfile(BaseSchema):
     risk_tolerance: str
     investment_goals: Optional[List[str]]
     created_at: datetime
+
+
+class UserProfileResponse(UserProfile):
+    """User profile response schema"""
+
+
+class UserProfileUpdate(BaseModel):
+    """User profile update schema"""
+
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    phone_number: Optional[str] = None
+    country: Optional[str] = None
+
+
+class UserKYCResponse(BaseSchema):
+    """User KYC response schema"""
+
+    id: UUID
+    user_id: UUID
+    document_type: str
+    verification_status: str
+    submitted_at: datetime
+    verified_at: Optional[datetime] = None
+
+
+class UserKYCUpdate(BaseModel):
+    """User KYC update schema"""
+
+    document_type: Optional[str] = None
+    document_number: Optional[str] = None
+    country: Optional[str] = None
+
+
+class UserRiskProfileResponse(UserRiskProfile):
+    """User risk profile response schema"""
+
+
+class UserRiskProfileUpdate(BaseModel):
+    """User risk profile update schema"""
+
+    risk_tolerance: Optional[str] = None
+    investment_goals: Optional[List[str]] = None
+    time_horizon: Optional[str] = None

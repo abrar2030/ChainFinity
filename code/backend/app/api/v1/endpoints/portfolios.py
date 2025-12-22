@@ -23,7 +23,7 @@ from schemas.portfolio import (
     RebalanceResponse,
 )
 from services.analytics.analytics_service import AnalyticsService
-from services.auth.auth_service import get_current_active_user
+from app.api.dependencies import get_current_user
 from services.portfolio.portfolio_service import PortfolioService
 from services.risk.risk_service import RiskService
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -37,7 +37,7 @@ async def get_user_portfolios(
     page: int = Query(1, ge=1),
     size: int = Query(20, ge=1, le=100),
     include_deleted: bool = Query(False),
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -62,7 +62,7 @@ async def get_user_portfolios(
 @router.post("/", response_model=PortfolioResponse)
 async def create_portfolio(
     portfolio_data: PortfolioCreate,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -98,7 +98,7 @@ async def create_portfolio(
 @router.get("/{portfolio_id}", response_model=PortfolioResponse)
 async def get_portfolio(
     portfolio_id: str,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -129,7 +129,7 @@ async def get_portfolio(
 async def update_portfolio(
     portfolio_id: str,
     portfolio_update: PortfolioUpdate,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -165,7 +165,7 @@ async def update_portfolio(
 @router.delete("/{portfolio_id}", response_model=SuccessResponse)
 async def delete_portfolio(
     portfolio_id: str,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -194,7 +194,7 @@ async def delete_portfolio(
 @router.get("/{portfolio_id}/assets", response_model=List[PortfolioAssetResponse])
 async def get_portfolio_assets(
     portfolio_id: str,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -222,7 +222,7 @@ async def get_portfolio_assets(
 async def add_portfolio_asset(
     portfolio_id: str,
     asset_data: PortfolioAssetUpdate,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -260,7 +260,7 @@ async def update_portfolio_asset(
     portfolio_id: str,
     asset_id: str,
     asset_update: PortfolioAssetUpdate,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -297,7 +297,7 @@ async def update_portfolio_asset(
 async def remove_portfolio_asset(
     portfolio_id: str,
     asset_id: str,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -329,7 +329,7 @@ async def remove_portfolio_asset(
 async def get_portfolio_analytics(
     portfolio_id: str,
     period: str = Query("30d", regex="^(1d|7d|30d|90d|1y|all)$"),
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -358,7 +358,7 @@ async def get_portfolio_performance(
     portfolio_id: str,
     period: str = Query("30d", regex="^(1d|7d|30d|90d|1y|all)$"),
     benchmark: Optional[str] = Query(None),
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -386,7 +386,7 @@ async def get_portfolio_performance(
 async def rebalance_portfolio(
     portfolio_id: str,
     rebalance_request: RebalanceRequest,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -422,7 +422,7 @@ async def rebalance_portfolio(
 @router.get("/{portfolio_id}/risk-assessment", response_model=dict)
 async def get_portfolio_risk_assessment(
     portfolio_id: str,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -450,7 +450,7 @@ async def get_portfolio_risk_assessment(
 async def sync_portfolio_with_blockchain(
     portfolio_id: str,
     wallet_addresses: List[str] = Body(...),
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -488,7 +488,7 @@ async def export_portfolio_data(
     portfolio_id: str,
     format: str = Query("csv", regex="^(csv|json|pdf)$"),
     include_transactions: bool = Query(True),
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -525,7 +525,7 @@ async def export_portfolio_data(
 async def get_portfolio_alerts(
     portfolio_id: str,
     active_only: bool = Query(True),
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -553,7 +553,7 @@ async def get_portfolio_alerts(
 async def create_portfolio_alert(
     portfolio_id: str,
     alert_data: dict = Body(...),
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """

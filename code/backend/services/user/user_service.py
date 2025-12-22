@@ -13,7 +13,7 @@ import pyotp
 import qrcode
 from config.database import cache
 from config.settings import settings
-from models.audit import AuditLog
+from models.compliance import AuditLog
 from models.user import (
     KYCStatus,
     RiskLevel,
@@ -26,8 +26,8 @@ from models.user import (
 from passlib.context import CryptContext
 from schemas.base import PaginatedResponse
 from schemas.user import UserCreate, UserProfileUpdate, UserUpdate
-from services.compliance.kyc_service import KYCService
-from services.email.email_service import EmailService
+
+# from services.email.email_service import EmailService
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -43,8 +43,7 @@ class UserService:
 
     def __init__(self, db: AsyncSession) -> Any:
         self.db = db
-        self.email_service = EmailService()
-        self.kyc_service = KYCService(db)
+        # self.email_service = None  # EmailService disabled
 
     async def create_user(self, user_data: UserCreate) -> User:
         """

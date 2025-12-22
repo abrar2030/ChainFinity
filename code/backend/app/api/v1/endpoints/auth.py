@@ -3,6 +3,7 @@ Authentication endpoints
 """
 
 import logging
+from datetime import datetime
 from typing import Any
 
 from app.api.dependencies import get_client_info, get_current_user

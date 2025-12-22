@@ -15,9 +15,24 @@ from models.risk import RiskAssessment
 from models.user import RiskLevel, UserRiskProfile
 from scipy import stats
 from services.market.market_data_service import MarketDataService
-from code.ai_models.train_correlation_model import CorrelationPredictor
 import os
-import tensorflow as tf
+import sys
+from pathlib import Path
+
+# Add ai_models to path
+ai_models_path = Path(__file__).parent.parent.parent / "ai_models"
+if str(ai_models_path) not in sys.path:
+    sys.path.insert(0, str(ai_models_path))
+
+try:
+    from train_correlation_model import CorrelationPredictor
+    import tensorflow as tf
+
+    HAS_ML_MODEL = True
+except (ImportError, ModuleNotFoundError):
+    CorrelationPredictor = None
+    tf = None
+    HAS_ML_MODEL = False
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -113,29 +128,49 @@ class RiskService:
             ),
         ]
 
-    def _load_correlation_predictor(self) -> CorrelationPredictor:
+    def _load_correlation_predictor(self):
         """Loads the correlation prediction model."""
         try:
-            if not os.path.exists(self.CORRELATION_MODEL_PATH):
+            if not HAS_ML_MODEL:
                 logger.warning(
-                    f"Correlation model not found at {self.CORRELATION_MODEL_PATH}. Using a mock predictor."
+                    "TensorFlow or correlation model not available. Using mock predictor."
                 )
 
                 class MockCorrelationPredictor:
-
                     def predict(self, df):
                         n_assets = 3
                         corr = np.identity(n_assets)
                         return corr
 
                 return MockCorrelationPredictor()
+
+            if not os.path.exists(self.CORRELATION_MODEL_PATH):
+                logger.warning(
+                    f"Correlation model not found at {self.CORRELATION_MODEL_PATH}. Using a mock predictor."
+                )
+
+                class MockCorrelationPredictor:
+                    def predict(self, df):
+                        n_assets = 3
+                        corr = np.identity(n_assets)
+                        return corr
+
+                return MockCorrelationPredictor()
+
             predictor = CorrelationPredictor()
             predictor.model = tf.keras.models.load_model(self.CORRELATION_MODEL_PATH)
             logger.info("Correlation prediction model loaded successfully.")
             return predictor
         except Exception as e:
             logger.error(f"Failed to load correlation predictor: {e}")
-            raise
+
+            class MockCorrelationPredictor:
+                def predict(self, df):
+                    n_assets = 3
+                    corr = np.identity(n_assets)
+                    return corr
+
+            return MockCorrelationPredictor()
 
     async def _get_portfolio_with_assets(
         self, portfolio_id: UUID, user_id: UUID

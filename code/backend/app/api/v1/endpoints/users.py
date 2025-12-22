@@ -21,9 +21,7 @@ from schemas.user import (
     UserRiskProfileUpdate,
     UserUpdate,
 )
-from services.auth.auth_service import get_current_active_user, get_current_user
-from services.compliance.kyc_service import KYCService
-from services.risk.risk_service import RiskService
+from app.api.dependencies import get_current_user
 from services.user.user_service import UserService
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -36,7 +34,7 @@ security = HTTPBearer()
 
 @router.get("/me", response_model=UserResponse)
 async def get_current_user_profile(
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -79,7 +77,7 @@ async def get_current_user_profile(
 @router.put("/me", response_model=UserResponse)
 async def update_current_user(
     user_update: UserUpdate,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -112,7 +110,7 @@ async def update_current_user(
 
 @router.get("/me/profile", response_model=UserProfileResponse)
 async def get_user_profile(
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -140,7 +138,7 @@ async def get_user_profile(
 @router.put("/me/profile", response_model=UserProfileResponse)
 async def update_user_profile(
     profile_update: UserProfileUpdate,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -175,7 +173,7 @@ async def update_user_profile(
 
 @router.get("/me/kyc", response_model=UserKYCResponse)
 async def get_user_kyc(
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -204,7 +202,7 @@ async def get_user_kyc(
 @router.post("/me/kyc/submit", response_model=UserKYCResponse)
 async def submit_kyc_verification(
     kyc_data: UserKYCUpdate,
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -237,7 +235,7 @@ async def submit_kyc_verification(
 
 @router.get("/me/risk-profile", response_model=UserRiskProfileResponse)
 async def get_user_risk_profile(
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -265,7 +263,7 @@ async def get_user_risk_profile(
 @router.post("/me/risk-assessment", response_model=UserRiskProfileResponse)
 async def request_risk_assessment(
     assessment_data: UserRiskProfileUpdate = Body(...),
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -301,7 +299,7 @@ async def request_risk_assessment(
 @router.post("/me/deactivate", response_model=SuccessResponse)
 async def deactivate_user_account(
     reason: str = Body(..., embed=True),
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -334,7 +332,7 @@ async def deactivate_user_account(
 async def get_user_activity(
     page: int = Query(1, ge=1),
     size: int = Query(20, ge=1, le=100),
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -411,7 +409,7 @@ async def verify_email(token: str, db: AsyncSession = Depends(get_async_session)
 async def change_password(
     current_password: str = Body(...),
     new_password: str = Body(...),
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -441,7 +439,7 @@ async def change_password(
 
 @router.post("/me/enable-mfa", response_model=dict)
 async def enable_mfa(
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -468,7 +466,7 @@ async def enable_mfa(
 @router.post("/me/verify-mfa", response_model=SuccessResponse)
 async def verify_mfa_setup(
     token: str = Body(..., embed=True),
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -497,7 +495,7 @@ async def verify_mfa_setup(
 @router.post("/me/disable-mfa", response_model=SuccessResponse)
 async def disable_mfa(
     password: str = Body(..., embed=True),
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_session),
 ):
     """
