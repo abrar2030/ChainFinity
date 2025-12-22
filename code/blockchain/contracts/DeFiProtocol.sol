@@ -523,12 +523,12 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
         uint256 amount = userInfo.stakedAmount;
         require(amount > 0, 'No staked amount');
 
+        // Update rewards before withdrawal
+        _updateReward(poolId, user);
+
         // Reset user state
         userInfo.stakedAmount = 0;
         userInfo.rewards = 0;
-        userInfo.rewardPerTokenPaid = 0;
-
-        // Update pool state
         pool.totalStaked = pool.totalStaked.sub(amount);
 
         // Transfer tokens
@@ -538,283 +538,210 @@ contract InstitutionalDeFiProtocol is ReentrancyGuard, Pausable, AccessControl {
     }
 
     /**
-     * @dev Set KYC verification status
-     * @param poolId Pool ID
-     * @param user User address
-     * @param verified Verification status
+     * @dev Internal function to calculate rewards
      */
-    function setKYCVerification(
-        uint256 poolId,
-        address user,
-        bool verified
-    ) external onlyRole(OPERATOR_ROLE) validPool(poolId) {
-        pools[poolId].users[user].isKYCVerified = verified;
-    }
-
-    /**
-     * @dev Authorize token for use in pools
-     * @param token Token address
-     * @param authorized Authorization status
-     */
-    function setAuthorizedToken(address token, bool authorized) external onlyRole(ADMIN_ROLE) {
-        authorizedTokens[token] = authorized;
-    }
-
-    /**
-     * @dev Update risk parameters for a pool
-     * @param poolId Pool ID
-     * @param params New risk parameters
-     */
-    function updateRiskParameters(
-        uint256 poolId,
-        RiskParameters memory params
-    ) external onlyRole(RISK_MANAGER_ROLE) validPool(poolId) {
-        riskParameters[poolId] = params;
-
-        emit RiskParametersUpdated(poolId, params.maxTotalValueLocked, params.maxUserStake);
-    }
-
-    /**
-     * @dev Pause contract
-     */
-    function pause() external onlyRole(ADMIN_ROLE) {
-        _pause();
-    }
-
-    /**
-     * @dev Unpause contract
-     */
-    function unpause() external onlyRole(ADMIN_ROLE) {
-        _unpause();
-    }
-
-    // View functions
-
-    /**
-     * @dev Get user information for a pool
-     * @param poolId Pool ID
-     * @param user User address
-     * @return User information
-     */
-    function getUserInfo(
-        uint256 poolId,
-        address user
-    )
-        external
-        view
-        validPool(poolId)
-        returns (
-            uint256 stakedAmount,
-            uint256 pendingRewards,
-            uint256 lastStakeTime,
-            uint256 lockupEndTime,
-            bool isKYCVerified
-        )
-    {
+    function _calculateReward(uint256 poolId, address user) internal view returns (uint256) {
         PoolInfo storage pool = pools[poolId];
         UserInfo storage userInfo = pool.users[user];
 
-        stakedAmount = userInfo.stakedAmount;
-        pendingRewards = _pendingReward(poolId, user);
-        lastStakeTime = userInfo.lastStakeTime;
-        lockupEndTime = userInfo.lockupEndTime;
-        isKYCVerified = userInfo.isKYCVerified;
+        if (pool.totalStaked == 0 || userInfo.stakedAmount == 0) {
+            return 0;
+        }
+
+        uint256 timeElapsed = block.timestamp.sub(pool.lastUpdateTime);
+        uint256 reward = timeElapsed.mul(pool.rewardRate).mul(userInfo.stakedAmount).div(
+            pool.totalStaked
+        );
+
+        return reward;
     }
 
     /**
-     * @dev Get pool information
-     * @param poolId Pool ID
-     * @return Pool information
-     */
-    function getPoolInfo(
-        uint256 poolId
-    )
-        external
-        view
-        validPool(poolId)
-        returns (
-            address stakingToken,
-            address rewardToken,
-            PoolType poolType,
-            RiskLevel riskLevel,
-            uint256 totalStaked,
-            uint256 rewardRate,
-            uint256 periodFinish,
-            bool isActive
-        )
-    {
-        PoolInfo storage pool = pools[poolId];
-
-        stakingToken = address(pool.stakingToken);
-        rewardToken = address(pool.rewardToken);
-        poolType = pool.poolType;
-        riskLevel = pool.riskLevel;
-        totalStaked = pool.totalStaked;
-        rewardRate = pool.rewardRate;
-        periodFinish = pool.periodFinish;
-        isActive = pool.isActive;
-    }
-
-    /**
-     * @dev Calculate pending rewards for a user
-     * @param poolId Pool ID
-     * @param user User address
-     * @return Pending rewards
-     */
-    function pendingReward(
-        uint256 poolId,
-        address user
-    ) external view validPool(poolId) returns (uint256) {
-        return _pendingReward(poolId, user);
-    }
-
-    // Internal functions
-
-    /**
-     * @dev Update reward for a user
-     * @param poolId Pool ID
-     * @param user User address
+     * @dev Internal function to update rewards
      */
     function _updateReward(uint256 poolId, address user) internal {
         PoolInfo storage pool = pools[poolId];
         UserInfo storage userInfo = pool.users[user];
 
-        pool.rewardPerTokenStored = _rewardPerToken(poolId);
-        pool.lastUpdateTime = _lastTimeRewardApplicable(poolId);
-
-        if (user != address(0)) {
-            userInfo.rewards = _pendingReward(poolId, user);
-            userInfo.rewardPerTokenPaid = pool.rewardPerTokenStored;
-        }
+        uint256 reward = _calculateReward(poolId, user);
+        userInfo.rewards = userInfo.rewards.add(reward);
+        pool.lastUpdateTime = block.timestamp;
     }
 
     /**
-     * @dev Calculate reward per token
-     * @param poolId Pool ID
-     * @return Reward per token
+     * @dev Internal function to perform risk check
      */
-    function _rewardPerToken(uint256 poolId) internal view returns (uint256) {
-        PoolInfo storage pool = pools[poolId];
-
-        if (pool.totalStaked == 0) {
-            return pool.rewardPerTokenStored;
-        }
-
-        return
-            pool.rewardPerTokenStored.add(
-                _lastTimeRewardApplicable(poolId)
-                    .sub(pool.lastUpdateTime)
-                    .mul(pool.rewardRate)
-                    .mul(PRECISION)
-                    .div(pool.totalStaked)
-            );
-    }
-
-    /**
-     * @dev Calculate pending rewards for a user
-     * @param poolId Pool ID
-     * @param user User address
-     * @return Pending rewards
-     */
-    function _pendingReward(uint256 poolId, address user) internal view returns (uint256) {
+    function _performRiskCheck(uint256 poolId, address user, uint256 amount) internal view {
+        RiskParameters storage params = riskParameters[poolId];
         PoolInfo storage pool = pools[poolId];
         UserInfo storage userInfo = pool.users[user];
 
-        return
-            userInfo
-                .stakedAmount
-                .mul(_rewardPerToken(poolId).sub(userInfo.rewardPerTokenPaid))
-                .div(PRECISION)
-                .add(userInfo.rewards);
-    }
+        // Check max TVL
+        require(pool.totalStaked.add(amount) <= params.maxTotalValueLocked, 'Max TVL exceeded');
 
-    /**
-     * @dev Get last time reward applicable
-     * @param poolId Pool ID
-     * @return Last applicable time
-     */
-    function _lastTimeRewardApplicable(uint256 poolId) internal view returns (uint256) {
-        return Math.min(block.timestamp, pools[poolId].periodFinish);
-    }
-
-    /**
-     * @dev Perform risk check
-     * @param poolId Pool ID
-     * @param user User address
-     * @param amount Amount to check
-     */
-    function _performRiskCheck(uint256 poolId, address user, uint256 amount) internal view {
-        PoolInfo storage pool = pools[poolId];
-        RiskParameters storage riskParams = riskParameters[poolId];
-
-        // Check maximum TVL
+        // Check max user stake
         require(
-            pool.totalStaked.add(amount) <= riskParams.maxTotalValueLocked,
-            'Exceeds maximum TVL'
+            userInfo.stakedAmount.add(amount) <= params.maxUserStake,
+            'Max user stake exceeded'
         );
 
-        // Check maximum user stake
-        require(
-            pool.users[user].stakedAmount.add(amount) <= riskParams.maxUserStake,
-            'Exceeds maximum user stake'
-        );
-
-        // Additional risk checks can be added here
+        // Placeholder for more complex risk checks (e.g., oracle-based collateral ratio checks)
     }
 
     /**
-     * @dev Get default early withdrawal fee based on risk level
-     * @param riskLevel Risk level
-     * @return Early withdrawal fee in basis points
+     * @dev Internal function to get default early withdrawal fee
      */
     function _getDefaultEarlyWithdrawalFee(RiskLevel riskLevel) internal pure returns (uint256) {
-        if (riskLevel == RiskLevel.Low) return 100; // 1%
-        if (riskLevel == RiskLevel.Medium) return 200; // 2%
-        if (riskLevel == RiskLevel.High) return 300; // 3%
+        if (riskLevel == RiskLevel.Low) return 50; // 0.5%
+        if (riskLevel == RiskLevel.Medium) return 100; // 1%
+        if (riskLevel == RiskLevel.High) return 200; // 2%
         return 500; // 5% for Critical
     }
 
     /**
-     * @dev Get default performance fee based on pool type
-     * @param poolType Pool type
-     * @return Performance fee in basis points
+     * @dev Internal function to get default performance fee
      */
     function _getDefaultPerformanceFee(PoolType poolType) internal pure returns (uint256) {
-        if (poolType == PoolType.Lending) return 100; // 1%
-        if (poolType == PoolType.Staking) return 200; // 2%
-        if (poolType == PoolType.LiquidityMining) return 300; // 3%
-        if (poolType == PoolType.YieldFarming) return 400; // 4%
-        return 500; // 5% for Insurance
+        if (poolType == PoolType.Lending) return 50; // 0.5%
+        if (poolType == PoolType.Staking) return 100; // 1%
+        if (poolType == PoolType.LiquidityMining) return 150; // 1.5%
+        if (poolType == PoolType.YieldFarming) return 200; // 2%
+        return 0; // No fee for Insurance
     }
 
     /**
-     * @dev Get default maximum TVL based on risk level
-     * @param riskLevel Risk level
-     * @return Maximum TVL
+     * @dev Internal function to get default max TVL
      */
     function _getDefaultMaxTVL(RiskLevel riskLevel) internal pure returns (uint256) {
         if (riskLevel == RiskLevel.Low) return 100000000 * PRECISION; // 100M
         if (riskLevel == RiskLevel.Medium) return 50000000 * PRECISION; // 50M
-        if (riskLevel == RiskLevel.High) return 25000000 * PRECISION; // 25M
-        return 10000000 * PRECISION; // 10M for Critical
+        if (riskLevel == RiskLevel.High) return 10000000 * PRECISION; // 10M
+        return 1000000 * PRECISION; // 1M for Critical
     }
 
     /**
-     * @dev Get default risk premium based on risk level
-     * @param riskLevel Risk level
-     * @return Risk premium in basis points
+     * @dev Internal function to get default risk premium
      */
     function _getDefaultRiskPremium(RiskLevel riskLevel) internal pure returns (uint256) {
-        if (riskLevel == RiskLevel.Low) return 100; // 1%
-        if (riskLevel == RiskLevel.Medium) return 300; // 3%
-        if (riskLevel == RiskLevel.High) return 500; // 5%
-        return 1000; // 10% for Critical
+        if (riskLevel == RiskLevel.Low) return 10; // 0.1%
+        if (riskLevel == RiskLevel.Medium) return 50; // 0.5%
+        if (riskLevel == RiskLevel.High) return 100; // 1%
+        return 200; // 2% for Critical
     }
 
     /**
-     * @dev Receive function
+     * @dev Internal function to perform compliance check
      */
-    receive() external payable {
-        revert('Direct ETH transfers not allowed');
+    function _performComplianceCheck(
+        address user,
+        address token,
+        uint256 amount,
+        string memory operation
+    ) internal view returns (bool) {
+        // Placeholder for external compliance oracle call or on-chain checks
+        // For now, it simply passes if the user is not blacklisted
+        return !hasRole(EMERGENCY_ROLE, user); // Simple check: Emergency role is used for blacklisting
+    }
+
+    /**
+     * @dev Internal function to set KYC verified status
+     */
+    function _setKYCVerified(address user, bool verified) internal {
+        // Placeholder for setting KYC status
+        pools[0].users[user].isKYCVerified = verified; // Assuming pool 0 is the default
+    }
+
+    /**
+     * @dev Internal function to set blacklisted status
+     */
+    function _setBlacklisted(address user, bool blacklisted) internal {
+        // Placeholder for setting blacklisted status
+        if (blacklisted) {
+            _grantRole(EMERGENCY_ROLE, user);
+        } else {
+            _revokeRole(EMERGENCY_ROLE, user);
+        }
+    }
+
+    /**
+     * @dev Internal function to get governance token balance
+     */
+    function _getGovernanceTokenBalance(address user) internal view returns (uint256) {
+        // Placeholder for getting governance token balance
+        return 0;
+    }
+
+    /**
+     * @dev Internal function to get governance token total supply
+     */
+    function _getGovernanceTokenTotalSupply() internal view returns (uint256) {
+        // Placeholder for getting governance token total supply
+        return 0;
+    }
+
+    // --- Admin Functions ---
+
+    /**
+     * @dev Create a new liquidity pool
+     */
+    function createLiquidityPool(
+        address tokenA,
+        address tokenB,
+        uint256 feeRate
+    ) external onlyRole(ADMIN_ROLE) returns (uint256 poolId) {
+        require(tokenA != address(0) && tokenB != address(0), 'Invalid token address');
+        require(tokenA != tokenB, 'Tokens must be different');
+        require(feeRate <= MAX_FEE, 'Fee rate too high');
+
+        poolId = liquidityPoolCount++;
+        liquidityPools[poolId] = LiquidityPool({
+            token0: IERC20(tokenA),
+            token1: IERC20(tokenB),
+            reserve0: 0,
+            reserve1: 0,
+            totalLiquidity: 0,
+            feeRate: feeRate,
+            lastUpdateTime: block.timestamp,
+            isActive: true,
+            liquidityProviders: new mapping(address => uint256)
+        });
+    }
+
+    /**
+     * @dev Update risk parameters for a pool
+     */
+    function updateRiskParameters(
+        uint256 poolId,
+        uint256 maxTotalValueLocked,
+        uint256 maxUserStake,
+        uint256 maxPoolUtilization,
+        uint256 liquidationThreshold,
+        uint256 collateralRatio,
+        uint256 riskPremium
+    ) external onlyRole(RISK_MANAGER_ROLE) validPool(poolId) {
+        riskParameters[poolId] = RiskParameters({
+            maxTotalValueLocked: maxTotalValueLocked,
+            maxUserStake: maxUserStake,
+            maxPoolUtilization: maxPoolUtilization,
+            liquidationThreshold: liquidationThreshold,
+            collateralRatio: collateralRatio,
+            riskPremium: riskPremium
+        });
+
+        emit RiskParametersUpdated(poolId, maxTotalValueLocked, maxUserStake);
+    }
+
+    /**
+     * @dev Pause the contract
+     */
+    function pause() external onlyRole(EMERGENCY_ROLE) {
+        _pause();
+    }
+
+    /**
+     * @dev Unpause the contract
+     */
+    function unpause() external onlyRole(ADMIN_ROLE) {
+        _unpause();
     }
 }

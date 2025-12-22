@@ -11,7 +11,7 @@ import '@chainlink/contracts/src/v0.8/ccip/interfaces/IAny2EVMMessageReceiver.so
 import '@chainlink/contracts/src/v0.8/ccip/libraries/Client.sol';
 
 /**
- * @title Enhanced CrossChainManager
+ * @title CrossChainManager
  * @dev Manages cross-chain transfers with Chainlink CCIP integration, rate limiting, and circuit breakers
  */
 contract CrossChainManager is
@@ -318,10 +318,7 @@ contract CrossChainManager is
     }
 
     /**
-     * @dev Get all members with a specific role
-     * @param role Role to query
-     * @return Array of addresses with the role
-     */
+     
 
     /**
      * @dev Pause the contract

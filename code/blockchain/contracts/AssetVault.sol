@@ -9,7 +9,7 @@ import '@openzeppelin/contracts/security/Pausable.sol';
 import '@openzeppelin/contracts/proxy/utils/Initializable.sol';
 
 /**
- * @title Enhanced AssetVault
+ * @title Secure AssetVault
  * @dev Secure vault for managing user assets with multi-sig, fees, and emergency controls
  */
 contract AssetVault is ReentrancyGuard, AccessControl, Pausable, Initializable {
@@ -28,12 +28,6 @@ contract AssetVault is ReentrancyGuard, AccessControl, Pausable, Initializable {
     uint256 public largeTransferThreshold;
     uint256 public requiredApprovals;
 
-    struct Asset {
-        address token;
-        uint256 amount;
-        uint256 timestamp;
-    }
-
     struct WithdrawalRequest {
         address user;
         address token;
@@ -45,7 +39,7 @@ contract AssetVault is ReentrancyGuard, AccessControl, Pausable, Initializable {
     }
 
     // Storage
-    mapping(address => Asset[]) public userAssets;
+    // Removed userAssets and Asset struct as userTokenBalances is sufficient for balance tracking
     mapping(address => mapping(address => uint256)) public userTokenBalances;
     mapping(uint256 => WithdrawalRequest) public withdrawalRequests;
     uint256 public nextWithdrawalRequestId;
@@ -144,10 +138,6 @@ contract AssetVault is ReentrancyGuard, AccessControl, Pausable, Initializable {
         }
 
         // Update user balances
-        userAssets[msg.sender].push(
-            Asset({token: token, amount: netAmount, timestamp: block.timestamp})
-        );
-
         userTokenBalances[msg.sender][token] += netAmount;
         emit AssetDeposited(msg.sender, token, netAmount, fee);
     }
@@ -161,9 +151,6 @@ contract AssetVault is ReentrancyGuard, AccessControl, Pausable, Initializable {
         require(amount > 0, 'Amount must be greater than 0');
         require(!frozenTokens[token], 'Token is frozen');
         require(!frozenUserAssets[msg.sender][token], 'User assets are frozen');
-        // Calculate net amount after fee
-        uint256 fee = (amount * withdrawFeeRate) / 10000;
-        uint256 netAmount = amount - fee;
 
         require(userTokenBalances[msg.sender][token] >= amount, 'Insufficient balance');
 
@@ -229,8 +216,8 @@ contract AssetVault is ReentrancyGuard, AccessControl, Pausable, Initializable {
         uint256 fee = (amount * withdrawFeeRate) / 10000;
         uint256 netAmount = amount - fee;
 
-        // Update user balance
-        userTokenBalances[user][token] -= netAmount;
+        // BUG FIX: Deduct the gross amount from the user's balance
+        userTokenBalances[user][token] -= amount;
 
         // Transfer tokens
         require(IERC20(token).transfer(user, netAmount), 'Transfer failed');
@@ -364,14 +351,6 @@ contract AssetVault is ReentrancyGuard, AccessControl, Pausable, Initializable {
      */
     function unpause() external onlyRole(ADMIN_ROLE) {
         _unpause();
-    }
-
-    /**
-     * @dev Get user assets
-     * @param user User address
-     */
-    function getUserAssets(address user) external view returns (Asset[] memory) {
-        return userAssets[user];
     }
 
     /**
