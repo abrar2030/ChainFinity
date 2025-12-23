@@ -35,7 +35,7 @@ class PortfolioService:
     Enhanced portfolio management service with institutional-grade features
     """
 
-    def __init__(self, db: AsyncSession) -> Any:
+    def __init__(self, db: AsyncSession) -> None:
         self.db = db
         self.market_data_service = MarketDataService()
         self.risk_service = RiskService(db)

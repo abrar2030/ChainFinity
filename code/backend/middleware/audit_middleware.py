@@ -20,7 +20,7 @@ async def audit_log(
     entity_id: str,
     changes: Optional[dict] = None,
     ip_address: Optional[str] = None,
-):
+) -> None:
     """
     Create an audit log entry
     """

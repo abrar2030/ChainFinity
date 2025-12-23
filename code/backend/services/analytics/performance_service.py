@@ -68,7 +68,7 @@ class PerformanceService:
     Comprehensive performance analytics service with institutional-grade metrics
     """
 
-    def __init__(self, db: AsyncSession) -> Any:
+    def __init__(self, db: AsyncSession) -> None:
         self.db = db
         self.market_data_service = MarketDataService()
         self.benchmarks = {

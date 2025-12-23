@@ -83,7 +83,7 @@ class RiskService:
     )
     "\n    Comprehensive risk management service with advanced analytics\n    "
 
-    def __init__(self, db: AsyncSession) -> Any:
+    def __init__(self, db: AsyncSession) -> None:
         self.db = db
         self.market_data_service = MarketDataService()
         self.correlation_predictor = self._load_correlation_predictor()
@@ -128,7 +128,7 @@ class RiskService:
             ),
         ]
 
-    def _load_correlation_predictor(self):
+    def _load_correlation_predictor(self) -> Any:
         """Loads the correlation prediction model."""
         try:
             if not HAS_ML_MODEL:
@@ -137,7 +137,7 @@ class RiskService:
                 )
 
                 class MockCorrelationPredictor:
-                    def predict(self, df):
+                    def predict(self, df: "pd.DataFrame") -> "pd.DataFrame":
                         n_assets = 3
                         corr = np.identity(n_assets)
                         return corr
@@ -150,7 +150,7 @@ class RiskService:
                 )
 
                 class MockCorrelationPredictor:
-                    def predict(self, df):
+                    def predict(self, df: "pd.DataFrame") -> "pd.DataFrame":
                         n_assets = 3
                         corr = np.identity(n_assets)
                         return corr
@@ -165,7 +165,7 @@ class RiskService:
             logger.error(f"Failed to load correlation predictor: {e}")
 
             class MockCorrelationPredictor:
-                def predict(self, df):
+                def predict(self, df: "pd.DataFrame") -> "pd.DataFrame":
                     n_assets = 3
                     corr = np.identity(n_assets)
                     return corr
@@ -182,14 +182,14 @@ class RiskService:
 
         class MockAsset:
 
-            def __init__(self, symbol: Any, quantity: Any, price: Any) -> Any:
+            def __init__(self, symbol: Any, quantity: Any, price: Any) -> None:
                 self.symbol = symbol
                 self.quantity = Decimal(str(quantity))
                 self.price = Decimal(str(price))
 
         class MockPortfolio:
 
-            def __init__(self, assets: Any) -> Any:
+            def __init__(self, assets: Any) -> None:
                 self.assets = assets
 
         if str(portfolio_id) == "00000000-0000-0000-0000-000000000001":

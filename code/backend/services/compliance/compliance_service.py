@@ -25,7 +25,7 @@ class ComplianceService:
     Main compliance service coordinating all compliance activities
     """
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.suspicious_amount_threshold = (
             settings.compliance.SUSPICIOUS_AMOUNT_THRESHOLD
         )

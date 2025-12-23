@@ -8,7 +8,7 @@ from contextlib import asynccontextmanager
 from typing import Any, AsyncGenerator, Optional
 import redis.asyncio as redis
 from config.settings import settings
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine, event, text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, sessionmaker
@@ -60,7 +60,7 @@ SyncSessionLocal = sessionmaker(bind=sync_engine, autocommit=False, autoflush=Fa
 redis_client: Optional[redis.Redis] = None
 
 
-async def init_redis():
+async def init_redis() -> None:
     """Initialize Redis connection"""
     global redis_client
     try:
@@ -80,7 +80,7 @@ async def init_redis():
         redis_client = None
 
 
-async def close_redis():
+async def close_redis() -> None:
     """Close Redis connection"""
     global redis_client
     if redis_client:
@@ -176,7 +176,7 @@ async def check_database_health() -> bool:
     """
     try:
         async with AsyncSessionLocal() as session:
-            result = await session.execute("SELECT 1")
+            result = await session.execute(text("SELECT 1"))
             return result.scalar() == 1
     except Exception as e:
         logger.error(f"Database health check failed: {e}")
@@ -197,17 +197,17 @@ async def check_redis_health() -> bool:
         return False
 
 
-async def init_database():
+async def init_database() -> None:
     """
     Initialize database connections and create tables
     """
     try:
         async with AsyncSessionLocal() as session:
-            await session.execute("SELECT 1")
+            await session.execute(text("SELECT 1"))
         logger.info("Primary database connection established")
         if AsyncReadSessionLocal:
             async with AsyncReadSessionLocal() as session:
-                await session.execute("SELECT 1")
+                await session.execute(text("SELECT 1"))
             logger.info("Read replica database connection established")
         await init_redis()
     except Exception as e:
@@ -215,7 +215,7 @@ async def init_database():
         raise
 
 
-async def close_database():
+async def close_database() -> None:
     """
     Close all database connections
     """
@@ -243,7 +243,7 @@ class CacheManager:
         return None
 
     @staticmethod
-    async def set(key: str, value: str, ttl: int = None) -> bool:
+    async def set(key: str, value: str, ttl: Optional[int] = None) -> bool:
         """Set value in cache with optional TTL"""
         if redis_client:
             try:

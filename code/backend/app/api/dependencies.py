@@ -3,7 +3,7 @@ API dependencies for authentication and common functionality
 """
 
 import logging
-from typing import Any, Dict
+from typing import Dict
 from config.database import get_async_session
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -71,7 +71,7 @@ class PermissionChecker:
     Permission checker for role-based access control
     """
 
-    def __init__(self, required_permissions: list) -> Any:
+    def __init__(self, required_permissions: list) -> None:
         self.required_permissions = required_permissions
 
     def __call__(self, current_user: User = Depends(get_current_active_user)) -> User:

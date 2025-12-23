@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Any, Dict, List, Optional
+from types import TracebackType
 import aiohttp
 from config.database import cache
 from services.external.price_feeds import PriceFeedAggregator
@@ -68,7 +69,7 @@ class MarketDataService:
     Comprehensive market data service with multiple data sources and caching
     """
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.price_feed_aggregator = PriceFeedAggregator()
         self.session = None
         self.cache_ttl = {
@@ -78,12 +79,17 @@ class MarketDataService:
             "technical_indicators": 120,
         }
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "MarketDataManager":
         """Async context manager entry"""
         self.session = aiohttp.ClientSession()
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(
+        self,
+        exc_type: type | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
         """Async context manager exit"""
         if self.session:
             await self.session.close()

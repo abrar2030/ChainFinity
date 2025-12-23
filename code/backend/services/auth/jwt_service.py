@@ -16,7 +16,7 @@ class JWTService:
     JWT token management service
     """
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.secret_key = settings.security.SECRET_KEY
         self.algorithm = settings.security.ALGORITHM
         self.access_token_expire_minutes = settings.security.ACCESS_TOKEN_EXPIRE_MINUTES

@@ -24,7 +24,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
     Comprehensive security middleware for production environments
     """
 
-    def __init__(self, app: Any, **kwargs) -> Any:
+    def __init__(self, app: Any, **kwargs) -> None:
         super().__init__(app)
         self.blocked_ips = set()
         self.suspicious_patterns = [
@@ -223,7 +223,9 @@ class SecurityMiddleware(BaseHTTPMiddleware):
                 return False
         return True
 
-    async def flag_suspicious_activity(self, client_ip: str, activity_type: str):
+    async def flag_suspicious_activity(
+        self, client_ip: str, activity_type: str
+    ) -> None:
         """
         Flag suspicious activity for monitoring
         """
@@ -238,7 +240,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
             await self.block_ip_temporarily(client_ip, 1800)
             logger.warning(f"IP blocked for suspicious activity: {client_ip}")
 
-    async def block_ip_temporarily(self, ip: str, duration: int):
+    async def block_ip_temporarily(self, ip: str, duration: int) -> None:
         """
         Block IP address temporarily
         """
@@ -268,7 +270,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
     async def log_security_metrics(
         self, request: Request, response: Response, client_ip: str, start_time: float
-    ):
+    ) -> None:
         """
         Log security-related metrics
         """
@@ -299,7 +301,7 @@ class IPWhitelistMiddleware(BaseHTTPMiddleware):
     IP whitelist middleware for admin endpoints
     """
 
-    def __init__(self, app: Any, whitelist_cidrs: list = None) -> Any:
+    def __init__(self, app: Any, whitelist_cidrs: list = None) -> None:
         super().__init__(app)
         self.whitelist_cidrs = whitelist_cidrs or []
         self.admin_paths = ["/admin", "/api/v1/admin"]

@@ -4,7 +4,7 @@ Authentication service with enhanced security features
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, Optional, Tuple
+from typing import Dict, Optional, Tuple
 from uuid import UUID
 from config.database import cache
 from config.settings import settings
@@ -25,7 +25,7 @@ class AuthService:
     Comprehensive authentication service with security features
     """
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.jwt_service = JWTService()
         self.password_service = PasswordService()
         self.mfa_service = MFAService()

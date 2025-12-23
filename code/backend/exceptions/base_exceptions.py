@@ -125,7 +125,7 @@ class ValidationException(BaseChainFinityException):
 class AuthenticationException(BaseChainFinityException):
     """Exception for authentication errors"""
 
-    def __init__(self, message: str, **kwargs) -> Any:
+    def __init__(self, message: str, **kwargs) -> None:
         kwargs.update(
             {
                 "category": ErrorCategory.AUTHENTICATION,
@@ -167,7 +167,7 @@ class AuthorizationException(BaseChainFinityException):
 class BusinessLogicException(BaseChainFinityException):
     """Exception for business logic violations"""
 
-    def __init__(self, message: str, **kwargs) -> Any:
+    def __init__(self, message: str, **kwargs) -> None:
         kwargs.update(
             {"category": ErrorCategory.BUSINESS_LOGIC, "severity": ErrorSeverity.MEDIUM}
         )

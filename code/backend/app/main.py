@@ -4,6 +4,7 @@ Main FastAPI application with production-ready configuration
 
 import logging
 from contextlib import asynccontextmanager
+from typing import AsyncGenerator
 
 import uvicorn
 from app.api.v1.router import api_router
@@ -29,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """
     Application lifespan manager
     """
@@ -164,7 +165,7 @@ async def general_exception_handler(request: Request, exc: Exception):
 
 # Health check endpoint
 @app.get("/health", tags=["system"])
-async def health_check():
+async def health_check() -> dict:
     """Health check endpoint"""
     from config.database import check_database_health, check_redis_health
 
@@ -193,7 +194,7 @@ async def health_check():
 
 # Root endpoint
 @app.get("/", tags=["system"])
-async def root():
+async def root() -> dict:
     """Root endpoint"""
     return {
         "message": f"Welcome to {settings.app.APP_NAME}",

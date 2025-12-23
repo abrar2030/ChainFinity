@@ -19,7 +19,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     Rate limiting middleware using Redis for distributed rate limiting
     """
 
-    def __init__(self, app: Any) -> Any:
+    def __init__(self, app: Any) -> None:
         super().__init__(app)
         self.rate_limit_per_minute = settings.security.RATE_LIMIT_PER_MINUTE
         self.rate_limit_burst = settings.security.RATE_LIMIT_BURST

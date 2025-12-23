@@ -126,11 +126,11 @@ class Settings(BaseSettings):
 
     # Convenience property accessors for backward compatibility
     @property
-    def app(self):
+    def app(self) -> "AppSettings":
         """Application settings accessor"""
 
         class AppSettings:
-            def __init__(self, settings):
+            def __init__(self, settings: "Settings") -> None:
                 self.APP_NAME = settings.APP_NAME
                 self.APP_VERSION = settings.APP_VERSION
                 self.APP_DESCRIPTION = settings.APP_DESCRIPTION
@@ -146,11 +146,11 @@ class Settings(BaseSettings):
         return AppSettings(self)
 
     @property
-    def database(self):
+    def database(self) -> "DatabaseSettings":
         """Database settings accessor"""
 
         class DatabaseSettings:
-            def __init__(self, settings):
+            def __init__(self, settings: "Settings") -> None:
                 self.DATABASE_URL = settings.DATABASE_URL
                 self.DATABASE_READ_URL = settings.DATABASE_READ_URL
                 self.DB_POOL_SIZE = settings.DB_POOL_SIZE
@@ -163,11 +163,11 @@ class Settings(BaseSettings):
         return DatabaseSettings(self)
 
     @property
-    def redis(self):
+    def redis(self) -> "RedisSettings":
         """Redis settings accessor"""
 
         class RedisSettings:
-            def __init__(self, settings):
+            def __init__(self, settings: "Settings") -> None:
                 self.REDIS_URL = settings.REDIS_URL
                 self.REDIS_PASSWORD = settings.REDIS_PASSWORD
                 self.REDIS_DB = settings.REDIS_DB
@@ -182,11 +182,11 @@ class Settings(BaseSettings):
         return RedisSettings(self)
 
     @property
-    def security(self):
+    def security(self) -> "SecuritySettings":
         """Security settings accessor"""
 
         class SecuritySettings:
-            def __init__(self, settings):
+            def __init__(self, settings: "Settings") -> None:
                 self.SECRET_KEY = settings.SECRET_KEY
                 self.ALGORITHM = settings.JWT_ALGORITHM
                 self.ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
@@ -199,44 +199,44 @@ class Settings(BaseSettings):
         return SecuritySettings(self)
 
     @property
-    def blockchain(self):
+    def blockchain(self) -> "BlockchainSettings":
         """Blockchain settings accessor"""
 
         class BlockchainSettings:
-            def __init__(self, settings):
+            def __init__(self, settings: "Settings") -> None:
                 self.ETH_RPC_URL = settings.ETH_RPC_URL
                 self.ETH_CHAIN_ID = settings.ETH_CHAIN_ID
 
         return BlockchainSettings(self)
 
     @property
-    def compliance(self):
+    def compliance(self) -> "ComplianceSettings":
         """Compliance settings accessor"""
 
         class ComplianceSettings:
-            def __init__(self, settings):
+            def __init__(self, settings: "Settings") -> None:
                 self.KYC_ENABLED = settings.KYC_ENABLED
                 self.AML_ENABLED = settings.AML_ENABLED
 
         return ComplianceSettings(self)
 
     @property
-    def monitoring(self):
+    def monitoring(self) -> "MonitoringSettings":
         """Monitoring settings accessor"""
 
         class MonitoringSettings:
-            def __init__(self, settings):
+            def __init__(self, settings: "Settings") -> None:
                 self.LOG_LEVEL = settings.LOG_LEVEL
                 self.METRICS_ENABLED = settings.METRICS_ENABLED
 
         return MonitoringSettings(self)
 
     @property
-    def external_apis(self):
+    def external_apis(self) -> "ExternalAPISettings":
         """External APIs settings accessor"""
 
         class ExternalAPISettings:
-            def __init__(self, settings):
+            def __init__(self, settings: "Settings") -> None:
                 self.COINMARKETCAP_API_KEY = settings.COINMARKETCAP_API_KEY
                 self.CRYPTOCOMPARE_API_KEY = settings.CRYPTOCOMPARE_API_KEY
                 self.ALPHA_VANTAGE_API_KEY = settings.ALPHA_VANTAGE_API_KEY

@@ -8,6 +8,7 @@ import logging
 from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Any, Dict, List, Optional
+from types import TracebackType
 import aiohttp
 from config.database import cache
 from config.settings import settings
@@ -20,7 +21,7 @@ class PriceFeedAggregator:
     Aggregates price data from multiple sources with failover
     """
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.sources = [
             CoinGeckoPriceFeed(),
             CoinMarketCapPriceFeed(),
@@ -84,18 +85,23 @@ class PriceFeedAggregator:
 class BasePriceFeed:
     """Base class for price feed sources"""
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.session = None
         self.base_url = ""
         self.api_key = None
         self.rate_limit = 1.0
         self.last_request = 0
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "PriceManager":
         self.session = aiohttp.ClientSession()
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(
+        self,
+        exc_type: type | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
         if self.session:
             await self.session.close()
 
@@ -131,7 +137,7 @@ class BasePriceFeed:
 class CoinGeckoPriceFeed(BasePriceFeed):
     """CoinGecko price feed"""
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         super().__init__()
         self.base_url = "https://api.coingecko.com/api/v3"
         self.rate_limit = 1.2
@@ -169,7 +175,7 @@ class CoinGeckoPriceFeed(BasePriceFeed):
 class CoinMarketCapPriceFeed(BasePriceFeed):
     """CoinMarketCap price feed"""
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         super().__init__()
         self.base_url = "https://pro-api.coinmarketcap.com/v1"
         self.api_key = settings.external_apis.COINMARKETCAP_API_KEY
@@ -201,7 +207,7 @@ class CoinMarketCapPriceFeed(BasePriceFeed):
 class BinancePriceFeed(BasePriceFeed):
     """Binance price feed"""
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         super().__init__()
         self.base_url = "https://api.binance.com/api/v3"
         self.rate_limit = 0.1
@@ -225,7 +231,7 @@ class BinancePriceFeed(BasePriceFeed):
 class CryptoComparePriceFeed(BasePriceFeed):
     """CryptoCompare price feed"""
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         super().__init__()
         self.base_url = "https://min-api.cryptocompare.com/data"
         self.api_key = settings.external_apis.CRYPTOCOMPARE_API_KEY
@@ -249,7 +255,7 @@ class CryptoComparePriceFeed(BasePriceFeed):
 class AlphaPriceFeed(BasePriceFeed):
     """Alpha Vantage price feed for traditional assets"""
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         super().__init__()
         self.base_url = "https://www.alphavantage.co/query"
         self.api_key = settings.external_apis.ALPHA_VANTAGE_API_KEY
@@ -282,7 +288,7 @@ class AlphaPriceFeed(BasePriceFeed):
 class YahooPriceFeed(BasePriceFeed):
     """Yahoo Finance price feed"""
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         super().__init__()
         self.base_url = "https://query1.finance.yahoo.com/v8/finance/chart"
         self.rate_limit = 0.5
@@ -369,7 +375,7 @@ class PriceFeedManager:
     Manages multiple price feeds with health monitoring and failover
     """
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.aggregator = PriceFeedAggregator()
         self.validator = PriceValidator()
         self.health_status = {}

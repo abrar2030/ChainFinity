@@ -41,7 +41,7 @@ class UserService:
     Comprehensive user management service
     """
 
-    def __init__(self, db: AsyncSession) -> Any:
+    def __init__(self, db: AsyncSession) -> None:
         self.db = db
         # self.email_service = None  # EmailService disabled
 
