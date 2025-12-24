@@ -28,10 +28,10 @@ infrastructure/
 │   └── templates/
 │       └── nginx.conf.j2              # Nginx configuration template
 ├── jenkins/                           # CI/CD pipeline configuration
-│   └── Jenkinsfile                    # Enhanced security pipeline
+│   └── Jenkinsfile                    # Security pipeline
 ├── k8s/                              # Legacy Kubernetes configurations
 │   └── risk-engine-deployment.yaml   # Risk engine deployment
-├── kubernetes/                        # Enhanced Kubernetes configurations
+├── kubernetes/                        # Kubernetes configurations
 │   ├── deployment.yaml               # Comprehensive application deployment
 │   ├── backup/
 │   │   └── cronjob.yaml             # Backup automation
@@ -40,7 +40,7 @@ infrastructure/
 │   └── monitoring/
 │       └── prometheus-config.yaml   # Comprehensive monitoring
 ├── terraform/                        # Infrastructure as Code
-│   ├── main.tf                      # Enhanced infrastructure configuration
+│   ├── main.tf                      # infrastructure configuration
 │   ├── variables.tf                 # Comprehensive variable definitions
 │   ├── outputs.tf                   # Infrastructure outputs
 │   ├── terraform.tfvars             # Production configuration
@@ -63,7 +63,7 @@ infrastructure/
 │   └── compliance/                  # Compliance frameworks
 │       └── compliance-framework.yaml # SOC2, PCI-DSS, GDPR configuration
 ├── networking/                       # Network configurations
-└── monitoring/                       # Enhanced monitoring
+└── monitoring/                       # Monitoring
     └── security/                    # Security monitoring
 ```
 

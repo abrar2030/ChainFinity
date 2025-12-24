@@ -281,7 +281,7 @@ cache = CacheManager()
 
 class DatabaseManager:
     """
-    Enhanced database manager for handling complex transactions and operations
+    Database manager for handling complex transactions and operations
     """
 
     @staticmethod

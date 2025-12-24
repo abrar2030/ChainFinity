@@ -1,5 +1,5 @@
 """
-Enhanced Performance Analytics Service for Financial Industry Applications
+Performance Analytics Service for Financial Industry Applications
 Comprehensive portfolio performance analysis with institutional-grade metrics
 """
 

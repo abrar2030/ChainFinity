@@ -1,5 +1,5 @@
 """
-Enhanced Market Data Service for Financial Industry Applications
+Market Data Service for Financial Industry Applications
 Real-time and historical market data with advanced analytics and caching
 """
 

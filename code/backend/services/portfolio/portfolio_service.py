@@ -1,5 +1,5 @@
 """
-Enhanced Portfolio Service for Financial Industry Applications
+Portfolio Service for Financial Industry Applications
 Comprehensive portfolio management with advanced analytics, risk management, and compliance
 """
 
@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 class PortfolioService:
     """
-    Enhanced portfolio management service with institutional-grade features
+    Portfolio management service with institutional-grade features
     """
 
     def __init__(self, db: AsyncSession) -> None:

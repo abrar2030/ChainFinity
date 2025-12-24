@@ -2,7 +2,7 @@
 
 ## Overview
 
-ChainFinity is a comprehensive blockchain-based financial platform designed for institutional-grade applications. This enhanced version provides advanced portfolio management, risk assessment, market analytics, and DeFi protocol integration with enterprise-level security and compliance features.
+ChainFinity is a comprehensive blockchain-based financial platform designed for institutional-grade applications. This version provides advanced portfolio management, risk assessment, market analytics, and DeFi protocol integration with enterprise-level security and compliance features.
 
 ## Table of Contents
 

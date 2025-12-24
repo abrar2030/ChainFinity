@@ -70,7 +70,7 @@ class RiskLevel(enum.Enum):
 
 class Transaction(BaseModel, TimestampMixin, AuditMixin):
     """
-    Enhanced transaction model with compliance and monitoring
+    Transaction model with compliance and monitoring
     """
 
     __tablename__ = "transactions"
