@@ -65,27 +65,3 @@ This document outlines the security considerations and best practices for the Ch
 4. **Eradication**: Remove threat
 5. **Recovery**: Restore systems
 6. **Lessons Learned**: Document and improve
-
-## Security Checklist
-
-- [ ] Regular security audits
-- [ ] Penetration testing
-- [ ] Vulnerability scanning
-- [ ] Security training
-- [ ] Incident response plan
-- [ ] Backup and recovery procedures
-
-## Reporting Security Issues
-
-If you discover a security vulnerability, please:
-
-1. Do not disclose it publicly
-2. Email security@chainfinity.com
-3. Include detailed information
-4. Wait for our response
-
-## Resources
-
-- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
-- [Smart Contract Security Best Practices](https://consensys.github.io/smart-contract-best-practices/)
-- [Security Tools](./tools.md)

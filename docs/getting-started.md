@@ -46,21 +46,3 @@ npm run dev
 ```
 http://localhost:3000
 ```
-
-## First Steps
-
-1. Create an account or log in
-2. Connect your wallet
-3. Start exploring the platform
-
-## Next Steps
-
-- Read the [Architecture Guide](./architecture.md) to understand the system design
-- Check out the [API Documentation](./api-spec.md) for detailed API information
-- Review the [Security Guidelines](./security.md) for best practices
-
-## Need Help?
-
-- Visit our [FAQ](./faq.md)
-- Check the [Troubleshooting Guide](./troubleshooting.md)
-- Join our [Discord Community](https://discord.gg/chainfinity)
