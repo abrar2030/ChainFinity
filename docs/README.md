@@ -6,7 +6,7 @@
 
 Get started with ChainFinity in three simple steps:
 
-1. **Clone and install dependencies**: `git clone https://github.com/abrar2030/ChainFinity.git && cd ChainFinity && ./scripts/env_setup.sh`
+1. **Clone and install dependencies**: `git clone https://github.com/quantsingularity/ChainFinity.git && cd ChainFinity && ./scripts/env_setup.sh`
 2. **Configure environment**: Copy `.env.example` to `.env` in each component directory and add your API keys
 3. **Start services**: Run `./scripts/run_chainfinity.sh` to launch all components
 
