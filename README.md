@@ -32,6 +32,24 @@ ChainFinity is an advanced cross-chain DeFi risk management platform that levera
 
 ChainFinity provides comprehensive risk management solutions for DeFi protocols and users operating across multiple blockchain networks. By combining AI-driven predictive analytics with cross-chain communication protocols, ChainFinity enables real-time risk assessment, automated hedging strategies, and optimized capital efficiency across the fragmented DeFi ecosystem.
 
+## Project Structure
+
+The project is organized into several main components:
+
+```
+ChainFinity/
+├── code/                   # Core backend logic, services, and shared utilities
+├── docs/                   # Project documentation
+├── infrastructure/         # DevOps, deployment, and infra-related code
+├── mobile-frontend/        # Mobile application
+├── web-frontend/           # Web dashboard
+├── scripts/                # Automation, setup, and utility scripts
+├── LICENSE                 # License information
+├── README.md               # Project overview and instructions
+├── eslint.config.js        # ESLint configuration
+└── package.json            # Node.js project metadata and dependencies
+```
+
 ## Key Features
 
 ### Cross-Chain Risk Analytics
