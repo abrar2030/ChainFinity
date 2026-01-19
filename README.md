@@ -1,7 +1,7 @@
 # ChainFinity
 
-![CI/CD Status](https://img.shields.io/github/actions/workflow/status/abrar2030/ChainFinity/cicd.yml?branch=main&label=CI/CD&logo=github)
-[![Test Coverage](https://img.shields.io/badge/coverage-79%25-yellow)](https://github.com/abrar2030/ChainFinity/actions)
+![CI/CD Status](https://img.shields.io/github/actions/workflow/status/quantsingularity/ChainFinity/cicd.yml?branch=main&label=CI/CD&logo=github)
+[![Test Coverage](https://img.shields.io/badge/coverage-79%25-yellow)](https://github.com/quantsingularity/ChainFinity/actions)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## 🔄 Cross-Chain DeFi Risk Management Platform
@@ -24,6 +24,7 @@ ChainFinity is an advanced cross-chain DeFi risk management platform that levera
 - [Deployment](#deployment)
 - [Testing](#testing)
 - [CI/CD Pipeline](#cicd-pipeline)
+- [Documentation](#documentation)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -162,7 +163,7 @@ ChainFinity/
 
 ```bash
 # Clone repository
-git clone https://github.com/abrar2030/ChainFinity.git
+git clone https://github.com/quantsingularity/ChainFinity.git
 cd ChainFinity
 
 # Install dependencies
@@ -185,7 +186,7 @@ For a quick setup using the provided script:
 
 ```bash
 # Clone and setup
-git clone https://github.com/abrar2030/ChainFinity.git
+git clone https://github.com/quantsingularity/ChainFinity.git
 cd ChainFinity
 ./setup_chainfinity_env.sh
 ./run_chainfinity.sh
@@ -285,17 +286,42 @@ npm test
 ./run_all_tests.sh
 ```
 
-### CI/CD Pipeline
+## CI/CD Pipeline
 
 ChainFinity uses GitHub Actions for continuous integration and deployment:
 
-| Stage                 | Description                                   |
-| :-------------------- | :-------------------------------------------- | --- |
-| Automated testing     | On each pull request to ensure code stability |
-| Security scanning     | For smart contracts                           |
-| Code quality checks   | To enforce standards                          |
-| Docker image building | And publishing to a container registry        |
-| Automated deployment  | To staging and production environments        | s   |
+| Stage                   | Control Area                    | Institutional-Grade Detail                                                              |
+| :---------------------- | :------------------------------ | :-------------------------------------------------------------------------------------- |
+| **CI Formatting Check** | Change Triggers                 | Enforced on all `push` and `pull_request` events to `main` and `develop`                |
+|                         | Manual Oversight                | On-demand execution via controlled `workflow_dispatch`                                  |
+|                         | Source Integrity                | Full repository checkout with complete Git history for auditability                     |
+|                         | Python Runtime Standardization  | Python 3.10 with deterministic dependency caching                                       |
+|                         | Backend Code Hygiene            | `autoflake` to detect unused imports/variables using non-mutating diff-based validation |
+|                         | Backend Style Compliance        | `black --check` to enforce institutional formatting standards                           |
+|                         | Non-Intrusive Validation        | Temporary workspace comparison to prevent unauthorized source modification              |
+|                         | Node.js Runtime Control         | Node.js 18 with locked dependency installation via `npm ci`                             |
+|                         | Web Frontend Formatting Control | Prettier checks for web-facing assets                                                   |
+|                         | Mobile Frontend Formatting      | Prettier enforcement for mobile application codebases                                   |
+|                         | Documentation Governance        | Repository-wide Markdown formatting enforcement                                         |
+|                         | Infrastructure Configuration    | Prettier validation for YAML/YML infrastructure definitions                             |
+|                         | Compliance Gate                 | Any formatting deviation fails the pipeline and blocks merge                            |
+
+## Documentation
+
+For detailed documentation, please refer to the following resources:
+
+| Document                    | Path                 | Description                                                 |
+| :-------------------------- | :------------------- | :---------------------------------------------------------- |
+| **README**                  | `README.md`          | High-level overview, project scope, and quickstart          |
+| **API Reference**           | `API.md`             | Detailed documentation for all API endpoints                |
+| **CLI Reference**           | `CLI.md`             | Command-line interface usage, commands, and examples        |
+| **Installation Guide**      | `INSTALLATION.md`    | Step-by-step installation and environment setup             |
+| **User Guide**              | `USAGE.md`           | Comprehensive guide for end-users, workflows, and examples  |
+| **Contributing Guidelines** | `CONTRIBUTING.md`    | Contribution process, coding standards, and PR requirements |
+| **Architecture Overview**   | `ARCHITECTURE.md`    | System architecture, components, and design rationale       |
+| **Configuration Guide**     | `CONFIGURATION.md`   | Configuration options, environment variables, and tuning    |
+| **Feature Matrix**          | `FEATURE_MATRIX.md`  | Feature capabilities, coverage, and roadmap alignment       |
+| **Troubleshooting**         | `TROUBLESHOOTING.md` | Common issues, diagnostics, and remediation steps           |
 
 ## Contributing
 
